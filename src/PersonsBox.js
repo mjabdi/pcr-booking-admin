@@ -104,7 +104,8 @@ const useStyles = makeStyles((theme) => ({
   },
 
   DownloadForm:{
-      marginTop: "10px"
+      marginTop: "10px",
+      marginBottom : "10px"
   }
 
 }));
@@ -138,7 +139,7 @@ export default function PersonsBox() {
 
    const downloadForm2 = (id) =>
    {
-        PDFService.downloadCovidForm1(id).then( (res) => 
+        PDFService.downloadCovidForm2(id).then( (res) => 
         {
             FileSaver.saveAs(
             new Blob([res.data], { type: 'application/pdf' }),
@@ -218,7 +219,7 @@ export default function PersonsBox() {
                                     variant="outlined"
                                     color="primary"
                                     onClick = {() => {downloadForm1(person._id)}}
-                                    onTouchTap = {() => {downloadForm1(person._id)}}
+                                    // onTouchTap = {() => {downloadForm1(person._id)}}
                                     className={classes.DownloadForm}
                                  >
                                     Download Registration Form
@@ -232,7 +233,7 @@ export default function PersonsBox() {
                                     variant="outlined"
                                     color="primary"
                                     onClick = {() => {downloadForm2(person._id)}}
-                                    onTouchTap = {() => {downloadForm2(person._id)}}
+                                    // onTouchTap = {() => {downloadForm2(person._id)}}
                                     className={classes.DownloadForm}
                                     >
                                     Download Clinic Form

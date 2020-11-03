@@ -2,7 +2,7 @@ import axios from 'axios';
 
 export default axios.create({
   // baseURL: window.location.href,
-  baseURL: 'http://159.69.76.159:3000',
+  baseURL: 'https://www.travelpcrtest.com',
   headers : {
       'Authorization' : 'Basic QXp1cmXEaWFtb45kOmh1bnRlcjO='
   }

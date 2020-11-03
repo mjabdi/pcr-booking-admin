@@ -130,7 +130,8 @@ const useStyles = makeStyles((theme) => ({
     },
 
     PersonsBox:{
-        marginTop : "20px"
+        marginTop : "20px",
+        marginBottom: "50px"
     }
 
 }));
@@ -202,7 +203,8 @@ export default function FindByRef() {
             <FormControl className={classes.TextBox}>
                 <TextField
                     {...focusProps}
-                    autoFocus 
+                    //autoFocus 
+                    pattern="[0-9]*"
                     error = {state.refError ? true : false} 
                     value = {state.ref}
                     className = {classes.TextField}
