@@ -1,7 +1,7 @@
 import './App.css';
 import GlobalState from './GlobalState'; 
 import React from 'react';
-import SignIn from './SignIn';
+import Navigator from './Navigator';
 
 
 function App() {
@@ -9,7 +9,7 @@ function App() {
   return (
     <GlobalState.Provider value={[state, setState]}>
       <div className="App">
-        <SignIn></SignIn>
+        <Navigator/>
       </div>
     </GlobalState.Provider>
   );

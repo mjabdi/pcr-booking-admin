@@ -117,6 +117,11 @@ export default function SignIn() {
             id="password"
             autoComplete="current-password"
             onChange={passwordChanged}
+            onKeyPress= {event => {
+              if (event.key === 'Enter') {
+                signIn();
+              }
+            }}
           />
 
           <Button
@@ -125,6 +130,7 @@ export default function SignIn() {
             variant="contained"
             color="primary"
             onClick = {signIn}
+            onTouchTap = {signIn}
             className={classes.submit}
           >
             Sign In
