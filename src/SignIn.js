@@ -61,7 +61,7 @@ export default function SignIn() {
   const [state, setState] = React.useContext(GlobalState);
 
   const signIn = () => {
-    if (state.user && state.password && state.user.toLowerCase() === 'admin' && state.password === '123456')
+    if (state.user && state.password && state.user.toLowerCase() === 'admin' && state.password === 'pcr$321')
     {
         setState(state => ({...state, signedIn : true }));
     }else

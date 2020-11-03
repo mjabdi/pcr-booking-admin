@@ -14,6 +14,8 @@ import Alert from '@material-ui/lab/Alert';
 import PropTypes from 'prop-types';
 import MaskedInput from 'react-text-mask';
 import { FormControl, Grid, Input, InputLabel } from '@material-ui/core';
+import BookService from './services/BookService';
+import PersonsBox from './PersonsBox';
 
 function Copyright() {
   return (
@@ -26,6 +28,23 @@ function Copyright() {
       {'.'}
     </Typography>
   );
+}
+
+
+
+const isBoolean = (param) => typeof(param) === "boolean"
+
+const useFocus = (initialFocus = false, id = "") => {
+    const [focus, setFocus] = React.useState(initialFocus)
+    const setFocusWithTrueDefault = (param) => setFocus(isBoolean(param)? param : true)
+    return ([
+        setFocusWithTrueDefault, {
+            autoFocus: focus,
+            key: `${id}${focus}`,
+            onFocus: () => setFocus(true),
+            onBlur: () => setFocus(false),
+        },
+    ])
 }
 
 
@@ -58,6 +77,7 @@ const useStyles = makeStyles((theme) => ({
         '& > * + *': {
           marginTop: theme.spacing(2),
         },
+        marginTop: "20px"
       },  
 
     paper: {
@@ -81,6 +101,10 @@ const useStyles = makeStyles((theme) => ({
         width: "80px"
     },
 
+    Clear:{
+        marginRight: "20px"
+    },
+
     title:{
         marginTop : "20px"
     },
@@ -96,21 +120,71 @@ const useStyles = makeStyles((theme) => ({
 
     TextField:{
 
+    },
+
+    NoRecordsFound:{
+        marginTop: "20px",
+        color: "red",
+        fontWeight: "600",
+        fontSize: "14px",
+    },
+
+    PersonsBox:{
+        marginTop : "20px"
     }
+
 }));
 
 export default function FindByRef() {
   const classes = useStyles();
   const [state, setState] = React.useContext(GlobalState);
+  
+  const [setFocus, focusProps] = useFocus(true);
 
     const handleChange = (event) =>
     {
-        console.log(event.target.value);
+        setState(state => ({...state, ref : event.target.value}));
+        setState(state => ({...state, refError : false})); 
+    }
+
+    const clearField = () =>
+    {
+        setState(state => ({...state, refError : false})); 
+        setState(state => ({...state, ref : '___-___-___'}));
+        setState(state => ({...state, foundRecords : []}));
+        setFocus();
     }
 
     const findRecords = () =>
     {
-        
+        if (!state.ref || state.ref.indexOf('_') >= 0)
+        {
+            setState(state => ({...state, refError : true}));  
+            return;
+        }
+
+        setState(state => ({...state, submiting : true}));
+        setState(state => ({...state, foundRecords : []}));
+
+        BookService.getBookingsByRef(state.ref).then( (res)=>
+        {
+            setState(state => ({...state, submiting : false}));
+            if (res.data.length > 0)
+            {
+                setState(state => ({...state, foundRecords : res.data}));
+            }
+            else
+            {
+                setState(state => ({...state, foundRecords : null}));
+            }
+            
+            console.log(res.data);
+
+        }).catch( (err) =>
+        {
+            console.log(err);
+            setState(state => ({...state, submiting : false}));
+        });
     }
 
   return (
@@ -127,7 +201,10 @@ export default function FindByRef() {
         <Grid item xs={12} md={12}>
             <FormControl className={classes.TextBox}>
                 <TextField
+                    {...focusProps}
                     autoFocus 
+                    error = {state.refError ? true : false} 
+                    value = {state.ref}
                     className = {classes.TextField}
                     width = "50px"
                     onChange={handleChange}
@@ -144,32 +221,71 @@ export default function FindByRef() {
                         inputComponent: TextMaskCustom,
                         style: { textAlign: 'center', fontSize:"24px", width: "210px", paddingLeft: "20px" }
                     }}
+
+                    onKeyPress= {event => {
+                        if (event.key === 'Enter') {
+                            findRecords();
+                        }
+                      }}
                 />         
             </FormControl>
         </Grid>
 
         <Grid item xs={12} md={12}>
-        <Button
-            type="button"
+               
+                <Button
+                    disabled = {state.submiting}
+                    color="default"
+                    onClick = {clearField}
+                    onTouchTap = {clearField}
+                    className={classes.Clear}
+                >
+                    Clear 
+                </Button>  
+            
+                <Button
+                    type="button"
+                    disabled = {state.submiting}
+                    variant="contained"
+                    color="primary"
+                    onClick = {findRecords}
+                    onTouchTap = {findRecords}
+                    className={classes.Find}
+                >
+                    Find 
+                </Button>  
+        </Grid>
+
+        <Grid item xs={12} md={12}>
+
                     
-            variant="contained"
-            color="primary"
-            onClick = {findRecords}
-            onTouchTap = {findRecords}
-            className={classes.Find}
-          >
-            Find 
-          </Button>  
+
+            {state.foundRecords && state.foundRecords.length > 0 && (
+                <React.Fragment>
+
+                    <div className={classes.PersonsBox}>
+                          <PersonsBox/>
+                    </div>
+                    
+
+
+                </React.Fragment>
+            )}   
+
+            {!state.foundRecords && (
+                <React.Fragment>
+
+                <div className={classes.root}>
+                    <Alert severity="error"> <strong>No Records Found !</strong> <br/> Please check you reference number again.</Alert>
+                </div> 
+                   
+                </React.Fragment>
+            )}
+
         </Grid>
-
-
-
-
-
-
+        
+        
         </Grid>
-
-
         
     </React.Fragment>
    

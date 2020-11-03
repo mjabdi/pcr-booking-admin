@@ -5,7 +5,7 @@ import Navigator from './Navigator';
 
 
 function App() {
-  const [state, setState] = React.useState({});
+  const [state, setState] = React.useState({foundRecords: []});
   return (
     <GlobalState.Provider value={[state, setState]}>
       <div className="App">
