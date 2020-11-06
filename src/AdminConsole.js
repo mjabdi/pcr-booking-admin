@@ -12,6 +12,7 @@ import Container from '@material-ui/core/Container';
 import GlobalState from './GlobalState';
 import Alert from '@material-ui/lab/Alert';
 import FindByRef from './FindByRef';
+import BookingView from './BookingTable'
 
 function Copyright() {
   return (
@@ -65,8 +66,9 @@ export default function AdminConsole() {
     <React.Fragment>
         <CssBaseline />
 
-        <FindByRef/>
-        
+        {/* <FindByRef/> */}
+
+          <BookingView/>       
 
     </React.Fragment>
 

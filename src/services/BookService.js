@@ -7,4 +7,34 @@ export default class BookService {
        return API.get(`/api/book/getbookingsbyref?ref=${ref}`);
     }
 
+    static getAllBookings= () =>
+    {
+       return API.get(`/api/book/getallbookings`);
+    }
+
+    static getTodayBookings= () =>
+    {
+       return API.get(`/api/book/gettodaybookings`);
+    }
+
+    static getOldBookings= () =>
+    {
+       return API.get(`/api/book/getoldbookings`);
+    }
+
+    static getFutureBookings= () =>
+    {
+       return API.get(`/api/book/getfuturebookings`);
+    }
+
+    static getRecentBookings= () =>
+    {
+       return API.get(`/api/book/getrecentbookings`);
+    }
+
+    static getRecentBookingsAll= () =>
+    {
+       return API.get(`/api/book/getrecentbookingsall`);
+    }
+
 }

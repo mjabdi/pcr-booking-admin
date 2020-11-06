@@ -11,6 +11,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import GlobalState from './GlobalState';
 import Alert from '@material-ui/lab/Alert';
+import { AppBar, Checkbox, FormControl, FormControlLabel, InputAdornment, InputLabel, OutlinedInput } from '@material-ui/core';
+import { IconButton, Toolbar } from 'material-ui';
+import { Visibility, VisibilityOff } from '@material-ui/icons';
+import clsx from 'clsx';
 
 function Copyright() {
   return (
@@ -32,13 +36,22 @@ const useStyles = makeStyles((theme) => ({
         '& > * + *': {
           marginTop: theme.spacing(2),
         },
+
+        display: 'flex',
+        flexWrap: 'wrap',
       },  
 
-    paper: {
+      margin: {
+        marginTop: theme.spacing(2),
+        marginBottom: theme.spacing(2),
+      },
+
+      paper: {
         marginTop: theme.spacing(8),
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
+        flexWrap: 'wrap',
     },
 
     avatar: {
@@ -54,102 +67,189 @@ const useStyles = makeStyles((theme) => ({
     submit: {
         margin: theme.spacing(3, 0, 2),
     },
+
+    RememberMe:{
+      textAlign: "left"
+    },
+
+    appBar: {
+      position: 'static',
+      // backgroundColor: "#333",
+      // color: "#fff",
+      alignItems: 'center'
+  
+    },
 }));
 
 export default function SignIn() {
   const classes = useStyles();
   const [state, setState] = React.useContext(GlobalState);
 
+  const [password, setPassword] = React.useState(
+    localStorage.getItem('pcr-admin-password') || ''
+  );
+
+  const [username, setUsername] = React.useState(
+    localStorage.getItem('pcr-admin-username') || ''
+  );
+
+  const [saveChecked, setSaveChecked] = React.useState(
+    localStorage.getItem('pcr-admin-username') ? true : false
+  ); 
+
+
   const signIn = () => {
-    if (state.user && state.password && state.user.toLowerCase() === 'admin' && state.password === 'pcr$321')
+    if (username && password && username.toLowerCase() === 'admin' && password === 'pcr$321')
     {
         setState(state => ({...state, signedIn : true }));
+        if (saveChecked)
+        {
+           localStorage.setItem('pcr-admin-username', username);
+           localStorage.setItem('pcr-admin-password', password);
+        }else{
+          localStorage.removeItem('pcr-admin-username');
+          localStorage.removeItem('pcr-admin-password');
+        }
+
     }else
     {
         setState(state => ({...state, signedInError : true }));
     }
   }
 
-  const userChanged = (event) =>
+  const usernameChanged = (event) =>
   {
-      setState(state => ({...state, user : event.target.value }));
+      setUsername(event.target.value);
       setState(state => ({...state, signedInError : false }));
   }
 
   const passwordChanged = (event) =>
   {
-      setState(state => ({...state, password : event.target.value }));
+      setPassword(event.target.value);
       setState(state => ({...state, signedInError : false }));
   }
 
+  const handleClickShowPassword = () => {
+    setState(state => ({...state, showPassword : !state.showPassword }));
+  };
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
+
+  const saveCheckedChanged = (event) =>
+  {
+    setSaveChecked(event.target.checked);
+  }
 
   return (
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <div className={classes.paper}>
-        <Avatar className={classes.avatar}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          Sign in
-        </Typography>
-        <form className={classes.form} noValidate>
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="usrname"
-            label="Username"
-            name="username"
-            autoComplete="username"
-            autoFocus
-            onChange={userChanged}
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-            onChange={passwordChanged}
-            onKeyPress= {event => {
-              if (event.key === 'Enter') {
-                signIn();
-              }
-            }}
-          />
-
-          <Button
-            type="button"
-            fullWidth
-            variant="contained"
-            color="primary"
-            onClick = {signIn}
-            onTouchTap = {signIn}
-            className={classes.submit}
-          >
-            Sign In
-          </Button>
-
-        </form>
-      </div>
-
-    {state.signedInError && (
-        <div className={classes.root}>
-             <Alert severity="error">Invalid Username or Password. Please try again.</Alert>
-        </div> 
-
-    )}
+    <React.Fragment>
+        <AppBar position="absolute" color="primary" className={classes.appBar}>
+                <Toolbar>
+                    <Typography variant="h6" color="inherit" noWrap className={classes.title}>
+                          PCR Booking Admin Console
+                    </Typography>
+                </Toolbar>
+            </AppBar>
+          <Container component="main" maxWidth="xs">
 
 
-      <Box mt={8}>
-        <Copyright />
-      </Box>
-    </Container>
+
+            <div className={classes.paper}>
+              <Avatar className={classes.avatar}>
+                <LockOutlinedIcon />
+              </Avatar>
+              <Typography component="h1" variant="h5">
+                Sign in
+              </Typography>
+              <form className={classes.form} noValidate>
+                <TextField
+                  variant="outlined"
+                  value={username}
+                  onChange={usernameChanged}
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="usrname"
+                  label="Username"
+                  name="username"
+                  autoComplete="username"
+                  autoFocus
+                />
+
+              <FormControl 
+                              fullWidth 
+                              required 
+                              className={clsx(classes.margin, classes.textField)} 
+                              variant="outlined"
+                              onKeyPress= {event => {
+                                if (event.key === 'Enter') {
+                                  signIn();
+                                }
+                              }}
+                              
+                              >
+                  <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+                  <OutlinedInput
+                    id="outlined-adornment-password"
+                    name="outlined-adornment-password"
+                    type={state.showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={passwordChanged}
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                        >
+                          {state.showPassword ? <Visibility /> : <VisibilityOff />}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                    labelWidth={100}
+                  />
+                </FormControl>
+              
+              <div align="left">
+                  <FormControlLabel className={classes.RememberMe}
+                      control={<Checkbox value="remember" color="primary" checked={saveChecked} onChange={saveCheckedChanged}  />}
+                      label="Save password on this device"
+                    />
+              </div>
+
+
+
+
+                <Button
+                  type="button"
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  onClick = {signIn}
+                  onTouchTap = {signIn}
+                  className={classes.submit}
+                >
+                  Sign In
+                </Button>
+
+
+              </form>
+            </div>
+
+            {state.signedInError && (
+                <div className={classes.root}>
+                    <Alert fullWidth severity="error">Invalid Username or Password. Please try again.</Alert>
+                </div> 
+            )}
+
+            <Box mt={8}>
+              <Copyright />
+            </Box>
+          </Container>
+
+    </React.Fragment>
+
+    
   );
 }
