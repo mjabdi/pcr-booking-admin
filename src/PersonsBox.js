@@ -162,7 +162,7 @@ export default function PersonsBox() {
 
           {state.foundRecords.map((person,index) => (
    
-                <Grid item xs={12} md={12}>
+                <Grid item xs={12} md={12} key={`panel${index}`}>
                 <div className={classes.root}>
                     <Accordion className={classes.Accordion} expanded={expanded === `panel${index}`} onChange={handleChange(`panel${index}`)}>
                     <AccordionSummary

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -142,6 +142,11 @@ export default function FindByRef() {
   
   const [setFocus, focusProps] = useFocus(true);
 
+  useEffect( () =>
+  {
+     findRecords();
+  }, [state.findRecords])
+
     const handleChange = (event) =>
     {
         setState(state => ({...state, ref : event.target.value}));
@@ -216,7 +221,7 @@ export default function FindByRef() {
                     id="refNo"
                     variant="outlined"
                     
-                    size="normal"
+                    size="medium"
                     margin="normal"
                     fullWidth = {true}
                     InputProps={{

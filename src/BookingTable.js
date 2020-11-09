@@ -2,30 +2,20 @@ import React, {useEffect, useState} from 'react';
 import { DataGrid } from '@material-ui/data-grid';
 import BookService from './services/BookService';
 import Typography from '@material-ui/core/Typography';
-import { Grid, makeStyles, TextField, Tooltip } from '@material-ui/core';
+import { Grid, Link, makeStyles, TextField, Tooltip } from '@material-ui/core';
 import RefreshIcon from '@material-ui/icons/Refresh';
-import { IconButton } from 'material-ui';
+import { IconButton } from '@material-ui/core';
 import LoaderSpinner from 'react-loader-spinner';
+import CheckIcon from '@material-ui/icons/Check';
+import CloseIcon from '@material-ui/icons/Close';
+import { green, red } from '@material-ui/core/colors';
+import GlobalState from './GlobalState';
+import { Report } from '@material-ui/icons';
 
 
 
-const columns = [
-  { field: 'id', headerName: '#', width: 50 },
-  { field: 'bookingDate', headerName: 'Booked Date', width: 150 },
-  { field: 'bookingTime', headerName: 'Booked Time', width: 150 },
-  { field: 'bookingRef', headerName: 'Ref No.', width: 150 },
-  { field: 'forename', headerName: 'Forename', width: 150 },
-  { field: 'surname', headerName: 'Surname', width: 150 },
-  { field: 'birthDate', headerName: 'D.O.B', width: 150 },
-  { field: 'email', headerName: 'email', width: 300 },
-  { field: 'phone', headerName: 'Tel', width: 150 },
-  { field: 'passportNumber', headerName: 'Passport No.', width: 150 },
-  { field: 'certificate', headerName: 'Certificate', width: 150 },
-  { field: 'postCode', headerName: 'Post Code', width: 150 },
-  { field: 'address', headerName: 'Address', width: 500 },
-  { field: 'notes', headerName: 'Notes', width: 500 },
 
-];
+
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -36,6 +26,39 @@ const useStyles = makeStyles((theme) => ({
   
   refreshButton:{
     marginLeft: theme.spacing(2),
+  },
+
+  checkIcon:{
+    color: "green"
+  },
+
+  closeIcon:{
+    color: "red"
+  },
+
+  RefLink: {
+    cursor: "pointer"
+  },
+
+  BookedLabel:{
+    backgroundColor: "#606060",
+    color: "#fff",
+    paddingRight: "10px",
+    paddingLeft: "10px"
+  },
+
+  TestTakenLabel:{
+    backgroundColor: "#0066cc",
+    color: "#fff",
+    paddingRight: "15px",
+    paddingLeft: "10px"
+  },
+
+  ReportSentLabel:{
+    backgroundColor: "#009900",
+    color: "#fff",
+    paddingRight: "40px",
+    paddingLeft: "10px"
   }
   
 }));
@@ -63,10 +86,101 @@ const getTableTitle = (str) =>{
 }
 
 export default function BookingTable(props) {
-
+  
   const classes = useStyles();
 
+  const columns = [
+    { field: 'id', headerName: '#', width: 50 },
+
+    { field: 'bookingDate', headerName: 'Booked Date', width: 150 },
+    { field: 'bookingTimeNormalized', headerName: 'Booked Time', width: 150 , valueGetter: (params) => {
+      return params.getValue('bookingTime');
+
+    }},
+    { field: 'status', headerName: 'Status', width: 150, renderCell: (params) =>{
+        if (params.value === 'booked')
+        {
+          return (
+            <span className={classes.BookedLabel}> Booked </span>
+          );
+      
+        }else if (params.value === 'took_the_test')
+        {
+          return (
+            <span  className={classes.TestTakenLabel}> Test Taken </span>
+          );
+
+        }else if (params.value === 'report_sent')
+        {
+          return (
+            <span  className={classes.ReportSentLabel}> Report Sent </span>
+          );
+
+        }else{
+          return 'Unknown';
+        }
+      }
+    },
+    { field: 'bookingRef', headerName: 'Ref No.', width: 150 , renderCell: (params) =>{
+      return (
+        <Tooltip title="Go Find By Ref" placement="right">
+            <Link className={classes.RefLink} onClick={
+              () => {
+                console.log(params.value);
+
+                setState(state => ({...state, currentMenuIndex: 5}));
+                setState(state => ({...state, ref : params.value}));
+                setState(state => ({...state, refError : false})); 
+                setState(state => ({...state, foundRecords : []}));
+                setState(state => ({...state, findRecords : !state.findRecords}));
+              }
+            }>
+              {params.value}
+            </Link>
+        </Tooltip>
+
+      );
+    }},
+    { field: 'forename', headerName: 'Forename', width: 150 },
+    { field: 'surname', headerName: 'Surname', width: 150 },
+    { field: 'birthDate', headerName: 'D.O.B', width: 150 },
+    { field: 'email', headerName: 'email', width: 300 },
+    { field: 'phone', headerName: 'Tel', width: 150 },
+    { field: 'passportNumber', headerName: 'Passport No.', width: 250,  valueGetter: (params) => {
+      const pass2 = params.getValue('passportNumber2');
+      if (pass2 && pass2.length > 0 && pass2.trim().length > 0)
+      {
+        return `${params.getValue('passportNumber')} - ${params.getValue('passportNumber2')}`
+      }
+      else
+      {
+        return params.getValue('passportNumber');
+      }
+   
+
+    }},
+    { field: 'certificate', headerName: 'Certificate', width: 150,  renderCell: (params) => {
+        return params.value ? (
+          <CheckIcon className={classes.checkIcon}/>
+        ) :
+        (
+        <  CloseIcon className={classes.closeIcon}/> 
+        );
+    } },
+    { field: 'postCode', headerName: 'Post Code', width: 150 },
+    { field: 'address', headerName: 'Address', width: 500 },
+    { field: 'notes', headerName: 'Notes', width: 500 },
+  
+  ];
+
+
+
+
+  const [state, setState] = React.useContext(GlobalState);  
+
   const [data, setData] = React.useState({bookings: [] , cachedBookings: [], isFetching : false});
+
+  const [selectedRow, setSelectedRow] = React.useState(null);
 
   const [filter,setFilter] = React.useState('');
 
@@ -139,11 +253,16 @@ export default function BookingTable(props) {
 
   }
 
-
-
-
   const filterChanged = (event) =>{
     setFilter(event.target.value);
+  }
+
+  const handleSelectionChanged = (newSelection) =>
+  {
+    if (newSelection.length > 0){
+      setSelectedRow(newSelection.rows[0]);
+    }
+    
   }
 
   return (
@@ -207,7 +326,11 @@ export default function BookingTable(props) {
       </Grid>
 
       <div style={{ height: 700, width: "100%" }}>
-        <DataGrid rows={data.bookings} columns={columns} pageSize={15} />
+        <DataGrid rows={data.bookings} 
+                  columns={columns} 
+                  autoPageSize
+                  onSelectionChange = {handleSelectionChanged}
+                  />
       </div>
     </React.Fragment>
   );

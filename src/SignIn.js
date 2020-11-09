@@ -12,7 +12,7 @@ import Container from '@material-ui/core/Container';
 import GlobalState from './GlobalState';
 import Alert from '@material-ui/lab/Alert';
 import { AppBar, Checkbox, FormControl, FormControlLabel, InputAdornment, InputLabel, OutlinedInput } from '@material-ui/core';
-import { IconButton, Toolbar } from 'material-ui';
+import { IconButton, Toolbar } from '@material-ui/core';
 import { Visibility, VisibilityOff } from '@material-ui/icons';
 import clsx from 'clsx';
 

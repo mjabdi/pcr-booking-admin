@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 
 
 import { ListItemIcon, Tooltip } from '@material-ui/core';
 import GlobalState from './GlobalState';
-import { List, ListItem } from 'material-ui';
+import { List, ListItem } from '@material-ui/core';
 
 import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
@@ -36,6 +36,10 @@ export default function DashboardPreview() {
   const [state, setState] = React.useContext(GlobalState);
 
   const [selectedIndex, setSelectedIndex] = React.useState(0);
+
+  useEffect(() => {
+    setSelectedIndex(state.currentMenuIndex);
+  }, [state.currentMenuIndex]);
 
   const handleListItemClick = (event, index) => {
     setSelectedIndex(index);
