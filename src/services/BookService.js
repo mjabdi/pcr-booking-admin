@@ -2,6 +2,11 @@ import API from './api';
 
 export default class BookService {
 
+   static updateBooking = (payload) =>
+   {
+      return API.post(`/api/book/updatebookappointment`, payload);
+   } 
+   
     static getBookingsByRef = (ref) =>
     {
        return API.get(`/api/book/getbookingsbyref?ref=${ref}`);

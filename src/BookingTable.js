@@ -47,17 +47,31 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: "10px"
   },
 
-  TestTakenLabel:{
-    backgroundColor: "#0066cc",
+  PatientAttendedLabel:{
+    backgroundColor: "#0066aa",
     color: "#fff",
     paddingRight: "15px",
+    paddingLeft: "10px"
+  },
+
+  SampleTakenLabel:{
+    backgroundColor: "#0066cc",
+    color: "#fff",
+    paddingRight: "40px",
     paddingLeft: "10px"
   },
 
   ReportSentLabel:{
     backgroundColor: "#009900",
     color: "#fff",
-    paddingRight: "40px",
+    paddingRight: "90px",
+    paddingLeft: "10px"
+  },
+
+  ReportCertSentLabel:{
+    backgroundColor: "#009900",
+    color: "#fff",
+    paddingRight: "68px",
     paddingLeft: "10px"
   }
   
@@ -92,22 +106,28 @@ export default function BookingTable(props) {
   const columns = [
     { field: 'id', headerName: '#', width: 50 },
 
-    { field: 'bookingDate', headerName: 'Booked Date', width: 150 },
-    { field: 'bookingTimeNormalized', headerName: 'Booked Time', width: 150 , valueGetter: (params) => {
+    { field: 'bookingDate', headerName: 'Booked Date', width: 120 },
+    { field: 'bookingTimeNormalized', headerName: 'Booked Time', width: 120 , valueGetter: (params) => {
       return params.getValue('bookingTime');
 
     }},
-    { field: 'status', headerName: 'Status', width: 150, renderCell: (params) =>{
+    { field: 'status', headerName: 'Status', width: 200, renderCell: (params) =>{
         if (params.value === 'booked')
         {
           return (
-            <span className={classes.BookedLabel}> Booked </span>
+            <span className={classes.BookedLabel}> Booking Made </span>
           );
       
-        }else if (params.value === 'took_the_test')
+        }else if (params.value === 'patient_attended')
         {
           return (
-            <span  className={classes.TestTakenLabel}> Test Taken </span>
+            <span  className={classes.PatientAttendedLabel}> Patient Attended </span>
+          );
+
+        }else if (params.value === 'sample_taken')
+        {
+          return (
+            <span  className={classes.SampleTakenLabel}> Sample Taken </span>
           );
 
         }else if (params.value === 'report_sent')
@@ -116,17 +136,23 @@ export default function BookingTable(props) {
             <span  className={classes.ReportSentLabel}> Report Sent </span>
           );
 
+        }else if (params.value === 'report_cert_sent')
+        {
+          return (
+            <span  className={classes.ReportCertSentLabel}> {`Rpt & Cert Sent`} </span>
+          );
+
         }else{
           return 'Unknown';
         }
       }
     },
-    { field: 'bookingRef', headerName: 'Ref No.', width: 150 , renderCell: (params) =>{
+    { field: 'bookingRef', headerName: 'Ref No.', width: 120 , renderCell: (params) =>{
       return (
         <Tooltip title="Go Find By Ref" placement="right">
             <Link className={classes.RefLink} onClick={
               () => {
-                console.log(params.value);
+                // console.log(params.value);
 
                 setState(state => ({...state, currentMenuIndex: 5}));
                 setState(state => ({...state, ref : params.value}));
@@ -141,34 +167,48 @@ export default function BookingTable(props) {
 
       );
     }},
-    { field: 'forename', headerName: 'Forename', width: 150 },
-    { field: 'surname', headerName: 'Surname', width: 150 },
-    { field: 'birthDate', headerName: 'D.O.B', width: 150 },
-    { field: 'email', headerName: 'email', width: 300 },
+    { field: 'forenameCapital', headerName: 'Forename', width: 150 },
+    { field: 'surnameCapital', headerName: 'Surname', width: 150 },
+    { field: 'birthDate', headerName: 'D.O.B', width: 120 },
+    { field: 'email', headerName: 'email', width: 300 , valueFormatter : (params) => {
+      return params.value.toUpperCase();
+    }},
     { field: 'phone', headerName: 'Tel', width: 150 },
     { field: 'passportNumber', headerName: 'Passport No.', width: 250,  valueGetter: (params) => {
       const pass2 = params.getValue('passportNumber2');
       if (pass2 && pass2.length > 0 && pass2.trim().length > 0)
       {
-        return `${params.getValue('passportNumber')} - ${params.getValue('passportNumber2')}`
+        return `${params.getValue('passportNumber')?.toUpperCase()} - ${params.getValue('passportNumber2')?.toUpperCase()}`
       }
       else
       {
-        return params.getValue('passportNumber');
+        return params.getValue('passportNumber')?.toUpperCase();
       }
    
 
     }},
-    { field: 'certificate', headerName: 'Certificate', width: 150,  renderCell: (params) => {
+    { field: 'certificate', headerName: 'Certificate', width: 120,  renderCell: (params) => {
         return params.value ? (
           <CheckIcon className={classes.checkIcon}/>
         ) :
         (
-        <  CloseIcon className={classes.closeIcon}/> 
+          <CloseIcon className={classes.closeIcon}/> 
         );
     } },
-    { field: 'postCode', headerName: 'Post Code', width: 150 },
-    { field: 'address', headerName: 'Address', width: 500 },
+    { field: 'antiBodyTest', headerName: 'Antibody Test', width: 120,  renderCell: (params) => {
+      return params.value ? (
+        <CheckIcon className={classes.checkIcon}/>
+      ) :
+      (
+      <  CloseIcon className={classes.closeIcon}/> 
+      );
+  } },
+    { field: 'postCode', headerName: 'Post Code', width: 150, valueFormatter : (params) => {
+      return params.value.toUpperCase();
+    } },
+    { field: 'address', headerName: 'Address', width: 500, valueFormatter : (params) => {
+      return params.value.toUpperCase();
+    } },
     { field: 'notes', headerName: 'Notes', width: 500 },
   
   ];

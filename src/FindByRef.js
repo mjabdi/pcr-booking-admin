@@ -145,7 +145,18 @@ export default function FindByRef() {
   useEffect( () =>
   {
      findRecords();
-  }, [state.findRecords])
+  }, [state.findRecords]);
+
+
+  useEffect( () => {
+    BookService.getBookingsByRef(state.ref).then( (res)=>
+    {
+        if (res.data.length > 0)
+        {
+            setState(state => ({...state, foundRecords : res.data}));
+        }
+    });
+    }, [state.RefreshPersonInfo]);
 
     const handleChange = (event) =>
     {
