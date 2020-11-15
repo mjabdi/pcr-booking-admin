@@ -9,10 +9,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
-import Badge from '@material-ui/core/Badge';
 import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
 import Link from '@material-ui/core/Link';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
@@ -22,10 +19,9 @@ import { ExitToAppOutlined } from '@material-ui/icons';
 
 import { Tooltip } from '@material-ui/core';
 import GlobalState from './GlobalState';
-import DashboardPreview from './DashboardPreview';
 import Menu from './Menu';
-import FindByRef from './FindByRef';
-import BookingTable from './BookingTable';
+import {getMenuContent} from './MenuList';
+
 
 function Copyright() {
     return (
@@ -146,28 +142,6 @@ export default function Dashboard() {
     setState(state => ({...state, signedIn: false}));
   }
 
-  const getContentFromMenuIndex = (index) =>
-  {
-    switch (index) {
-      case 0:
-        return <DashboardPreview />;
-      case 1:
-        return <BookingTable date="today"/>;
-      case 2:
-        return <BookingTable date="old"/>;
-      case 3:
-        return <BookingTable date="future"/>;
-      case 4:
-          return <BookingTable date="all"/>;
-      case 5:
-            return <FindByRef/>;
-      case 100:
-            return <BookingTable date="recent"/>;;      
-      default:
-        throw new Error('Unknown MenuItem');
-    }
-  }
-
 
   return (
     <div className={classes.root}>
@@ -221,7 +195,7 @@ export default function Dashboard() {
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>
 
-          {getContentFromMenuIndex(currentMenuIndex)}
+          {getMenuContent(currentMenuIndex)}
 
           <Box pt={4}>
             <Copyright />

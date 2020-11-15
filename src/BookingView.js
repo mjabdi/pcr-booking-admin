@@ -10,6 +10,7 @@ import Title from './Title';
 import BookService from './services/BookService';
 import * as dateformat from 'dateformat';
 import GlobalState from './GlobalState';
+import { getMenuIndex } from './MenuList';
 
 
 
@@ -27,7 +28,7 @@ export default function BookingView() {
 
   const seeMoreRecords = (event) => {
     event.preventDefault();
-    setState(state=>({...state, currentMenuIndex:100}));
+    setState(state=>({...state, currentMenuIndex:getMenuIndex(`recentBookings`)}));
   }
 
 

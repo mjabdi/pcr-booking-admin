@@ -17,6 +17,17 @@ export default class BookService {
        return API.get(`/api/book/getallbookings`);
     }
 
+    static getLiveBookings= () =>
+    {
+       return API.get(`/api/book/getlivebookings`);
+    }
+
+    static getCompletedBookings= () =>
+    {
+       return API.get(`/api/book/getcompletedbookings`);
+    }
+
+
     static getTodayBookings= () =>
     {
        return API.get(`/api/book/gettodaybookings`);

@@ -536,7 +536,7 @@ export default function PersonsBox() {
        const month = parseInt(str.substr(5,2));
        const day = parseInt(str.substr(8,2));
 
-       if (year < 2020)
+       if (year < 1900)
        {
           error = true;
        }

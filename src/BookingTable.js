@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import { DataGrid } from '@material-ui/data-grid';
 import BookService from './services/BookService';
 import Typography from '@material-ui/core/Typography';
@@ -11,6 +11,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import { green, red } from '@material-ui/core/colors';
 import GlobalState from './GlobalState';
 import { Report } from '@material-ui/icons';
+import { getMenuIndex } from './MenuList';
 
 
 
@@ -91,7 +92,15 @@ const getTableTitle = (str) =>{
   }else if (str === 'recent')
   {
     return `Recent Bookings`;
-  }else
+  }else if (str === 'live')
+  {
+    return `Live Bookings`;
+  }else if (str === 'completed')
+  {
+    return `Completed Bookings`;
+  }
+  
+  else
   {
     return `All Bookings`;
   }
@@ -102,6 +111,9 @@ const getTableTitle = (str) =>{
 export default function BookingTable(props) {
   
   const classes = useStyles();
+
+
+
 
   const columns = [
     { field: 'id', headerName: '#', width: 50 },
@@ -154,7 +166,7 @@ export default function BookingTable(props) {
               () => {
                 // console.log(params.value);
 
-                setState(state => ({...state, currentMenuIndex: 5}));
+                setState(state => ({...state, currentMenuIndex: getMenuIndex(`findByRef`)}));
                 setState(state => ({...state, ref : params.value}));
                 setState(state => ({...state, refError : false})); 
                 setState(state => ({...state, foundRecords : []}));
@@ -213,9 +225,6 @@ export default function BookingTable(props) {
   
   ];
 
-
-
-
   const [state, setState] = React.useContext(GlobalState);  
 
   const [data, setData] = React.useState({bookings: [] , cachedBookings: [], isFetching : false});
@@ -226,38 +235,60 @@ export default function BookingTable(props) {
 
   const [refresh, setRefresh] = React.useState(false);
 
-  var api = BookService.getAllBookings;
-
-  if (props.date === 'today')
-  {
-    api = BookService.getTodayBookings;
-  }else if (props.date === 'old')
-  {
-    api = BookService.getOldBookings;
-  }else if (props.date === 'future')
-  {
-    api = BookService.getFutureBookings;
-  }else if (props.date === 'recent')
-  {
-    api = BookService.getRecentBookingsAll;
-  }
-
+  const lastPromise = useRef();
 
   useEffect( () => {
 
+            var api = BookService.getAllBookings;
+            if (props.date === 'today')
+            {
+              api = BookService.getTodayBookings;
+            }else if (props.date === 'old')
+            {
+              api = BookService.getOldBookings;
+            }else if (props.date === 'future')
+            {
+              api = BookService.getFutureBookings;
+            }else if (props.date === 'recent')
+            {
+              api = BookService.getRecentBookingsAll;
+            }else if (props.date === 'live')
+            {
+              api = BookService.getLiveBookings;
+            }else if (props.date === 'completed')
+            {
+              api = BookService.getCompletedBookings;
+            }
+                       
             setData({bookings: [], cachedBookings: [], isFetching: true});
-            api().then( (res) =>{
-                res.data.forEach((element, index) => {
-                    res.data[index] = {...element, id : index + 1}
-                });
-                setData({bookings: res.data, cachedBookings: [...res.data], isFetching: false});
+            const currentPromise = api().then( (res) =>{
+              
+              for (var i=0; i < res.data.length; i++)
+              {
+                res.data[i] = {...res.data[i], id : i + 1}
+              }  
+              
+              return res.data;
+            })
 
-            }).catch( (err) => {
-                console.log(err);
-                setData({bookings: data.bookings, cachedBookings: data.cachedBookings, isFetching: false});
-            });
+            lastPromise.current = currentPromise;
+
+            currentPromise.then(
+              result => {
+                if (currentPromise === lastPromise.current) {
+                  setData({bookings: result, cachedBookings: [...result], isFetching: false});
+                }
+              },
+              e => {
+                if (currentPromise === lastPromise.current) {
+                    console.log(e);
+                    setData({bookings: data.bookings, cachedBookings: data.cachedBookings, isFetching: false});
+                }
+              });
         },
         [props.date, refresh]);
+
+
 
   useEffect( () => {
 
