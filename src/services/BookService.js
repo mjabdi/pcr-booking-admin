@@ -6,6 +6,17 @@ export default class BookService {
    {
       return API.post(`/api/book/updatebookappointment`, payload);
    } 
+
+   static deleteBooking = (id) =>
+   {
+      return API.post(`/api/book/deletebookappointment?id=${id}`);
+   } 
+
+   static unDeleteBooking = (id) =>
+   {
+      return API.post(`/api/book/undeletebookappointment?id=${id}`);
+   } 
+   
    
     static getBookingsByRef = (ref) =>
     {
@@ -17,6 +28,11 @@ export default class BookService {
        return API.get(`/api/book/getallbookings`);
     }
 
+    static getDeletedBookings= () =>
+    {
+       return API.get(`/api/book/getdeletedbookings`);
+    }
+
     static getLiveBookings= () =>
     {
        return API.get(`/api/book/getlivebookings`);
@@ -26,6 +42,12 @@ export default class BookService {
     {
        return API.get(`/api/book/getcompletedbookings`);
     }
+
+    static getPositiveBookings= () =>
+    {
+       return API.get(`/api/book/getpositivebookings`);
+    }
+
 
 
     static getTodayBookings= () =>
@@ -52,5 +74,26 @@ export default class BookService {
     {
        return API.get(`/api/book/getrecentbookingsall`);
     }
+
+    static getUnmatchedRecords= () =>
+    {
+       return API.get(`/api/book/getunmatchedrecords`);
+    }
+
+    static getUnmatchedRecordsArchived= () =>
+    {
+       return API.get(`/api/book/getunmatchedrecordsarchived`);
+    }
+
+    static archiveRecord = (id) =>
+    {
+       return API.post(`/api/book/archiverecord?id=${id}`);
+    }
+
+    static unArchiveRecord = (id) =>
+    {
+       return API.post(`/api/book/unarchiverecord?id=${id}`);
+    }
+
 
 }

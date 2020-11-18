@@ -8,7 +8,7 @@ import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import dateFormat from 'dateformat';
-import { Button, Checkbox, FormControlLabel, Link, TextField } from '@material-ui/core';
+import { Button, Checkbox, FormControlLabel, Link, TextField, Tooltip } from '@material-ui/core';
 import PDFService from './services/PDFService';
 
 import {calculatePrice} from './PriceCalculator';
@@ -20,6 +20,9 @@ import { CheckBox } from '@material-ui/icons';
 import { parse } from 'date-fns';
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
+
+
+import DeleteIcon from '@material-ui/icons/Delete';
 
 const useStyles = makeStyles((theme) => ({
   box: {
@@ -68,6 +71,13 @@ const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
   },
+
+  lineThrough:{
+    textDecoration : "line-through",
+  },
+
+
+
   heading: {
     fontSize: theme.typography.pxToRem(15),
     flexBasis: '33.33%',
@@ -109,6 +119,11 @@ const useStyles = makeStyles((theme) => ({
   Accordion:{
     backgroundColor : "#f5f5f5",
     color: "#222"
+  },
+
+  AccordionDeleted:{
+    backgroundColor : "#aaa",
+    color: "#555"
   },
 
   DownloadForm:{
@@ -162,6 +177,14 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: "10px"
   },
 
+  PositiveLabel:{
+    backgroundColor: "red",
+    color: "#fff",
+    paddingRight: "90px",
+    paddingLeft: "10px",
+    fontWeight: "800"
+  },
+
   EditButton:
   {
     marginBottom : "20px",
@@ -170,9 +193,34 @@ const useStyles = makeStyles((theme) => ({
       background: "green",
       color: "#fff"
     },
+    textDecoration : "none !important",
+    padding: "10px"   
+  },
+
+  RestoreButton:
+  {
+    marginBottom : "20px",
+    backgroundColor : "#fafafa",
+    color: "#555",
+    "&:hover": {
+      background: "#f1f1f1",
+      color: "#111"
+    },
+    textDecoration : "none !important",
+    padding: "10px"   
+  },
+
+
+  DeleteButton:
+  {
+    marginBottom : "20px",
+    backgroundColor : "#d90015",
+    "&:hover": {
+      background: "#b80012",
+      color: "#fff"
+    },
 
     padding: "10px"
-
     
   },
 
@@ -229,11 +277,15 @@ export default function PersonsBox() {
 
     const [state, setState] = React.useContext(GlobalState);
 
-    const [expanded, setExpanded] = React.useState(false);
+    const [expanded, setExpanded] = React.useState('panel0');
 
     const [editMode, setEditMode] = React.useState({edit : false, person : null});
+    const [deleteMode, setDeleteMode] = React.useState({delete : false, person : null});
+    const [restoreMode, setRestoreMode] = React.useState({restore : false, person : null});
 
     const [saving, setSaving] =  React.useState(false);
+    const [deleting, setDeleting] =  React.useState(false);
+    const [restoring, setRestoring] =  React.useState(false);
 
     const [validationError, setValidationError] = React.useState({});
 
@@ -370,13 +422,14 @@ export default function PersonsBox() {
           <span  className={classes.ReportSentLabel}> Report Sent </span>
         );
     
-      }else if (status === 'report_cert_sent')
+      }else if (status === 'positive')
       {
         return (
-          <span  className={classes.ReportCertSentLabel}> {`Rpt & Cert Sent`} </span>
+          <span  className={classes.PositiveLabel}> {`POSITIVE`} </span>
         );
     
-      }else{
+      }
+      else{
         return 'Unknown';
       }
     }
@@ -634,6 +687,70 @@ export default function PersonsBox() {
        });
    }
 
+   const deleteBooking = (id) =>
+   {
+       setDeleting(true);
+       bookingService.deleteBooking(id).then( (res) => {
+        setDeleting(false);
+        setDeleteMode({delete: false, person: null});
+        setState(state => ({...state, RefreshPersonInfo : !state.RefreshPersonInfo}));
+
+       }).catch ( (err) => {
+          setDeleting(false);
+          setDeleteMode({delete: false, person: null});
+         console.log(err);
+       });
+   }
+
+   const restoreBooking = (id) =>
+   {
+       setRestoring(true);
+       bookingService.unDeleteBooking(id).then( (res) => {
+        setRestoring(false);
+        setRestoreMode({restore: false, person: null});
+        setState(state => ({...state, RefreshPersonInfo : !state.RefreshPersonInfo}));
+
+       }).catch ( (err) => {
+        setRestoring(false);
+        setRestoreMode({restore: false, person: null});
+         console.log(err);
+       });
+   }
+
+
+
+   const handleDeleteModeChanged = (del, person) => {
+
+    if (del)
+    {
+      setDeleteMode({delete: del, person: person});
+    }
+    else if (!del && !person)
+    {
+      setDeleteMode({delete: del, person: person});
+    }
+    else if (!del && person)
+    {
+        deleteBooking(person._id);
+    }
+  }
+
+  const handleRestoreModeChanged = (restore, person) => {
+
+    if (restore)
+    {
+      setRestoreMode({restore: restore, person: person});
+    }
+    else if (!restore && !person)
+    {
+      setRestoreMode({restore: restore, person: person});
+    }
+    else if (!restore && person)
+    {
+        restoreBooking(person._id);
+    }
+  }
+
   return (
     <React.Fragment>
           
@@ -644,22 +761,83 @@ export default function PersonsBox() {
    
                 <Grid item xs={12} md={12} key={`panel${index}`}>
                 <div className={classes.root}>
-                    <Accordion className={classes.Accordion} expanded={expanded === `panel${index}`} onChange={handleChange(`panel${index}`)}>
-                    <AccordionSummary
+                    <Accordion className={person.deleted ? classes.AccordionDeleted : classes.Accordion} expanded={expanded === `panel${index}`} onChange={handleChange(`panel${index}`)}>
+                    <AccordionSummary className={person.deleted ? classes.lineThrough : ''}
                         expandIcon={<ExpandMoreIcon />}
                         aria-controls="panel1bh-content"
                         id={`panel${index}bh-header`}
                     >
+                      {person.deleted && (
+                          <Tooltip  title="This record has been deleted.">
+                            <DeleteIcon  style={{padding: 0, margin: 0,  color: "#fff", fontSize: 25 }}/>
+                        </Tooltip>
+                      )}
+
                         <Typography className={classes.heading}> {`#${index+1}`} </Typography>
                         <Typography className={classes.secondaryHeading}>
                         {`${person.forenameCapital} ${person.surnameCapital}`}
                         </Typography>
                     </AccordionSummary>
+
                     <AccordionDetails className={classes.infoDetails}>
                         
+
+
                         <ul className={classes.ul}>
 
-                            <li hidden={(editMode.edit && editMode.person._id === person._id)}>
+                        {/* Restore Functionality ******************************************* */}  
+                        <li hidden={!(restoreMode.restore && restoreMode.person._id  === person._id)}>
+                              <div style={{fontWeight: "500", paddingBottom: "5px", paddingLeft: "5px", fontSize:"16px" , color:"#fff"}}>
+                                Are you sure you want to restore this record?
+                              </div>
+                            </li>
+
+                            <li hidden={!person.deleted || (restoreMode.restore && restoreMode.person._id === person._id)}>
+                                 <Button
+                                    type="button"
+                                    fullWidth
+                                    variant="contained"
+                                    color="primary"
+                                    onClick = {() => {handleRestoreModeChanged(true, person)}}
+                                    className={classes.RestoreButton}
+                                 >
+                                   Restore This Record
+                                </Button>
+                            </li>
+
+                            <li hidden={!(restoreMode.restore && restoreMode.person._id  === person._id)}>
+                                 <Button
+                                    type="button"
+                                    fullWidth
+                                    variant="contained"
+                                    color="primary"
+                                    disabled = {restoring}
+                                    onClick = {() => {handleRestoreModeChanged(false, person)}}
+                                    className={classes.SaveButton}
+                                 >
+                                    YES, Restore this!
+                                </Button>
+                            </li>
+
+                            <li hidden={!(restoreMode.restore && restoreMode.person._id  === person._id)}>
+                                 <Button
+                                    type="button"
+                                    fullWidth
+                                    variant="contained"
+                                    color="default"
+                                    disabled = {restoring}
+                                    onClick = {() => {handleRestoreModeChanged(false, null)}}
+                                    className={classes.CancelButton}
+                                 >
+                                    Cancel
+                                </Button>
+                            </li>
+
+                           {/*  ******************************************************************* */}
+
+                              {/* Edit Functionality ******************************************* */}
+
+                            <li hidden={person.deleted || deleteMode.delete || (editMode.edit && editMode.person._id === person._id)}>
                                  <Button
                                     type="button"
                                     fullWidth
@@ -699,13 +877,66 @@ export default function PersonsBox() {
                                     Cancel
                                 </Button>
                             </li>
+                            
+                            {/* ****************************************************************************************** */}
 
+
+                            {/* Delete Functionality ******************************************* */}
+
+                            <li hidden={!(deleteMode.delete && deleteMode.person._id  === person._id)}>
+                              <div style={{fontWeight: "600",  paddingBottom: "5px", paddingLeft: "5px", fontSize:"16px"}}>
+                                Are you sure you want to delete this record?
+                              </div>
+                            </li>
+
+                            <li hidden={person.deleted ||  editMode.edit || (deleteMode.delete && deleteMode.person._id === person._id)}>
+                                 <Button
+                                    type="button"
+                                    fullWidth
+                                    variant="contained"
+                                    color="primary"
+                                    onClick = {() => {handleDeleteModeChanged(true, person)}}
+                                    className={classes.DeleteButton}
+                                 >
+                                   Delete This Record
+                                </Button>
+                            </li>
+
+                            <li hidden={!(deleteMode.delete && deleteMode.person._id  === person._id)}>
+                                 <Button
+                                    type="button"
+                                    fullWidth
+                                    variant="contained"
+                                    color="primary"
+                                    disabled = {deleting}
+                                    onClick = {() => {handleDeleteModeChanged(false, person)}}
+                                    className={classes.SaveButton}
+                                 >
+                                    YES, Delete this!
+                                </Button>
+                            </li>
+
+                            <li hidden={!(deleteMode.delete && deleteMode.person._id === person._id)}>
+                                 <Button
+                                    type="button"
+                                    fullWidth
+                                    variant="contained"
+                                    color="default"
+                                    disabled = {deleting}
+                                    onClick = {() => {handleDeleteModeChanged(false, null)}}
+                                    className={classes.CancelButton}
+                                 >
+                                    Cancel
+                                </Button>
+                            </li>
+                                 
+                            {/* ****************************************************************************************** */}
 
                             <li className={classes.li}>
                                 <span className={classes.infoTitle}>BOOKED DATE</span> 
                             
 
-                                <span hidden={(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>{dateFormat(new Date(person.bookingDate),'dd mmm yyyy').toUpperCase() }</span>  
+                                <span hidden={(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>{person.bookingDate }</span>  
                                         <span hidden={!(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>
                                           <TextField 
                                                       error={validationError.bookingDateError}
@@ -840,7 +1071,7 @@ export default function PersonsBox() {
                             </li>
                             <li className={classes.li}>
                                 <span className={classes.infoTitle}>D.O.B</span>
-                                        <span hidden={(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>{dateFormat(new Date(person.birthDate),'dd mmm yyyy').toUpperCase() }</span>  
+                                        <span hidden={(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>{person.birthDate }</span>  
                                         <span hidden={!(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>
                                         <TextField 
                                                       error={validationError.dobError} 
@@ -995,7 +1226,7 @@ export default function PersonsBox() {
                                 <span className={classes.infoTitle}>TOTAL CHARGES</span> <span className={calculatePrice(person) <= 199 ? classes.infoDataCharges : classes.infoDataChargesHigher}>{`£${calculatePrice(person)}`}</span>  
                             </li>
 
-                            <li >
+                            <li  hidden={person.deleted} >
                                  <Button
                                     type="button"
                                     fullWidth
@@ -1009,7 +1240,7 @@ export default function PersonsBox() {
                                 </Button>
                             </li>
 
-                            <li>
+                            <li  hidden={person.deleted}>
                                   <Button
                                     type="button"
                                     fullWidth
@@ -1023,7 +1254,7 @@ export default function PersonsBox() {
                                  </Button>
                             </li>
 
-                            <li hidden={person.status !== 'report_sent' && person.status !== 'report_cert_sent' }>
+                            <li hidden={ person.deleted || (person.status !== 'report_sent' && person.status !== 'report_cert_sent') }>
                                  <Button
                                     type="button"
                                     fullWidth
@@ -1037,7 +1268,7 @@ export default function PersonsBox() {
                                 </Button>
                             </li>
 
-                            <li hidden={person.status !== 'report_cert_sent'}>
+                            <li hidden={person.deleted || person.status !== 'report_cert_sent'}>
                                  <Button
                                     type="button"
                                     fullWidth

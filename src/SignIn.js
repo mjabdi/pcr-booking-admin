@@ -99,7 +99,7 @@ export default function SignIn() {
 
 
   const signIn = () => {
-    if (username && password && username.toLowerCase() === 'admin' && password === 'pcr$321')
+    if (username && password && username.toLowerCase() === 'admin' && password === 'MELLIM2020!gbc')
     {
         setState(state => ({...state, signedIn : true }));
         if (saveChecked)

@@ -3,6 +3,7 @@ import DashboardIcon from '@material-ui/icons/Dashboard';
 import FindByRef from './FindByRef';
 import BookingTable from './BookingTable';
 import DashboardPreview from './DashboardPreview';
+import UnmatchedRecords from './UnmatchedRecords';
 
 import NewReleasesIcon from '@material-ui/icons/NewReleases';
 import HistoryIcon from '@material-ui/icons/History';
@@ -12,6 +13,9 @@ import SearchIcon from '@material-ui/icons/Search';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 import LiveTvIcon from '@material-ui/icons/LiveTv';
 import PlaylistAddCheckIcon from '@material-ui/icons/PlaylistAddCheck';
+import WarningIcon from '@material-ui/icons/Warning';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 export const MenuList = [
     {index: 0, id:`dashboard`, title: `Dashboard`, icon : <DashboardIcon/>, content: <DashboardPreview />},
@@ -22,7 +26,10 @@ export const MenuList = [
     {index: 5, id:`futureBookings`, title: `Future Bookings`, icon : <TimelineIcon/>, content: <BookingTable date="future"/>},
     {index: 6, id:`allBookings`, title: `All Bookings`, icon : <DescriptionIcon/>, content: <BookingTable date="all"/>},
     {index: 7, id:`completedBookings`, title: `Completed Bookings`, icon : <PlaylistAddCheckIcon/>, content: <BookingTable date="completed"/>},
-    {index: 8, id:`findByRef`, title: `Find By Ref No`, icon : <SearchIcon/>, content: <FindByRef/>},
+    {index: 8, id:`positiveBookings`, title: `Positive Results`, icon : <AddCircleOutlineIcon/>, content: <BookingTable date="positive"/>},
+    {index: 9, id:`deletedBookings`, title: `Deleted Records`, icon : <DeleteIcon/>, content: <BookingTable date="deleted"/>},
+    {index: 10, id:`unmatchedRecords`, title: `Unmatched Records`, icon : <WarningIcon/>, content: <UnmatchedRecords/>},
+    {index: 11, id:`findByRef`, title: `Find By Ref No`, icon : <SearchIcon/>, content: <FindByRef/>},
   ];
 
   export const getMenuContent = (index) =>

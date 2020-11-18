@@ -74,7 +74,17 @@ const useStyles = makeStyles((theme) => ({
     color: "#fff",
     paddingRight: "68px",
     paddingLeft: "10px"
+  },
+
+  PositiveLabel:{
+    backgroundColor: "red",
+    color: "#fff",
+    paddingRight: "90px",
+    paddingLeft: "10px",
+    fontWeight: "800"
   }
+
+
   
 }));
 
@@ -98,6 +108,12 @@ const getTableTitle = (str) =>{
   }else if (str === 'completed')
   {
     return `Completed Bookings`;
+  }else if (str === 'positive')
+  {
+    return `Positive Results`;
+  }else if (str === 'deleted')
+  {
+    return `Deleted Records`;
   }
   
   else
@@ -154,7 +170,14 @@ export default function BookingTable(props) {
             <span  className={classes.ReportCertSentLabel}> {`Rpt & Cert Sent`} </span>
           );
 
-        }else{
+        }else if (params.value === 'positive')
+        {
+          return (
+            <span  className={classes.PositiveLabel}> {`POSITIVE`} </span>
+          );
+        }
+        
+        else{
           return 'Unknown';
         }
       }
@@ -258,6 +281,14 @@ export default function BookingTable(props) {
             }else if (props.date === 'completed')
             {
               api = BookService.getCompletedBookings;
+            }
+            else if (props.date === 'positive')
+            {
+              api = BookService.getPositiveBookings;
+            }
+            else if (props.date === 'deleted')
+            {
+              api = BookService.getDeletedBookings;
             }
                        
             setData({bookings: [], cachedBookings: [], isFetching: true});
