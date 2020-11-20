@@ -2,9 +2,19 @@ import API from './api';
 
 export default class BookService {
 
+   static findBookingByRefBirthDate = (bookingRef, birthDate) =>
+   {
+      return API.get(`/api/book/getbookingsbyrefandbirthdate?ref=${bookingRef}&birthdate=${birthDate}`);
+   }
+
    static updateBooking = (payload) =>
    {
       return API.post(`/api/book/updatebookappointment`, payload);
+   } 
+
+   static updateBookingTime = (payload) =>
+   {
+      return API.post(`/api/book/updatebookappointmenttime`, payload);
    } 
 
    static deleteBooking = (id) =>

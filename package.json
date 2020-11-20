@@ -21,7 +21,7 @@
     "@testing-library/user-event": "^12.1.10",
     "axios": "^0.21.0",
     "clsx": "^1.1.1",
-    "date-fns": "^2.0.0-beta.5",
+    "date-fns": "^2.16.1",
     "dateformat": "^3.0.3",
     "email-validator": "^2.0.4",
     "file-saver": "^2.0.2",

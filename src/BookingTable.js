@@ -308,6 +308,7 @@ export default function BookingTable(props) {
               result => {
                 if (currentPromise === lastPromise.current) {
                   setData({bookings: result, cachedBookings: [...result], isFetching: false});
+                  setPage(1);
                 }
               },
               e => {
@@ -366,6 +367,8 @@ export default function BookingTable(props) {
     }
     
   }
+
+  const [page, setPage] = React.useState(1);
 
   return (
     <React.Fragment>
@@ -431,6 +434,10 @@ export default function BookingTable(props) {
         <DataGrid rows={data.bookings} 
                   columns={columns} 
                   autoPageSize
+                  page={page}
+                  onPageChange={(params) => {
+                    setPage(params.page);
+                  }}
                   onSelectionChange = {handleSelectionChanged}
                   />
       </div>
