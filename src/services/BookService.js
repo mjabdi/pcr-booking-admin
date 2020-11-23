@@ -2,6 +2,28 @@ import API from './api';
 
 export default class BookService {
 
+   
+   static resendLink  = (linkId) =>
+   {
+      return API.post(`/api/book/resendemails?id=${linkId}`);
+   }
+
+   static matchRecords  = (bookingId, linkId) =>
+   {
+      return API.post(`/api/book/matchrecords?bookingid=${bookingId}&linkid=${linkId}`);
+   }
+
+   static findBestMatches = (id) =>
+   {
+      return API.get(`/api/book/getbestmatchedbookings?id=${id}`);
+   } 
+
+   static getLinkDetails = (id) =>
+   {
+      return API.get(`/api/book/getlinkdetails?id=${id}`);
+   } 
+
+
    static findBookingByRefBirthDate = (bookingRef, birthDate) =>
    {
       return API.get(`/api/book/getbookingsbyrefandbirthdate?ref=${bookingRef}&birthdate=${birthDate}`);
@@ -31,6 +53,11 @@ export default class BookService {
     static getBookingsByRef = (ref) =>
     {
        return API.get(`/api/book/getbookingsbyref?ref=${ref}`);
+    }
+
+    static getBookingById = (id) =>
+    {
+       return API.get(`/api/book/getbookingbyid?id=${id}`);
     }
 
     static getAllBookings= () =>

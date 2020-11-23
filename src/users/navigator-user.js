@@ -49,6 +49,10 @@ export default function NavigatorUser(props) {
     const [state, setState] = React.useContext(GlobalState);
     const [loaded, setLoaded] = React.useState(false);
 
+    useEffect(() => {
+        document.title = "Edit Booking Info"
+     }, []);
+
     useEffect( () => {
 
         if (props.pathId && props.pathId.length === 22)

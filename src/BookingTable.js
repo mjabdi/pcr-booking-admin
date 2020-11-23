@@ -307,7 +307,7 @@ export default function BookingTable(props) {
             currentPromise.then(
               result => {
                 if (currentPromise === lastPromise.current) {
-                  setData({bookings: result, cachedBookings: [...result], isFetching: false});
+                  setData({bookings: [...result], cachedBookings: [...result], isFetching: false});
                   setPage(1);
                 }
               },
@@ -326,18 +326,15 @@ export default function BookingTable(props) {
 
         if (filter && filter.trim().length > 0)
         {
-          var filteredData = data.bookings.filter( (element) => {
+          var filteredData = data.cachedBookings.filter( (element) => 
 
-            return (element.forename.toLowerCase().indexOf(filter.toLowerCase()) >= 0) ||
-                   (element.surname.toLowerCase().indexOf(filter.toLowerCase()) >= 0) ||
-                   (element.email.toLowerCase().indexOf(filter.toLowerCase()) >= 0)
-            
-            ;
-  
-          });
+             (element.forename.toLowerCase().indexOf(filter.toLowerCase()) >= 0) ||
+                   (element.surname.toLowerCase().indexOf(filter.toLowerCase()) >= 0) 
+                  // || (element.email.toLowerCase().indexOf(filter.toLowerCase()) >= 0)
+          );
   
   
-          setData({bookings: filteredData, cachedBookings: data.cachedBookings, isFetching: false});
+          setData({bookings: [...filteredData], cachedBookings: data.cachedBookings, isFetching: false});
         }else
         {
           setData({bookings: [...data.cachedBookings], cachedBookings: data.cachedBookings, isFetching: false});
@@ -400,12 +397,11 @@ export default function BookingTable(props) {
     {data.isFetching && (
 
         <LoaderSpinner
-        type="ThreeDots"
-        color="#3f51b5"
-        height={50}
-        width={50}
-        timeout={0} //3 secs
-
+          type="ThreeDots"
+          color="#3f51b5"
+          height={50}
+          width={50}
+          timeout={0} //3 secs
      />
 
 

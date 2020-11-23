@@ -241,11 +241,13 @@ const getStartedClicked = (event) => {
 
                 <Typography variant="h6" gutterBottom>
                     
-                    Your Appointment was Successfully Canceld.
+                     Thank you for letting us know.
+                     <br/>
+                     Your appointment was successfully cancelled.
 
                     <br/><br/>
 
-                    You can book for a new appointment if you like.   
+                    You can book a new appointment if needed later on.  
                 </Typography>
                 <br/>
                 
