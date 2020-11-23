@@ -150,6 +150,20 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: "50px"   
   },
 
+  resendFilesButton:{
+    marginTop: "5px",
+    marginBottom : "5px",
+    backgroundColor : "#3792ad",
+    "&:hover": {
+      background: "#2f798f",
+      color: "#fff"
+    },
+    textDecoration : "none !important",
+    padding: "10px",
+    paddingLeft : "50px",
+    paddingRight: "50px"   
+  },
+
   cancelButton:
   {
     marginBottom : "10px",
@@ -322,6 +336,8 @@ export default function UnmatchedRecords() {
   const [sending, setSending] = React.useState(false);
   const [sent, setSent] = React.useState(false);
 
+  const [sendJustToPCR, setSendJustToPCR] = React.useState(false);
+
   const [sendingStatus, setSendingStatus] = React.useState('');
 
   const [sendingCounter, setSendingCounter] = React.useState(0);
@@ -352,6 +368,7 @@ export default function UnmatchedRecords() {
       setSending(false);
       setSent(false);
       clearInterval(interval);
+      setSendJustToPCR(false);
     }, 100);
   }
 
@@ -380,12 +397,12 @@ export default function UnmatchedRecords() {
     if (smartLinkId)
     {
       findBestMatches(smartLinkId);
-      console.log('refrshing....');
+      // console.log('refrshing....');
 
     }
 
 
-  }, [state.refreshMatchingData]);
+  }, [state.bookingDialogDataChanged]);
 
   const findBestMatches = (id) =>
   {
@@ -580,6 +597,45 @@ export default function UnmatchedRecords() {
     setSendingProgress((prevProgress) => (prevProgress >= 100 ? 100 : getProgress(sendingStatus)));
 
   }, [sendingStatus]);
+
+  const resendFilesClicked = (event) =>
+  {
+    setSending(true);
+    setSendingProgress(0);
+    setSendingStatus('downloadFailed');
+    setSendJustToPCR(true);
+
+
+    BookService.regenerateFiles(smartLinkId).then( res => {
+
+      interval = setInterval(() => {
+             
+       // setProgress(sendingCounter);
+
+       // setProgress(getProgress(sendingStatus));
+
+       BookService.getLinkDetails(smartLinkId).then( res => {
+ 
+         setSendingStatus(res.data.status);
+ 
+         if (res.data.status === 'sent')
+         {
+           setSending(false);
+           setSent(true);
+           setRefresh(!refresh);
+           clearInterval(interval);
+         }
+       });
+ 
+     }, 1000);
+
+   }).catch(err => {
+     console.log(err);
+     setSending(false);
+   });
+
+
+  }
  
   const resendEmailsClicked = (event) => {
     setSending(true);
@@ -1078,9 +1134,22 @@ export default function UnmatchedRecords() {
                           </Button>
                     </Grid>
 
+                    
+                    <Grid item>
+                          <Button
+                            disabled = {sending || sent}
+                            className={classes.resendFilesButton}
+                            variant="contained"
+                            color="primary"
+                            onClick = {resendFilesClicked}
+                          >
+                            Just Generate The Files and send to pcrresults@medicalexpressclinic.co.uk
+                          </Button>
+                    </Grid>
+
                     <Grid item>
             
-                         <Alert style={{marginTop:"10px", paddingLeft:"50px", paddingRight:"50px"}} severity="warning">
+                         <Alert style={{marginTop:"10px",  paddingLeft:"50px", paddingRight:"50px"}} severity="warning">
                             Caution! — The LAB Report and Certificate will be Sent According to the Record you have Selected !
                           </Alert>
        
@@ -1099,11 +1168,18 @@ export default function UnmatchedRecords() {
                                    'Sending ...'
                                  )}
 
-                                 {sent && (
+                                 {sent && !sendJustToPCR && (
                                      <Alert style={{marginTop:"10px", paddingLeft:"50px", paddingRight:"50px"}} severity="success">
                                           Success! — The LAB Report {selectedBooking.certificate? ' and Certificate ': ' ' }  Successfully Sent.
                                      </Alert>
                                  )}
+
+                                {sent && sendJustToPCR && (
+                                     <Alert style={{marginTop:"10px", paddingLeft:"50px", paddingRight:"50px"}} severity="success">
+                                          Success! — The LAB Report {selectedBooking.certificate? ' and Certificate ': ' ' }  Successfully Sent Just to pcrresults@medicalexpressclinic.co.uk .
+                                     </Alert>
+                                 )}
+
 
 
                                  

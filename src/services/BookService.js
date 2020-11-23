@@ -3,9 +3,14 @@ import API from './api';
 export default class BookService {
 
    
-   static resendLink  = (linkId) =>
+   static resendEmails  = (linkId) =>
    {
       return API.post(`/api/book/resendemails?id=${linkId}`);
+   }
+
+   static regenerateFiles  = (linkId) =>
+   {
+      return API.post(`/api/book/regeneratefiles?id=${linkId}`);
    }
 
    static matchRecords  = (bookingId, linkId) =>

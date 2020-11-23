@@ -34,6 +34,9 @@ import Paper from '@material-ui/core/Paper';
 import DeleteIcon from '@material-ui/icons/Delete';
 import BookService from './services/BookService';
 
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
+
 const useStyles = makeStyles((theme) => ({
   box: {
     backgroundColor : "#373737",
@@ -270,7 +273,12 @@ const useStyles = makeStyles((theme) => ({
   centeredLabel : {
     display: "flex",
     alignItems: "center"
-  }
+  },
+
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
+  },
 
 
 
@@ -505,7 +513,13 @@ export default function BookingDialog(props) {
           <span  className={classes.ReportSentLabel}> Report Sent </span>
         );
     
-      }else if (status === 'positive')
+      }else if (status === 'report_cert_sent')
+      {
+        return (
+          <span  className={classes.ReportCertSentLabel}> {`Report & Certificate Sent`} </span>
+        );
+      }
+      else if (status === 'positive')
       {
         return (
           <span  className={classes.PositiveLabel}> {`POSITIVE`} </span>
@@ -846,7 +860,7 @@ export default function BookingDialog(props) {
         console.log(err);
       });
 
-      setState(state => ({...state, refreshMatchingData : !state.refreshMatchingData ? true : false}))
+      setState(state => ({...state, bookingDialogDataChanged : !state.bookingDialogDataChanged ? true : false}));
     }
 
   } , [refreshData]);
@@ -1424,10 +1438,16 @@ export default function BookingDialog(props) {
                     </div>
 
             </Grid> 
-
+           
                   </div>
+                  <Backdrop className={classes.backdrop} open={saving || deleting || restoring}>
+                        <CircularProgress color="inherit" />
+                  </Backdrop>
+
                 </DialogContent>
               </Dialog>
+
+      
         </React.Fragment>
       )}
 

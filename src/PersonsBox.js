@@ -422,7 +422,13 @@ export default function PersonsBox() {
           <span  className={classes.ReportSentLabel}> Report Sent </span>
         );
     
-      }else if (status === 'positive')
+      }else if (status === 'report_cert_sent')
+      {
+        return (
+          <span  className={classes.ReportCertSentLabel}> {`Report & Certificate Sent`} </span>
+        );
+      }
+      else if (status === 'positive')
       {
         return (
           <span  className={classes.PositiveLabel}> {`POSITIVE`} </span>
@@ -939,6 +945,7 @@ export default function PersonsBox() {
                                 <span hidden={(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>{person.bookingDate }</span>  
                                         <span hidden={!(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>
                                           <TextField 
+                                                      fullWidth
                                                       error={validationError.bookingDateError}
                                                       className={classes.TextBox} 
                                                       value={bookingDate}
@@ -961,7 +968,8 @@ export default function PersonsBox() {
                                 <span hidden={(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>{person.bookingTime.toUpperCase()}</span>  
                                         <span hidden={!(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>
                                           <TextField 
-                                                       error={validationError.bookingTimeError}
+                                                      fullWidth
+                                                      error={validationError.bookingTimeError}
                                                       className={classes.TextBox} 
                                                       value={bookingTime}
                                                       onChange = {bookingTimeChanged}
@@ -983,6 +991,7 @@ export default function PersonsBox() {
                                         <span hidden={(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>{person.gender?.toUpperCase()}</span>  
                                         <span hidden={!(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>
                                           <TextField 
+                                                      fullWidth
                                                       className={classes.TextBox} 
                                                       value={gender}
                                                       onChange = {genderChanged}
@@ -1001,6 +1010,7 @@ export default function PersonsBox() {
                                        <span hidden={(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>{person.title?.toUpperCase()}</span>  
                                         <span hidden={!(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>
                                           <TextField 
+                                                      fullWidth
                                                       className={classes.TextBox} 
                                                       value={title}
                                                       onChange = {titleChanged}
@@ -1020,6 +1030,7 @@ export default function PersonsBox() {
                                         <span hidden={(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>{person.forenameCapital}</span>  
                                         <span hidden={!(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>
                                         <TextField 
+                                                      fullWidth
                                                       className={classes.TextBox} 
                                                       value={forename}
                                                       onChange = {forenameChanged}
@@ -1038,6 +1049,7 @@ export default function PersonsBox() {
                                         <span hidden={(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>{person.surnameCapital}</span>  
                                         <span hidden={!(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>
                                         <TextField 
+                                                      fullWidth
                                                       className={classes.TextBox} 
                                                       value={surname}
                                                       onChange = {surnameChanged}
@@ -1056,6 +1068,7 @@ export default function PersonsBox() {
                                        <span hidden={(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>{person.email?.toUpperCase()}</span>  
                                         <span hidden={!(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>
                                         <TextField 
+                                                      fullWidth
                                                       className={classes.TextBox} 
                                                       value={email}
                                                       onChange = {emailChanged}
@@ -1074,6 +1087,7 @@ export default function PersonsBox() {
                                         <span hidden={(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>{person.birthDate }</span>  
                                         <span hidden={!(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>
                                         <TextField 
+                                                      fullWidth
                                                       error={validationError.dobError} 
                                                       className={classes.TextBox} 
                                                       value={dob}
@@ -1093,6 +1107,7 @@ export default function PersonsBox() {
                                  <span hidden={(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>{person.phone?.toUpperCase()}</span>  
                                         <span hidden={!(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>
                                         <TextField 
+                                                      fullWidth
                                                       className={classes.TextBox} 
                                                       value={tel}
                                                       onChange = {telChanged}
@@ -1111,6 +1126,7 @@ export default function PersonsBox() {
                                         <span hidden={(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>{person.postCode?.toUpperCase()}</span>  
                                         <span hidden={!(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>
                                         <TextField 
+                                                      fullWidth
                                                       className={classes.TextBox} 
                                                       value={postCode}
                                                       onChange = {postCodeChanged}
@@ -1129,6 +1145,7 @@ export default function PersonsBox() {
                                         <span hidden={(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>{person.address?.toUpperCase()}</span>  
                                         <span hidden={!(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>
                                         <TextField 
+                                                      fullWidth
                                                       className={classes.TextBox} 
                                                       value={address}
                                                       onChange = {addressChanged}
@@ -1147,6 +1164,7 @@ export default function PersonsBox() {
                                         <span hidden={(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>{person.notes?.toUpperCase()}</span>  
                                         <span hidden={!(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>
                                         <TextField 
+                                                      fullWidth
                                                       className={classes.TextBox} 
                                                       value={notes}
                                                       onChange = {notesChanged}
@@ -1165,6 +1183,7 @@ export default function PersonsBox() {
                                 <span hidden={(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>{person.passportNumber?.toUpperCase()}</span>  
                                         <span hidden={!(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>
                                         <TextField 
+                                                      fullWidth
                                                       className={classes.TextBox} 
                                                       value={passport}
                                                       onChange = {passportChanged}
@@ -1184,6 +1203,7 @@ export default function PersonsBox() {
                                         <span hidden={(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>{person.passportNumber2?.toUpperCase()}</span>  
                                         <span hidden={!(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>
                                         <TextField 
+                                                      fullWidth
                                                       className={classes.TextBox} 
                                                       value={passport2}
                                                       onChange = {passport2Changed}

@@ -1,5 +1,3 @@
-const { TouchApp } = require("@material-ui/icons");
-
 
 const calculatePrice = (person) =>
 {

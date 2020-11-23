@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import { DataGrid } from '@material-ui/data-grid';
 import BookService from './services/BookService';
 import Typography from '@material-ui/core/Typography';
-import { Grid, Link, makeStyles, TextField, Tooltip } from '@material-ui/core';
+import { Button, Grid, Link, makeStyles, TextField, Tooltip } from '@material-ui/core';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import { IconButton } from '@material-ui/core';
 import LoaderSpinner from 'react-loader-spinner';
@@ -12,9 +12,11 @@ import { green, red } from '@material-ui/core/colors';
 import GlobalState from './GlobalState';
 import { Report } from '@material-ui/icons';
 import { getMenuIndex } from './MenuList';
+import {FormatDateFromString, FormatDateFromStringShortYear} from './DateFormatter';
 
-
-
+import SearchIcon from '@material-ui/icons/Search';
+import CreateIcon from '@material-ui/icons/Create';
+import BookingDialog from './BookingDialog';
 
 
 
@@ -44,44 +46,37 @@ const useStyles = makeStyles((theme) => ({
   BookedLabel:{
     backgroundColor: "#606060",
     color: "#fff",
-    paddingRight: "10px",
-    paddingLeft: "10px"
+    width: "70px"
   },
 
   PatientAttendedLabel:{
     backgroundColor: "#0066aa",
     color: "#fff",
-    paddingRight: "15px",
-    paddingLeft: "10px"
+    width: "70px"
   },
 
   SampleTakenLabel:{
     backgroundColor: "#0066cc",
     color: "#fff",
-    paddingRight: "40px",
-    paddingLeft: "10px"
+    width: "70px"
   },
 
   ReportSentLabel:{
     backgroundColor: "#009900",
     color: "#fff",
-    paddingRight: "90px",
-    paddingLeft: "10px"
+    width: "70px"
   },
 
   ReportCertSentLabel:{
     backgroundColor: "#009900",
     color: "#fff",
-    paddingRight: "68px",
-    paddingLeft: "10px"
+    width: "70px"
   },
 
   PositiveLabel:{
     backgroundColor: "red",
     color: "#fff",
-    paddingRight: "90px",
-    paddingLeft: "10px",
-    fontWeight: "800"
+    width: "70px"
   }
 
 
@@ -132,48 +127,66 @@ export default function BookingTable(props) {
 
 
   const columns = [
-    { field: 'id', headerName: '#', width: 50 },
+    // { field: 'id', headerName: '#', width: 70 },
 
-    { field: 'bookingDate', headerName: 'Booked Date', width: 120 },
-    { field: 'bookingTimeNormalized', headerName: 'Booked Time', width: 120 , valueGetter: (params) => {
+    {field: '_id', headerName:' ', width: 70, renderCell: (params) =>{
+        return (
+          <Button 
+                  color="primary"
+                  onClick = {event => openDetailsDialog(event, params.value)}
+          > 
+          
+          <SearchIcon/> 
+          
+          </Button>
+
+        ); 
+    
+      }
+    },
+
+    { field: 'bookingDate', headerName: 'B Date', width: 110, valueFormatter: (params) => { 
+            return FormatDateFromString(params.value);
+        }
+     },
+    { field: 'bookingTimeNormalized', headerName: 'B Time', width: 105 , valueGetter: (params) => {
       return params.getValue('bookingTime');
-
     }},
-    { field: 'status', headerName: 'Status', width: 200, renderCell: (params) =>{
+    { field: 'status', headerName: 'Status', width: 100, renderCell: (params) =>{
         if (params.value === 'booked')
         {
           return (
-            <span className={classes.BookedLabel}> Booking Made </span>
+            <span className={classes.BookedLabel}>  BM </span>
           );
       
         }else if (params.value === 'patient_attended')
         {
           return (
-            <span  className={classes.PatientAttendedLabel}> Patient Attended </span>
+            <span  className={classes.PatientAttendedLabel}> PA </span>
           );
 
         }else if (params.value === 'sample_taken')
         {
           return (
-            <span  className={classes.SampleTakenLabel}> Sample Taken </span>
+            <span  className={classes.SampleTakenLabel}>  ST </span>
           );
 
         }else if (params.value === 'report_sent')
         {
           return (
-            <span  className={classes.ReportSentLabel}> Report Sent </span>
+            <span  className={classes.ReportSentLabel}>  RS </span>
           );
 
         }else if (params.value === 'report_cert_sent')
         {
           return (
-            <span  className={classes.ReportCertSentLabel}> {`Rpt & Cert Sent`} </span>
+            <span  className={classes.ReportCertSentLabel}>  RCS </span>
           );
 
         }else if (params.value === 'positive')
         {
           return (
-            <span  className={classes.PositiveLabel}> {`POSITIVE`} </span>
+            <span  className={classes.PositiveLabel}> POS </span>
           );
         }
         
@@ -204,8 +217,11 @@ export default function BookingTable(props) {
     }},
     { field: 'forenameCapital', headerName: 'Forename', width: 150 },
     { field: 'surnameCapital', headerName: 'Surname', width: 150 },
-    { field: 'birthDate', headerName: 'D.O.B', width: 120 },
-    { field: 'email', headerName: 'email', width: 300 , valueFormatter : (params) => {
+    { field: 'birthDate', headerName: 'D.O.B', width: 110, valueFormatter: (params) => { 
+      return FormatDateFromString(params.value);
+       }
+    },
+    { field: 'email', headerName: 'Email', width: 200 , valueFormatter : (params) => {
       return params.value.toUpperCase();
     }},
     { field: 'phone', headerName: 'Tel', width: 150 },
@@ -244,7 +260,7 @@ export default function BookingTable(props) {
     { field: 'address', headerName: 'Address', width: 500, valueFormatter : (params) => {
       return params.value.toUpperCase();
     } },
-    { field: 'notes', headerName: 'Notes', width: 500 },
+    // { field: 'notes', headerName: 'Notes', width: 500 },
   
   ];
 
@@ -253,6 +269,11 @@ export default function BookingTable(props) {
   const [data, setData] = React.useState({bookings: [] , cachedBookings: [], isFetching : false});
 
   const [selectedRow, setSelectedRow] = React.useState(null);
+
+  const [selectedBooking, setSelectedBooking] = React.useState(null);
+  const [seeDetailsDialogOpen, setSeeDetailsDialogOpen] = React.useState(false);
+
+  
 
   const [filter,setFilter] = React.useState('');
 
@@ -342,7 +363,27 @@ export default function BookingTable(props) {
       },
       [filter]);
 
+  
+      useEffect(() => {
 
+        setRefresh(!refresh);
+    
+      }, [state.bookingDialogDataChanged]);    
+
+
+  const handleCloseSeeDetaisDialog = () =>
+  {
+    setSelectedBooking(null);
+    setSeeDetailsDialogOpen(false);
+  }    
+  
+  const openDetailsDialog = (event, id) =>
+  {
+    const booking = data.bookings.find(element => element._id === id);
+    setSelectedBooking(booking);
+    setSeeDetailsDialogOpen(true);
+
+  }
 
 
 
@@ -437,6 +478,12 @@ export default function BookingTable(props) {
                   onSelectionChange = {handleSelectionChanged}
                   />
       </div>
+
+      <BookingDialog
+            booking={selectedBooking}
+            open={seeDetailsDialogOpen}
+            onClose={handleCloseSeeDetaisDialog}
+          />
     </React.Fragment>
   );
 }
