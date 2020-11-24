@@ -34,7 +34,10 @@ import Alert from '@material-ui/lab/Alert';
 import PropTypes from 'prop-types';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Box from '@material-ui/core/Box';
-import { counter } from '@fortawesome/fontawesome-svg-core';
+
+import WarningIcon from '@material-ui/icons/Warning';
+
+import {FormatDateFromString, RevertFormatDateFromString} from './DateFormatter';
 
 var interval;
 
@@ -228,10 +231,17 @@ export default function UnmatchedRecords() {
   const columns = [
     { field: 'id', headerName: '#', width: 50 },
 
-    { field: 'testDate', headerName: 'Test Date', width: 120 },
+    { field: 'testDate', headerName: 'Test Date', width: 120, valueFormatter : (params) =>
+      {
+        return FormatDateFromString(params.value);
+      }
+     },
     { field: 'forename', headerName: 'Forename', width: 200 },
     { field: 'surname', headerName: 'Surname', width: 200 },
-    { field: 'birthDate', headerName: 'D.O.B', width: 120 },
+    { field: 'birthDate', headerName: 'D.O.B', width: 120 , valueFormatter : (params) =>
+    {
+      return FormatDateFromString(params.value);
+    }},
     { field: '_id' , headerName:'Action', width: 300 , renderCell: (params) => {
         if (selectedTab === 'unresolved')
         {
@@ -503,7 +513,7 @@ export default function UnmatchedRecords() {
 
         if (filter && filter.trim().length > 0)
         {
-          var filteredData = data.bookings.filter( (element) => {
+          var filteredData = data.cachedBookings.filter( (element) => {
 
             return (element.forename.toLowerCase().indexOf(filter.toLowerCase()) >= 0) ||
                    (element.surname.toLowerCase().indexOf(filter.toLowerCase()) >= 0) 
@@ -643,7 +653,7 @@ export default function UnmatchedRecords() {
     setSendingStatus('downloadFailed');
  
 
-    BookService.resendLink(smartLinkId).then( res => {
+    BookService.resendEmails(smartLinkId).then( res => {
 
        interval = setInterval(() => {
         
@@ -691,24 +701,28 @@ export default function UnmatchedRecords() {
         justify="space-between"
         alignItems="flex-end"
       >
-        <Grid item md={3}>
-          <Typography
-            variant="h6"
-            color="inherit"
-            noWrap
-            className={classes.title}
-          >
-            Unmatched Records
-            <Tooltip title="Refresh" placement="right">
-              <IconButton
-                color="primary"
-                className={classes.refreshButton}
-                onClick={refreshClicked}
-              >
-                <RefreshIcon />
-              </IconButton>
-            </Tooltip>
-          </Typography>
+        <Grid item md={5}>
+            <div style={{textAlign:"left", paddingLeft:"10px"}}>
+                <Grid container direction="row" justify="flex-start" alignItems="center">
+                        <Grid item>
+                                <span style={{paddingRight: "15px", color: "#555"}}> <WarningIcon style={{fontSize:"2.2rem"}}/> </span>
+                        </Grid>
+                        <Grid item>
+                              <span style={{fontSize: '1.4rem', fontWeight:"600", color: "#444"}}> Unmatched Records </span>
+                        </Grid>
+                        <Grid item>
+                            <Tooltip title="Refresh" placement="right">
+                                <IconButton
+                                  color="primary"
+                                  className={classes.refreshButton}
+                                  onClick={refreshClicked}
+                                >
+                                  <RefreshIcon />
+                                </IconButton>
+                            </Tooltip>
+                        </Grid>
+                  </Grid>
+                </div>
         </Grid>
 
         <Grid item md={3}>
@@ -906,14 +920,14 @@ export default function UnmatchedRecords() {
                       <Grid item>
                         <span className={classes.infoTitle}>D.O.B:</span>
                         <span className={classes.infoData}>
-                          {smartLinkDetails.birthDate}
+                          {FormatDateFromString(smartLinkDetails.birthDate)}
                         </span>
                       </Grid>
 
                       <Grid item>
                         <span className={classes.infoTitle}>Test Date:</span>
                         <span className={classes.infoData}>
-                          {smartLinkDetails.testDate}
+                          {FormatDateFromString(smartLinkDetails.testDate)}
                         </span>
                       </Grid>
                     </Grid>
@@ -1028,7 +1042,7 @@ export default function UnmatchedRecords() {
                                     </span>
                                   )}
                                 </Grid>
-                                {row.birthDate}
+                                {FormatDateFromString(row.birthDate)}
                                 <Grid item></Grid>
                               </Grid>
                             </TableCell>
@@ -1043,11 +1057,12 @@ export default function UnmatchedRecords() {
                                   : { fontWeight: "800", color: "red" }
                               }
                             >
-                              {dateformat(row.samplingTimeStamp, "yyyy-mm-dd")}
+                              {FormatDateFromString(dateformat(row.samplingTimeStamp, "yyyy-mm-dd"))}
                             </TableCell>
                             <TableCell>
                               <Button
                                 color="primary"
+                                disabled = {sending}
                                 onClick={(event) =>
                                   seeDetailsClicked(event, row)
                                 }

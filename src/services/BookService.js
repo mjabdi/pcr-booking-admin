@@ -3,6 +3,22 @@ import API from './api';
 export default class BookService {
 
    
+   static changeBackToBookingMade = (id) =>
+   {
+      return API.post(`/api/book/changebacktobookingmade?id=${id}`);
+   }
+
+   static resendEmailsWithBookingId = (bookingId) =>
+   {
+      return API.post(`/api/book/resendemailswithbookingid?id=${bookingId}`);
+   }
+
+   static regenerateFilesWithBookingId  = (bookingId) =>
+   {
+      return API.post(`/api/book/regeneratefileswithbookingid?id=${bookingId}`);
+   }
+
+
    static resendEmails  = (linkId) =>
    {
       return API.post(`/api/book/resendemails?id=${linkId}`);
@@ -27,6 +43,12 @@ export default class BookService {
    {
       return API.get(`/api/book/getlinkdetails?id=${id}`);
    } 
+
+   static getLinkDetailsWithBookingId = (id) =>
+   {
+      return API.get(`/api/book/getlinkdetailswithbookingid?id=${id}`);
+   } 
+
 
 
    static findBookingByRefBirthDate = (bookingRef, birthDate) =>
@@ -68,6 +90,11 @@ export default class BookService {
     static getAllBookings= () =>
     {
        return API.get(`/api/book/getallbookings`);
+    }
+
+    static getLateBookings= () =>
+    {
+       return API.get(`/api/book/getlatebookings`);
     }
 
     static getDeletedBookings= () =>

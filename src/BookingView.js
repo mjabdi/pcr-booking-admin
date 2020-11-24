@@ -11,7 +11,7 @@ import BookService from './services/BookService';
 import * as dateformat from 'dateformat';
 import GlobalState from './GlobalState';
 import { getMenuIndex } from './MenuList';
-
+import {FormatDateFromString, FormatDateFromStringShortYear} from './DateFormatter';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -26,24 +26,52 @@ export default function BookingView() {
 
   const [data, setData] = React.useState({bookings: [] , isFetching : false});
 
+  const [refresh, setRefresh] = React.useState(false);
+
   const seeMoreRecords = (event) => {
     event.preventDefault();
     setState(state=>({...state, currentMenuIndex:getMenuIndex(`recentBookings`)}));
   }
 
+  const loadData = () => 
+  {
+    setData({bookings: data.bookings, isFetching: true});
+    BookService.getRecentBookings().then( (res) =>{
+        setData({bookings: res.data, isFetching: false});
+
+    }).catch( (err) => {
+        console.log(err);
+        setData({bookings: data.bookings, isFetching: false});
+    });
+  }
+
 
   useEffect( () => {
-
-            setData({bookings: data.bookings, isFetching: true});
-            BookService.getRecentBookings().then( (res) =>{
-                setData({bookings: res.data, isFetching: false});
-
-            }).catch( (err) => {
-                console.log(err);
-                setData({bookings: data.bookings, isFetching: false});
-            });
+          loadData();
         },
-        []);   
+        [refresh]);   
+
+
+   useEffect( () => {
+     loadData();
+     setInterval(() => {
+       setRefresh(refresh => !refresh);
+     }, 5000);
+   }, []) ;    
+
+   const formatTimeStamp = (timeStamp) =>
+   {
+     const todayStr = dateformat(new Date(), 'yyyy-mm-dd');
+     const timeStampStr = dateformat(timeStamp, 'yyyy-mm-dd');
+     if (todayStr === timeStampStr)
+     {
+       return dateformat(timeStamp, "'Today', h:MM:ss TT");
+     }
+     else
+     {
+        return dateformat(timeStamp, "mmm dS, h:MM:ss TT");
+     }
+   }
 
   return (
     <React.Fragment>
@@ -63,12 +91,12 @@ export default function BookingView() {
         <TableBody>
           {data.bookings.map((row) => (
             <TableRow key={row._id}>
-              <TableCell>{dateformat(row.timeStamp, "mmm dS, h:MM:ss TT")}</TableCell>
+              <TableCell>{formatTimeStamp(row.timeStamp)}</TableCell>
               <TableCell>{row.forename}</TableCell>
               <TableCell>{row.surname}</TableCell>
               <TableCell>{row.email}</TableCell>
-              <TableCell>{row.birthDate}</TableCell>
-              <TableCell>{row.bookingDate}</TableCell>
+              <TableCell>{FormatDateFromString(row.birthDate)}</TableCell>
+              <TableCell>{FormatDateFromString(row.bookingDate)}</TableCell>
               <TableCell>{row.bookingTime}</TableCell>
             </TableRow>
           ))}

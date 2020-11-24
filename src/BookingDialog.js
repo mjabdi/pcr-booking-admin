@@ -3,10 +3,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import GlobalState from './GlobalState';
 import Grid from '@material-ui/core/Grid';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import dateFormat from 'dateformat';
 import { Button, Checkbox, FormControlLabel, Link, TextField, Tooltip } from '@material-ui/core';
 import PDFService from './services/PDFService';
@@ -16,15 +12,11 @@ import {calculatePrice} from './PriceCalculator';
 import FileSaver from 'file-saver';
 
 import bookingService from './services/BookService';
-import { CheckBox } from '@material-ui/icons';
-import { parse } from 'date-fns';
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
 
 import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Draggable from 'react-draggable';
 import Slide from '@material-ui/core/Slide'  
@@ -36,6 +28,8 @@ import BookService from './services/BookService';
 
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import {FormatDateFromString, RevertFormatDateFromString} from './DateFormatter';
+import ResendEmailsDialog from './ResendEmailsDialog';
 
 const useStyles = makeStyles((theme) => ({
   box: {
@@ -116,17 +110,10 @@ const useStyles = makeStyles((theme) => ({
 
   title:
   {
-    // textAlign : "center",
-    // fontWeight : "500",
-    // margin: "10px",
-    // backgroundColor : "#eee",
-    // padding : "10px",
-    // borderRadius : "4px"
     textAlign: "center",
     fontWeight : "600",
     marginLeft: "10px",
     marginBottom: "5px"
-
   },
 
   Accordion:{
@@ -156,46 +143,69 @@ const useStyles = makeStyles((theme) => ({
     fontWeight : "600"
   },
   BookedLabel:{
-    backgroundColor: "#606060",
-    color: "#fff",
+    color: "#606060",
     paddingRight: "10px",
-    paddingLeft: "10px"
+    paddingLeft: "5px",
+    paddingBottom: "3px",
+    paddingTop: "3px",
+    fontWeight: "800",
+    borderLeft: "5px solid",
+    borderColor: "#606060"
   },
 
   PatientAttendedLabel:{
-    backgroundColor: "#0066aa",
-    color: "#fff",
-    paddingRight: "15px",
-    paddingLeft: "10px"
+    color: "#0066aa",
+    paddingRight: "10px",
+    paddingLeft: "5px",
+    paddingBottom: "3px",
+    paddingTop: "3px",
+    fontWeight: "800",
+    borderLeft: "5px solid",
+    borderColor: "#0066aa"
   },
 
   SampleTakenLabel:{
-    backgroundColor: "#0066cc",
-    color: "#fff",
-    paddingRight: "40px",
-    paddingLeft: "10px"
+    color: "#0066cc",
+    paddingRight: "10px",
+    paddingLeft: "5px",
+    paddingBottom: "3px",
+    paddingTop: "3px",
+    fontWeight: "800",
+    borderLeft: "5px solid",
+    borderColor: "#0066cc"
   },
 
   ReportSentLabel:{
-    backgroundColor: "#009900",
-    color: "#fff",
-    paddingRight: "90px",
-    paddingLeft: "10px"
+    color: "#009900",
+    paddingRight: "10px",
+    paddingLeft: "5px",
+    paddingBottom: "3px",
+    paddingTop: "3px",
+    fontWeight: "800",
+    borderLeft: "5px solid",
+    borderColor: "#009900"
   },
 
   ReportCertSentLabel:{
-    backgroundColor: "#009900",
-    color: "#fff",
-    paddingRight: "68px",
-    paddingLeft: "10px"
+    color: "#009900",
+    paddingRight: "10px",
+    paddingLeft: "5px",
+    paddingBottom: "3px",
+    paddingTop: "3px",
+    fontWeight: "800",
+    borderLeft: "5px solid",
+    borderColor: "#009900"
   },
 
   PositiveLabel:{
-    backgroundColor: "red",
-    color: "#fff",
-    paddingRight: "90px",
-    paddingLeft: "10px",
-    fontWeight: "800"
+    color: "red",
+    paddingRight: "10px",
+    paddingLeft: "5px",
+    paddingBottom: "3px",
+    paddingTop: "3px",
+    fontWeight: "800",
+    borderLeft: "5px solid",
+    borderColor: "red"
   },
 
   EditButton:
@@ -209,6 +219,21 @@ const useStyles = makeStyles((theme) => ({
     textDecoration : "none !important",
     padding: "10px"   
   },
+
+  ResendEmailsButton:
+  {
+    // marginBottom : "20px",
+    color : "#2f942e",
+    borderColor: "#2f942e",
+    "&:hover": {
+      background: "#fafffa",
+      borderColor: "#2f942e",
+    },
+    textDecoration : "none !important",
+    paddingLeft: "50px",
+    paddingRight: "50px"   
+  },
+
 
   RestoreButton:
   {
@@ -306,7 +331,8 @@ export default function BookingDialog(props) {
 
     const [state, setState] = React.useContext(GlobalState);
 
-    const [expanded, setExpanded] = React.useState('panel0');
+    const [openResendDialog, setOpenResendDialog] = React.useState(false);
+    const [selectedBooking, setSelectedBooking] = React.useState(null);
 
     const [editMode, setEditMode] = React.useState({edit : false, person : null});
     const [deleteMode, setDeleteMode] = React.useState({delete : false, person : null});
@@ -345,19 +371,25 @@ export default function BookingDialog(props) {
 
     const [fieldChanged, setFieldChanged] = React.useState(false);
 
+    const handleCloseResendDialog = () =>
+    {
+      setOpenResendDialog(false);
+      setSelectedBooking(null);
+    }
+
     useEffect( () => {
 
       if (booking)
       {
         const isChanged = (             
-           bookingDate !== booking.bookingDate 
+           bookingDate !== FormatDateFromString(booking.bookingDate) 
         || bookingTime !== booking.bookingTime
         || gender !== booking.gender
         || forename !== booking.forenameCapital
         || surname !== booking.surnameCapital
         || title !== booking.title
         || email !== booking.email
-        || dob !== booking.birthDate
+        || dob !== FormatDateFromString(booking.birthDate)
         || tel !== booking.phone
         || postCode !== booking.postCode
         || address !== booking.address
@@ -454,11 +486,6 @@ export default function BookingDialog(props) {
       setFieldChanged(!fieldChanged);
     }
 
-    const notesChanged = (event) =>
-    {
-      setNotes(event.target.value);
-    }
-
     const passportChanged = (event) =>
     {
       setPassport(event.target.value);
@@ -483,10 +510,6 @@ export default function BookingDialog(props) {
       setFieldChanged(!fieldChanged);
     }
 
-
-    const handleChange = (panel) => (event, isExpanded) => {
-      setExpanded(isExpanded ? panel : false);
-    };
 
     const getStatusLabel = (status) => {
       if (status === 'booked')
@@ -555,6 +578,8 @@ export default function BookingDialog(props) {
             `pcr-clinic-form-${id}.pdf`
         );
 
+        setRefreshData(!refreshData);
+
         }).catch( (err) =>
         {
             console.log(err);
@@ -597,12 +622,12 @@ export default function BookingDialog(props) {
        {
          setForename(person.forenameCapital);
          setSurnme(person.surnameCapital);
-         setBookingDate(person.bookingDate);
+         setBookingDate(FormatDateFromString(person.bookingDate));
          setBookingTime(person.bookingTime.toUpperCase());
          setGender(person.gender.toUpperCase());
          setTitle(person.title.toUpperCase());
          setEmail(person.email.toUpperCase());
-         setDOB(person.birthDate);
+         setDOB(FormatDateFromString(person.birthDate));
          setTel(person.phone.toUpperCase());
          setPostCode(person.postCode.toUpperCase());
          setAddress(person.address.toUpperCase());
@@ -640,7 +665,7 @@ export default function BookingDialog(props) {
           booking.antiBodyTest = antiBodyTest;
           booking.gender = gender;
           booking.title = title;
-          booking.birthDate = dob;
+          booking.birthDate = RevertFormatDateFromString(dob);
           booking.email = email;
           booking.phone = tel;
           booking.postCode = postCode;
@@ -650,7 +675,7 @@ export default function BookingDialog(props) {
           booking.forename = forename;
           booking.surname = surname;
           booking.notes = notes;
-          booking.bookingDate = bookingDate;
+          booking.bookingDate = RevertFormatDateFromString(bookingDate);
           booking.bookingTime = bookingTime;
           booking.bookingRef = person.bookingRef;
 
@@ -850,6 +875,24 @@ export default function BookingDialog(props) {
     }
   }
 
+  const changeBackToBookingMade = (event, id) =>
+  {
+    setSaving(true);
+    BookService.changeBackToBookingMade(id).then(res => {
+      setSaving(false);
+      setRefreshData(!refreshData);
+    }).catch(err => {
+      console.log(err);
+      setSaving(false);
+    })
+  }
+
+  const resendEmails = (event, id) =>
+  {
+    setSelectedBooking(booking);
+    setOpenResendDialog(true);
+  }
+
   useEffect( () => 
   {
     if (props.booking)
@@ -875,582 +918,970 @@ export default function BookingDialog(props) {
   }, [props.booking]);
 
 
+
+
   return (
     <React.Fragment>
-
       {booking && (
-
-      <React.Fragment>
-                <Dialog
-                open={props.open}
-                TransitionComponent={Transition}
-                keepMounted
-                onClose={props.onClose}
-                PaperComponent={PaperComponent}
-                aria-labelledby="alert-dialog-slide-title"
-                aria-describedby="alert-dialog-slide-description"
+        <React.Fragment>
+          <Dialog
+            open={props.open}
+            TransitionComponent={Transition}
+            keepMounted
+            onClose={props.onClose}
+            PaperComponent={PaperComponent}
+            aria-labelledby="alert-dialog-slide-title"
+            aria-describedby="alert-dialog-slide-description"
+          >
+            <DialogTitle id="alert-dialog-slide-title">
+              <Grid
+                container
+                direction="row"
+                justify="center"
+                spacing={2}
+                alignItems="center"
               >
-                <DialogTitle id="alert-dialog-slide-title">
-                
-
-                      <Grid
-                      container
-                      direction="row"
-                      justify="center"
-                      spacing = {2}
-                      alignItems="center"
-                      >
-                            <Grid item>
-                              <div style={booking.deleted ? {paddingBottom: "5px", textDecoration: "line-through"} : {} }>
-                                   {`${booking.forenameCapital} ${booking.surnameCapital}`}
-                              </div>
-                                 
-                              </Grid>
-
-                              {booking.deleted && (
-                              <Grid item>
-                                <Tooltip  title="This record has been deleted.">
-                                    <DeleteIcon  style={{padding: 0, margin: 0,  color: "#333", fontSize: 25 }}/>
-                                </Tooltip>
-                              </Grid>
-                        )}
-
-                      </Grid>
-
-                      
-                  
-                </DialogTitle>
-                <DialogContent>
-                <div
-                    style={{
-                      minHeight: "600px",
-                      maxHeight: "600px",
-                      minWidth: "500px",
-                      maxWidth: "800px",
-                      paddingTop: "20px"
-                    }}
-                    
-                    >
-
-
-                  <Grid item xs={12} md={12} key={`panel0`}>
-            
-
-                    <div className={classes.infoDetails}>
-
-                        <ul className={classes.ul}>
-
-                        {/* Restore Functionality ******************************************* */}  
-                        <li hidden={!(restoreMode.restore && restoreMode.person._id  === booking._id)}>
-                              <div style={{fontWeight: "500", paddingBottom: "5px", paddingLeft: "5px", fontSize:"16px" , color:"#333"}}>
-                                Are you sure you want to restore this record?
-                              </div>
-                            </li>
-
-                            <li hidden={!booking.deleted || (restoreMode.restore && restoreMode.person._id === booking._id)}>
-                                 <Button
-                                    type="button"
-                                    fullWidth
-                                    variant="contained"
-                                    color="primary"
-                                    onClick = {() => {handleRestoreModeChanged(true, booking)}}
-                                    className={classes.RestoreButton}
-                                 >
-                                   Restore This Record
-                                </Button>
-                            </li>
-
-                            <li hidden={!(restoreMode.restore && restoreMode.person._id  === booking._id)}>
-                                 <Button
-                                    type="button"
-                                    fullWidth
-                                    variant="contained"
-                                    color="primary"
-                                    disabled = {restoring}
-                                    onClick = {() => {handleRestoreModeChanged(false, booking)}}
-                                    className={classes.SaveButton}
-                                 >
-                                    YES, Restore this!
-                                </Button>
-                            </li>
-
-                            <li hidden={!(restoreMode.restore && restoreMode.person._id  === booking._id)}>
-                                 <Button
-                                    type="button"
-                                    fullWidth
-                                    variant="contained"
-                                    color="default"
-                                    disabled = {restoring}
-                                    onClick = {() => {handleRestoreModeChanged(false, null)}}
-                                    className={classes.CancelButton}
-                                 >
-                                    Cancel
-                                </Button>
-                            </li>
-
-                           {/*  ******************************************************************* */}
-
-                              {/* Edit Functionality ******************************************* */}
-
-                            <li hidden={booking.deleted || deleteMode.delete || (editMode.edit && editMode.person._id === booking._id)}>
-                                 <Button
-                                    type="button"
-                                    fullWidth
-                                    variant="contained"
-                                    color="primary"
-                                    onClick = {() => {handleEditModeChanged(true, booking)}}
-                                    className={classes.EditButton}
-                                 >
-                                    Edit Booking Info
-                                </Button>
-                            </li>
-
-                            <li hidden={!(editMode.edit && editMode.person._id  === booking._id)}>
-                                 <Button
-                                    type="button"
-                                    fullWidth
-                                    variant="contained"
-                                    color="primary"
-                                    disabled = {saving || !recordChanged}
-                                    onClick = {() => {handleEditModeChanged(false, booking)}}
-                                    className={classes.SaveButton}
-                                 >
-                                    Save Changes
-                                </Button>
-                            </li>
-
-                            <li hidden={!(editMode.edit && editMode.person._id === booking._id)}>
-                                 <Button
-                                    type="button"
-                                    fullWidth
-                                    variant="contained"
-                                    color="default"
-                                    disabled = {saving}
-                                    onClick = {() => {handleEditModeChanged(false, null)}}
-                                    className={classes.CancelButton}
-                                 >
-                                    Cancel
-                                </Button>
-                            </li>
-                            
-                            {/* ****************************************************************************************** */}
-
-
-                            {/* Delete Functionality ******************************************* */}
-
-                            <li hidden={!(deleteMode.delete && deleteMode.person._id  === booking._id)}>
-                              <div style={{fontWeight: "600",  paddingBottom: "5px", paddingLeft: "5px", fontSize:"16px"}}>
-                                Are you sure you want to delete this record?
-                              </div>
-                            </li>
-
-                            <li hidden={props.deleteButtonDisabled || booking.deleted ||  editMode.edit || (deleteMode.delete && deleteMode.person._id === booking._id)}>
-                                 <Button
-                                    type="button"
-                                    fullWidth
-                                    variant="contained"
-                                    color="primary"
-                                    onClick = {() => {handleDeleteModeChanged(true, booking)}}
-                                    className={classes.DeleteButton}
-                                 >
-                                   Delete This Record
-                                </Button>
-                            </li>
-
-                            <li hidden={!(deleteMode.delete && deleteMode.person._id  === booking._id)}>
-                                 <Button
-                                    type="button"
-                                    fullWidth
-                                    variant="contained"
-                                    color="primary"
-                                    disabled = {deleting}
-                                    onClick = {() => {handleDeleteModeChanged(false, booking)}}
-                                    className={classes.SaveButton}
-                                 >
-                                    YES, Delete this!
-                                </Button>
-                            </li>
-
-                            <li hidden={!(deleteMode.delete && deleteMode.person._id === booking._id)}>
-                                 <Button
-                                    type="button"
-                                    fullWidth
-                                    variant="contained"
-                                    color="default"
-                                    disabled = {deleting}
-                                    onClick = {() => {handleDeleteModeChanged(false, null)}}
-                                    className={classes.CancelButton}
-                                 >
-                                    Cancel
-                                </Button>
-                            </li>
-                                 
-                            {/* ****************************************************************************************** */}
-
-                            <li className={classes.li}>
-                                <span className={classes.infoTitle}>BOOKED DATE</span> 
-                            
-
-                                <span hidden={(editMode.edit && editMode.person._id  === booking._id)} className={classes.infoData}>{booking.bookingDate }</span>  
-                                        <span hidden={!(editMode.edit && editMode.person._id  === booking._id)} className={classes.infoData}>
-                                          <TextField 
-                                                      fullWidth
-                                                      error={validationError.bookingDateError}
-                                                      className={classes.TextBox} 
-                                                      value={bookingDate}
-                                                      onChange = {bookingDateChanged}
-                                                      inputProps= {{
-                                                          style:{
-                                                            padding: 0
-                                                          }
-                                                        }
-                                                      }
-                                                      > 
-                                          </TextField> 
-                                        </span> 
-
-
-                            </li>
-
-                            <li className={classes.li}>
-                                <span className={classes.infoTitle}>BOOKED TIME</span> 
-                                <span hidden={(editMode.edit && editMode.person._id  === booking._id)} className={classes.infoData}>{booking.bookingTime.toUpperCase()}</span>  
-                                        <span hidden={!(editMode.edit && editMode.person._id  === booking._id)} className={classes.infoData}>
-                                          <TextField 
-                                                      fullWidth
-                                                       error={validationError.bookingTimeError}
-                                                      className={classes.TextBox} 
-                                                      value={bookingTime}
-                                                      onChange = {bookingTimeChanged}
-                                                      inputProps= {{
-                                                          style:{
-                                                            padding: 0
-                                                          }
-                                                        }
-                                                      }
-                                                      > 
-                                          </TextField> 
-                                        </span> 
-
-
-                            </li>
-
-                            <li className={classes.li}>
-                            <span className={classes.infoTitle}>GENDER</span> 
-                                        <span hidden={(editMode.edit && editMode.person._id  === booking._id)} className={classes.infoData}>{booking.gender?.toUpperCase()}</span>  
-                                        <span hidden={!(editMode.edit && editMode.person._id  === booking._id)} className={classes.infoData}>
-                                          <TextField 
-                                                      fullWidth
-                                                      className={classes.TextBox} 
-                                                      value={gender}
-                                                      onChange = {genderChanged}
-                                                      inputProps= {{
-                                                          style:{
-                                                            padding: 0
-                                                          }
-                                                        }
-                                                      }
-                                                      > 
-                                          </TextField> 
-                                        </span> 
-                            </li>
-                            <li className={classes.li}>
-                            <span className={classes.infoTitle}>TITLE</span> 
-                                       <span hidden={(editMode.edit && editMode.person._id  === booking._id)} className={classes.infoData}>{booking.title?.toUpperCase()}</span>  
-                                        <span hidden={!(editMode.edit && editMode.person._id  === booking._id)} className={classes.infoData}>
-                                          <TextField 
-                                                      fullWidth
-                                                      className={classes.TextBox} 
-                                                      value={title}
-                                                      onChange = {titleChanged}
-                                                      inputProps= {{
-                                                          style:{
-                                                            padding: 0
-                                                          }
-                                                        }
-                                                      }
-                                                      > 
-                                          </TextField> 
-                                        </span> 
-                             
-                            </li>
-                            <li className={classes.li}>
-                            <span className={classes.infoTitle}>FORENAME</span> 
-                                        <span hidden={(editMode.edit && editMode.person._id  === booking._id)} className={classes.infoData}>{booking.forenameCapital}</span>  
-                                        <span hidden={!(editMode.edit && editMode.person._id  === booking._id)} className={classes.infoData}>
-                                        <TextField 
-                                                      fullWidth
-                                                      className={classes.TextBox} 
-                                                      value={forename}
-                                                      onChange = {forenameChanged}
-                                                      inputProps= {{
-                                                          style:{
-                                                            padding: 0
-                                                          }
-                                                        }
-                                                      }
-                                                      > 
-                                          </TextField> 
-                                        </span> 
-                            </li>
-                            <li className={classes.li}>
-                                <span className={classes.infoTitle}>SURNAME</span>
-                                        <span hidden={(editMode.edit && editMode.person._id  === booking._id)} className={classes.infoData}>{booking.surnameCapital}</span>  
-                                        <span hidden={!(editMode.edit && editMode.person._id  === booking._id)} className={classes.infoData}>
-                                        <TextField 
-                                                      fullWidth
-                                                      className={classes.TextBox} 
-                                                      value={surname}
-                                                      onChange = {surnameChanged}
-                                                      inputProps= {{
-                                                          style:{
-                                                            padding: 0
-                                                          }
-                                                        }
-                                                      }
-                                                      > 
-                                          </TextField> 
-                                        </span>   
-                            </li>
-                            <li className={classes.li}>
-                                <span className={classes.infoTitle}>EMAIL</span> 
-                                       <span hidden={(editMode.edit && editMode.person._id  === booking._id)} className={classes.infoData}>{booking.email?.toUpperCase()}</span>  
-                                        <span hidden={!(editMode.edit && editMode.person._id  === booking._id)} className={classes.infoData}>
-                                        <TextField 
-                                                      fullWidth
-                                                      className={classes.TextBox} 
-                                                      value={email}
-                                                      onChange = {emailChanged}
-                                                      inputProps= {{
-                                                          style:{
-                                                            padding: 0
-                                                          }
-                                                        }
-                                                      }
-                                                      > 
-                                          </TextField> 
-                                        </span>   
-                            </li>
-                            <li className={classes.li}>
-                                <span className={classes.infoTitle}>D.O.B</span>
-                                        <span hidden={(editMode.edit && editMode.person._id  === booking._id)} className={classes.infoData}>{booking.birthDate }</span>  
-                                        <span hidden={!(editMode.edit && editMode.person._id  === booking._id)} className={classes.infoData}>
-                                        <TextField 
-                                                      fullWidth
-                                                      error={validationError.dobError} 
-                                                      className={classes.TextBox} 
-                                                      value={dob}
-                                                      onChange = {dobChanged}
-                                                      inputProps= {{
-                                                          style:{
-                                                            padding: 0
-                                                          }
-                                                        }
-                                                      }
-                                                      > 
-                                          </TextField> 
-                                        </span>   
-                            </li>
-                            <li className={classes.li}>
-                                <span className={classes.infoTitle}>TEL</span>
-                                 <span hidden={(editMode.edit && editMode.person._id  === booking._id)} className={classes.infoData}>{booking.phone?.toUpperCase()}</span>  
-                                        <span hidden={!(editMode.edit && editMode.person._id  === booking._id)} className={classes.infoData}>
-                                        <TextField 
-                                                      fullWidth
-                                                      className={classes.TextBox} 
-                                                      value={tel}
-                                                      onChange = {telChanged}
-                                                      inputProps= {{
-                                                          style:{
-                                                            padding: 0
-                                                          }
-                                                        }
-                                                      }
-                                                      > 
-                                          </TextField> 
-                                        </span>  
-                            </li>
-                            <li className={classes.li}>
-                                <span className={classes.infoTitle}>POST CODE</span> 
-                                        <span hidden={(editMode.edit && editMode.person._id  === booking._id)} className={classes.infoData}>{booking.postCode?.toUpperCase()}</span>  
-                                        <span hidden={!(editMode.edit && editMode.person._id  === booking._id)} className={classes.infoData}>
-                                        <TextField 
-                                                      fullWidth
-                                                      className={classes.TextBox} 
-                                                      value={postCode}
-                                                      onChange = {postCodeChanged}
-                                                      inputProps= {{
-                                                          style:{
-                                                            padding: 0
-                                                          }
-                                                        }
-                                                      }
-                                                      > 
-                                          </TextField> 
-                                        </span>  
-                            </li>
-                            <li className={classes.li}>
-                                <span className={classes.infoTitle}>ADDRESS</span> 
-                                        <span hidden={(editMode.edit && editMode.person._id  === booking._id)} className={classes.infoData}>{booking.address?.toUpperCase()}</span>  
-                                        <span hidden={!(editMode.edit && editMode.person._id  === booking._id)} className={classes.infoData}>
-                                        <TextField 
-                                                      fullWidth
-                                                      className={classes.TextBox} 
-                                                      value={address}
-                                                      onChange = {addressChanged}
-                                                      inputProps= {{
-                                                          style:{
-                                                            padding: 0
-                                                          }
-                                                        }
-                                                      }
-                                                      > 
-                                          </TextField> 
-                                        </span>  
-                            </li>
-  
-                            <li className={classes.li}>
-                                <span className={classes.infoTitle}>PASSPORT NO.</span>
-                                <span hidden={(editMode.edit && editMode.person._id  === booking._id)} className={classes.infoData}>{booking.passportNumber?.toUpperCase()}</span>  
-                                        <span hidden={!(editMode.edit && editMode.person._id  === booking._id)} className={classes.infoData}>
-                                        <TextField 
-                                                      fullWidth
-                                                      className={classes.TextBox} 
-                                                      value={passport}
-                                                      onChange = {passportChanged}
-                                                      inputProps= {{
-                                                          style:{
-                                                            padding: 0
-                                                          }
-                                                        }
-                                                      }
-                                                      > 
-                                          </TextField> 
-                                        </span>  
-                            </li>
-
-                            <li className={classes.li}>
-                                <span className={classes.infoTitle}>SECOND PASSPORT NO.</span> 
-                                        <span hidden={(editMode.edit && editMode.person._id  === booking._id)} className={classes.infoData}>{booking.passportNumber2?.toUpperCase()}</span>  
-                                        <span hidden={!(editMode.edit && editMode.person._id  === booking._id)} className={classes.infoData}>
-                                        <TextField 
-                                                      fullWidth
-                                                      className={classes.TextBox} 
-                                                      value={passport2}
-                                                      onChange = {passport2Changed}
-                                                      inputProps= {{
-                                                          style:{
-                                                            padding: 0
-                                                          }
-                                                        }
-                                                      }
-                                                      > 
-                                          </TextField> 
-                                        </span>   
-                            </li>
-
-                            <li className={classes.li}>
-                                <span className={classes.infoTitle}>REQUEST FOR CERTIFICATE</span> 
-                                <span hidden={(editMode.edit && editMode.person._id  === booking._id)} className={classes.infoData}>{booking.certificate ? ( <CheckIcon className={classes.checkIcon}/> ) :  <CloseIcon className={classes.closeIcon}/> }</span>
-                                <span hidden={!(editMode.edit && editMode.person._id  === booking._id)} className={classes.infoData}>
-                                    <FormControlLabel className={classes.formControl} 
-                                          control={<Checkbox className={classes.formControl}  color="secondary" name="certificate" checked={certificate} onChange={certificateChanged} />}
-                                          label=''
-                                        />
-                                </span>    
-                            </li>
-                            <li className={classes.li}>
-                                <span className={classes.infoTitle}>REQUEST FOR ANTIBODY TEST</span>
-                                <span hidden={(editMode.edit && editMode.person._id  === booking._id)} className={classes.infoData}>{booking.antiBodyTest ? <CheckIcon className={classes.checkIcon}/> :  <CloseIcon className={classes.closeIcon}/> }</span>  
-                                <span hidden={!(editMode.edit && editMode.person._id  === booking._id)} className={classes.infoData}>
-                                    <FormControlLabel className={classes.formControl} 
-                                          control={<Checkbox className={classes.formControl}  color="secondary" name="certificate" checked={antiBodyTest} onChange={antiBodyTestChanged} />}
-                                          label=''
-                                        />
-                                </span>   
-                            </li>
-                            <li className={classes.li}>
-                                <span className={classes.infoTitle}>STATUS</span> {getStatusLabel(booking.status)} 
-                            </li>
-      
-                            <li className={classes.li}>
-                                <span className={classes.infoTitle}>TOTAL CHARGES</span> <span className={calculatePrice(booking) <= 199 ? classes.infoDataCharges : classes.infoDataChargesHigher}>{`£${calculatePrice(booking)}`}</span>  
-                            </li>
-
-                            <li  hidden={booking.deleted} >
-                                 <Button
-                                    type="button"
-                                    fullWidth
-                                    variant="outlined"
-                                    color="primary"
-                                    onClick = {() => {downloadForm1(booking._id)}}
-                                    // onTouchTap = {() => {downloadForm1(person._id)}}
-                                    className={classes.DownloadForm}
-                                 >
-                                    Download Registration Form
-                                </Button>
-                            </li>
-
-                            <li  hidden={booking.deleted}>
-                                  <Button
-                                    type="button"
-                                    fullWidth
-                                    variant="outlined"
-                                    color="primary"
-                                    onClick = {() => {downloadForm2(booking._id)}}
-                                    // onTouchTap = {() => {downloadForm2(person._id)}}
-                                    className={classes.DownloadForm}
-                                    >
-                                    Download Lab Form
-                                 </Button>
-                            </li>
-
-                            <li hidden={ booking.deleted || (booking.status !== 'report_sent' && booking.status !== 'report_cert_sent') }>
-                                 <Button
-                                    type="button"
-                                    fullWidth
-                                    variant="outlined"
-                                    color="primary"
-                                    onClick = {() => {downloadLabResults(booking._id)}}
-                                    // onTouchTap = {() => {downloadForm1(person._id)}}
-                                    className={classes.DownloadForm}
-                                 >
-                                    Download Lab Results
-                                </Button>
-                            </li>
-
-                            <li hidden={booking.deleted || booking.status !== 'report_cert_sent'}>
-                                 <Button
-                                    type="button"
-                                    fullWidth
-                                    variant="outlined"
-                                    color="primary"
-                                    onClick = {() => {downloadCertificate(booking._id)}}
-                                    // onTouchTap = {() => {downloadForm1(person._id)}}
-                                    className={classes.DownloadForm}
-                                 >
-                                    Download Certificate
-                                </Button>
-                            </li>
-
-                        </ul>
-
-                    </div>
-
-            </Grid> 
-           
+                <Grid item>
+                  <div
+                    style={
+                      booking.deleted
+                        ? {
+                            paddingBottom: "5px",
+                            textDecoration: "line-through",
+                          }
+                        : {}
+                    }
+                  >
+                    {`${booking.forenameCapital} ${booking.surnameCapital}`}
                   </div>
-                  <Backdrop className={classes.backdrop} open={saving || deleting || restoring}>
-                        <CircularProgress color="inherit" />
-                  </Backdrop>
+                </Grid>
 
-                </DialogContent>
-              </Dialog>
+                {booking.deleted && (
+                  <Grid item>
+                    <Tooltip title="This record has been deleted.">
+                      <DeleteIcon
+                        style={{
+                          padding: 0,
+                          margin: 0,
+                          color: "#333",
+                          fontSize: 25,
+                        }}
+                      />
+                    </Tooltip>
+                  </Grid>
+                )}
+              </Grid>
+            </DialogTitle>
+            <DialogContent>
+              <div
+                style={{
+                  minHeight: "600px",
+                  maxHeight: "600px",
+                  minWidth: "500px",
+                  maxWidth: "800px",
+                  paddingTop: "20px",
+                }}
+              >
+                <Grid item xs={12} md={12} key={`panel0`}>
+                  <div className={classes.infoDetails}>
+                    <ul className={classes.ul}>
+                      {/* Restore Functionality ******************************************* */}
+                      <li
+                        hidden={
+                          !(
+                            restoreMode.restore &&
+                            restoreMode.person._id === booking._id
+                          )
+                        }
+                      >
+                        <div
+                          style={{
+                            fontWeight: "500",
+                            paddingBottom: "5px",
+                            paddingLeft: "5px",
+                            fontSize: "16px",
+                            color: "#333",
+                          }}
+                        >
+                          Are you sure you want to restore this record?
+                        </div>
+                      </li>
 
-      
+                      <li
+                        hidden={
+                          !booking.deleted ||
+                          (restoreMode.restore &&
+                            restoreMode.person._id === booking._id)
+                        }
+                      >
+                        <Button
+                          type="button"
+                          fullWidth
+                          variant="contained"
+                          color="primary"
+                          onClick={() => {
+                            handleRestoreModeChanged(true, booking);
+                          }}
+                          className={classes.RestoreButton}
+                        >
+                          Restore This Record
+                        </Button>
+                      </li>
+
+                      <li
+                        hidden={
+                          !(
+                            restoreMode.restore &&
+                            restoreMode.person._id === booking._id
+                          )
+                        }
+                      >
+                        <Button
+                          type="button"
+                          fullWidth
+                          variant="contained"
+                          color="primary"
+                          disabled={restoring}
+                          onClick={() => {
+                            handleRestoreModeChanged(false, booking);
+                          }}
+                          className={classes.SaveButton}
+                        >
+                          YES, Restore this!
+                        </Button>
+                      </li>
+
+                      <li
+                        hidden={
+                          !(
+                            restoreMode.restore &&
+                            restoreMode.person._id === booking._id
+                          )
+                        }
+                      >
+                        <Button
+                          type="button"
+                          fullWidth
+                          variant="contained"
+                          color="default"
+                          disabled={restoring}
+                          onClick={() => {
+                            handleRestoreModeChanged(false, null);
+                          }}
+                          className={classes.CancelButton}
+                        >
+                          Cancel
+                        </Button>
+                      </li>
+
+                      {/*  ******************************************************************* */}
+
+                      {/* Edit Functionality ******************************************* */}
+
+                      <li
+                        hidden={
+                          booking.deleted ||
+                          deleteMode.delete ||
+                          (editMode.edit && editMode.person._id === booking._id)
+                        }
+                      >
+                        <Button
+                          type="button"
+                          fullWidth
+                          variant="contained"
+                          color="primary"
+                          onClick={() => {
+                            handleEditModeChanged(true, booking);
+                          }}
+                          className={classes.EditButton}
+                        >
+                          Edit Booking Info
+                        </Button>
+                      </li>
+
+                      <li
+                        hidden={
+                          !(
+                            editMode.edit && editMode.person._id === booking._id
+                          )
+                        }
+                      >
+                        <Button
+                          type="button"
+                          fullWidth
+                          variant="contained"
+                          color="primary"
+                          disabled={saving || !recordChanged}
+                          onClick={() => {
+                            handleEditModeChanged(false, booking);
+                          }}
+                          className={classes.SaveButton}
+                        >
+                          Save Changes
+                        </Button>
+                      </li>
+
+                      <li
+                        hidden={
+                          !(
+                            editMode.edit && editMode.person._id === booking._id
+                          )
+                        }
+                      >
+                        <Button
+                          type="button"
+                          fullWidth
+                          variant="contained"
+                          color="default"
+                          disabled={saving}
+                          onClick={() => {
+                            handleEditModeChanged(false, null);
+                          }}
+                          className={classes.CancelButton}
+                        >
+                          Cancel
+                        </Button>
+                      </li>
+
+                      {/* ****************************************************************************************** */}
+
+                      {/* Delete Functionality ******************************************* */}
+
+                      <li
+                        hidden={
+                          !(
+                            deleteMode.delete &&
+                            deleteMode.person._id === booking._id
+                          )
+                        }
+                      >
+                        <div
+                          style={{
+                            fontWeight: "600",
+                            paddingBottom: "5px",
+                            paddingLeft: "5px",
+                            fontSize: "16px",
+                          }}
+                        >
+                          Are you sure you want to delete this record?
+                        </div>
+                      </li>
+
+                      <li
+                        hidden={
+                          props.deleteButtonDisabled ||
+                          booking.deleted ||
+                          editMode.edit ||
+                          (deleteMode.delete &&
+                            deleteMode.person._id === booking._id)
+                        }
+                      >
+                        <Button
+                          type="button"
+                          fullWidth
+                          variant="contained"
+                          color="primary"
+                          onClick={() => {
+                            handleDeleteModeChanged(true, booking);
+                          }}
+                          className={classes.DeleteButton}
+                        >
+                          Delete This Record
+                        </Button>
+                      </li>
+
+                      <li
+                        hidden={
+                          !(
+                            deleteMode.delete &&
+                            deleteMode.person._id === booking._id
+                          )
+                        }
+                      >
+                        <Button
+                          type="button"
+                          fullWidth
+                          variant="contained"
+                          color="primary"
+                          disabled={deleting}
+                          onClick={() => {
+                            handleDeleteModeChanged(false, booking);
+                          }}
+                          className={classes.SaveButton}
+                        >
+                          YES, Delete this!
+                        </Button>
+                      </li>
+
+                      <li
+                        hidden={
+                          !(
+                            deleteMode.delete &&
+                            deleteMode.person._id === booking._id
+                          )
+                        }
+                      >
+                        <Button
+                          type="button"
+                          fullWidth
+                          variant="contained"
+                          color="default"
+                          disabled={deleting}
+                          onClick={() => {
+                            handleDeleteModeChanged(false, null);
+                          }}
+                          className={classes.CancelButton}
+                        >
+                          Cancel
+                        </Button>
+                      </li>
+
+                      {/* ****************************************************************************************** */}
+
+                      <li className={classes.li}>
+                        <span className={classes.infoTitle}>BOOKED DATE</span>
+
+                        <span
+                          hidden={
+                            editMode.edit && editMode.person._id === booking._id
+                          }
+                          className={classes.infoData}
+                        >
+                          {FormatDateFromString(booking.bookingDate)}
+                        </span>
+                        <span
+                          hidden={
+                            !(
+                              editMode.edit &&
+                              editMode.person._id === booking._id
+                            )
+                          }
+                          className={classes.infoData}
+                        >
+                          <TextField
+                            fullWidth
+                            error={validationError.bookingDateError}
+                            className={classes.TextBox}
+                            value={bookingDate}
+                            onChange={bookingDateChanged}
+                            inputProps={{
+                              style: {
+                                padding: 0,
+                              },
+                            }}
+                          ></TextField>
+                        </span>
+                      </li>
+
+                      <li className={classes.li}>
+                        <span className={classes.infoTitle}>BOOKED TIME</span>
+                        <span
+                          hidden={
+                            editMode.edit && editMode.person._id === booking._id
+                          }
+                          className={classes.infoData}
+                        >
+                          {booking.bookingTime.toUpperCase()}
+                        </span>
+                        <span
+                          hidden={
+                            !(
+                              editMode.edit &&
+                              editMode.person._id === booking._id
+                            )
+                          }
+                          className={classes.infoData}
+                        >
+                          <TextField
+                            fullWidth
+                            error={validationError.bookingTimeError}
+                            className={classes.TextBox}
+                            value={bookingTime}
+                            onChange={bookingTimeChanged}
+                            inputProps={{
+                              style: {
+                                padding: 0,
+                              },
+                            }}
+                          ></TextField>
+                        </span>
+                      </li>
+
+                      <li className={classes.li}>
+                        <span className={classes.infoTitle}>GENDER</span>
+                        <span
+                          hidden={
+                            editMode.edit && editMode.person._id === booking._id
+                          }
+                          className={classes.infoData}
+                        >
+                          {booking.gender?.toUpperCase()}
+                        </span>
+                        <span
+                          hidden={
+                            !(
+                              editMode.edit &&
+                              editMode.person._id === booking._id
+                            )
+                          }
+                          className={classes.infoData}
+                        >
+                          <TextField
+                            fullWidth
+                            className={classes.TextBox}
+                            value={gender}
+                            onChange={genderChanged}
+                            inputProps={{
+                              style: {
+                                padding: 0,
+                              },
+                            }}
+                          ></TextField>
+                        </span>
+                      </li>
+                      <li className={classes.li}>
+                        <span className={classes.infoTitle}>TITLE</span>
+                        <span
+                          hidden={
+                            editMode.edit && editMode.person._id === booking._id
+                          }
+                          className={classes.infoData}
+                        >
+                          {booking.title?.toUpperCase()}
+                        </span>
+                        <span
+                          hidden={
+                            !(
+                              editMode.edit &&
+                              editMode.person._id === booking._id
+                            )
+                          }
+                          className={classes.infoData}
+                        >
+                          <TextField
+                            fullWidth
+                            className={classes.TextBox}
+                            value={title}
+                            onChange={titleChanged}
+                            inputProps={{
+                              style: {
+                                padding: 0,
+                              },
+                            }}
+                          ></TextField>
+                        </span>
+                      </li>
+                      <li className={classes.li}>
+                        <span className={classes.infoTitle}>FORENAME</span>
+                        <span
+                          hidden={
+                            editMode.edit && editMode.person._id === booking._id
+                          }
+                          className={classes.infoData}
+                        >
+                          {booking.forenameCapital}
+                        </span>
+                        <span
+                          hidden={
+                            !(
+                              editMode.edit &&
+                              editMode.person._id === booking._id
+                            )
+                          }
+                          className={classes.infoData}
+                        >
+                          <TextField
+                            fullWidth
+                            className={classes.TextBox}
+                            value={forename}
+                            onChange={forenameChanged}
+                            inputProps={{
+                              style: {
+                                padding: 0,
+                              },
+                            }}
+                          ></TextField>
+                        </span>
+                      </li>
+                      <li className={classes.li}>
+                        <span className={classes.infoTitle}>SURNAME</span>
+                        <span
+                          hidden={
+                            editMode.edit && editMode.person._id === booking._id
+                          }
+                          className={classes.infoData}
+                        >
+                          {booking.surnameCapital}
+                        </span>
+                        <span
+                          hidden={
+                            !(
+                              editMode.edit &&
+                              editMode.person._id === booking._id
+                            )
+                          }
+                          className={classes.infoData}
+                        >
+                          <TextField
+                            fullWidth
+                            className={classes.TextBox}
+                            value={surname}
+                            onChange={surnameChanged}
+                            inputProps={{
+                              style: {
+                                padding: 0,
+                              },
+                            }}
+                          ></TextField>
+                        </span>
+                      </li>
+                      <li className={classes.li}>
+                        <span className={classes.infoTitle}>EMAIL</span>
+                        <span
+                          hidden={
+                            editMode.edit && editMode.person._id === booking._id
+                          }
+                          className={classes.infoData}
+                        >
+                          {booking.email?.toUpperCase()}
+                        </span>
+                        <span
+                          hidden={
+                            !(
+                              editMode.edit &&
+                              editMode.person._id === booking._id
+                            )
+                          }
+                          className={classes.infoData}
+                        >
+                          <TextField
+                            fullWidth
+                            className={classes.TextBox}
+                            value={email}
+                            onChange={emailChanged}
+                            inputProps={{
+                              style: {
+                                padding: 0,
+                              },
+                            }}
+                          ></TextField>
+                        </span>
+                      </li>
+                      <li className={classes.li}>
+                        <span className={classes.infoTitle}>D.O.B</span>
+                        <span
+                          hidden={
+                            editMode.edit && editMode.person._id === booking._id
+                          }
+                          className={classes.infoData}
+                        >
+                          {FormatDateFromString(booking.birthDate)}
+                        </span>
+                        <span
+                          hidden={
+                            !(
+                              editMode.edit &&
+                              editMode.person._id === booking._id
+                            )
+                          }
+                          className={classes.infoData}
+                        >
+                          <TextField
+                            fullWidth
+                            error={validationError.dobError}
+                            className={classes.TextBox}
+                            value={dob}
+                            onChange={dobChanged}
+                            inputProps={{
+                              style: {
+                                padding: 0,
+                              },
+                            }}
+                          ></TextField>
+                        </span>
+                      </li>
+                      <li className={classes.li}>
+                        <span className={classes.infoTitle}>TEL</span>
+                        <span
+                          hidden={
+                            editMode.edit && editMode.person._id === booking._id
+                          }
+                          className={classes.infoData}
+                        >
+                          {booking.phone?.toUpperCase()}
+                        </span>
+                        <span
+                          hidden={
+                            !(
+                              editMode.edit &&
+                              editMode.person._id === booking._id
+                            )
+                          }
+                          className={classes.infoData}
+                        >
+                          <TextField
+                            fullWidth
+                            className={classes.TextBox}
+                            value={tel}
+                            onChange={telChanged}
+                            inputProps={{
+                              style: {
+                                padding: 0,
+                              },
+                            }}
+                          ></TextField>
+                        </span>
+                      </li>
+                      <li className={classes.li}>
+                        <span className={classes.infoTitle}>POST CODE</span>
+                        <span
+                          hidden={
+                            editMode.edit && editMode.person._id === booking._id
+                          }
+                          className={classes.infoData}
+                        >
+                          {booking.postCode?.toUpperCase()}
+                        </span>
+                        <span
+                          hidden={
+                            !(
+                              editMode.edit &&
+                              editMode.person._id === booking._id
+                            )
+                          }
+                          className={classes.infoData}
+                        >
+                          <TextField
+                            fullWidth
+                            className={classes.TextBox}
+                            value={postCode}
+                            onChange={postCodeChanged}
+                            inputProps={{
+                              style: {
+                                padding: 0,
+                              },
+                            }}
+                          ></TextField>
+                        </span>
+                      </li>
+                      <li className={classes.li}>
+                        <span className={classes.infoTitle}>ADDRESS</span>
+                        <span
+                          hidden={
+                            editMode.edit && editMode.person._id === booking._id
+                          }
+                          className={classes.infoData}
+                        >
+                          {booking.address?.toUpperCase()}
+                        </span>
+                        <span
+                          hidden={
+                            !(
+                              editMode.edit &&
+                              editMode.person._id === booking._id
+                            )
+                          }
+                          className={classes.infoData}
+                        >
+                          <TextField
+                            fullWidth
+                            className={classes.TextBox}
+                            value={address}
+                            onChange={addressChanged}
+                            inputProps={{
+                              style: {
+                                padding: 0,
+                              },
+                            }}
+                          ></TextField>
+                        </span>
+                      </li>
+
+                      <li className={classes.li}>
+                        <span className={classes.infoTitle}>PASSPORT NO.</span>
+                        <span
+                          hidden={
+                            editMode.edit && editMode.person._id === booking._id
+                          }
+                          className={classes.infoData}
+                        >
+                          {booking.passportNumber?.toUpperCase()}
+                        </span>
+                        <span
+                          hidden={
+                            !(
+                              editMode.edit &&
+                              editMode.person._id === booking._id
+                            )
+                          }
+                          className={classes.infoData}
+                        >
+                          <TextField
+                            fullWidth
+                            className={classes.TextBox}
+                            value={passport}
+                            onChange={passportChanged}
+                            inputProps={{
+                              style: {
+                                padding: 0,
+                              },
+                            }}
+                          ></TextField>
+                        </span>
+                      </li>
+
+                      <li className={classes.li}>
+                        <span className={classes.infoTitle}>
+                          SECOND PASSPORT NO.
+                        </span>
+                        <span
+                          hidden={
+                            editMode.edit && editMode.person._id === booking._id
+                          }
+                          className={classes.infoData}
+                        >
+                          {booking.passportNumber2?.toUpperCase()}
+                        </span>
+                        <span
+                          hidden={
+                            !(
+                              editMode.edit &&
+                              editMode.person._id === booking._id
+                            )
+                          }
+                          className={classes.infoData}
+                        >
+                          <TextField
+                            fullWidth
+                            className={classes.TextBox}
+                            value={passport2}
+                            onChange={passport2Changed}
+                            inputProps={{
+                              style: {
+                                padding: 0,
+                              },
+                            }}
+                          ></TextField>
+                        </span>
+                      </li>
+
+                      <li className={classes.li}>
+                        <span className={classes.infoTitle}>
+                          REQUEST FOR CERTIFICATE
+                        </span>
+                        <span
+                          hidden={
+                            editMode.edit && editMode.person._id === booking._id
+                          }
+                          className={classes.infoData}
+                        >
+                          {booking.certificate ? (
+                            <CheckIcon className={classes.checkIcon} />
+                          ) : (
+                            <CloseIcon className={classes.closeIcon} />
+                          )}
+                        </span>
+                        <span
+                          hidden={
+                            !(
+                              editMode.edit &&
+                              editMode.person._id === booking._id
+                            )
+                          }
+                          className={classes.infoData}
+                        >
+                          <FormControlLabel
+                            className={classes.formControl}
+                            control={
+                              <Checkbox
+                                className={classes.formControl}
+                                color="secondary"
+                                name="certificate"
+                                checked={certificate}
+                                onChange={certificateChanged}
+                              />
+                            }
+                            label=""
+                          />
+                        </span>
+                      </li>
+                      <li className={classes.li}>
+                        <span className={classes.infoTitle}>
+                          REQUEST FOR ANTIBODY TEST
+                        </span>
+                        <span
+                          hidden={
+                            editMode.edit && editMode.person._id === booking._id
+                          }
+                          className={classes.infoData}
+                        >
+                          {booking.antiBodyTest ? (
+                            <CheckIcon className={classes.checkIcon} />
+                          ) : (
+                            <CloseIcon className={classes.closeIcon} />
+                          )}
+                        </span>
+                        <span
+                          hidden={
+                            !(
+                              editMode.edit &&
+                              editMode.person._id === booking._id
+                            )
+                          }
+                          className={classes.infoData}
+                        >
+                          <FormControlLabel
+                            className={classes.formControl}
+                            control={
+                              <Checkbox
+                                className={classes.formControl}
+                                color="secondary"
+                                name="certificate"
+                                checked={antiBodyTest}
+                                onChange={antiBodyTestChanged}
+                              />
+                            }
+                            label=""
+                          />
+                        </span>
+                      </li>
+                      <li className={classes.li}>
+                        <span className={classes.infoTitle}>STATUS</span>{" "}
+                        {getStatusLabel(booking.status)}
+                        {booking.status === "sample_taken" &&
+                          !(
+                            editMode.edit && editMode.person._id === booking._id
+                          ) && (
+                            <Button 
+                                  variant="outlined"
+                                  color="primary"
+                                  disabled = {saving}
+                                  onClick = {event => changeBackToBookingMade(event,booking._id)}
+
+                                     >
+                              Change Back To Booking Made
+                            </Button>
+                          )}
+
+                          {(booking.status === "report_sent" || booking.status === "report_cert_sent") &&
+                          !(
+                            editMode.edit && editMode.person._id === booking._id
+                          ) && (
+                            <Button 
+                                  variant="outlined"
+                                  color="primary"
+                                  className = {classes.ResendEmailsButton}
+                                  onClick = {event => resendEmails(event,booking._id)}
+
+                                     >
+                              Resend emails
+                            </Button>
+                          )}
+                      </li>
+
+                      <li className={classes.li}>
+                        <span className={classes.infoTitle}>TOTAL CHARGES</span>{" "}
+                        <span
+                          className={
+                            calculatePrice(booking) <= 199
+                              ? classes.infoDataCharges
+                              : classes.infoDataChargesHigher
+                          }
+                        >{`£${calculatePrice(booking)}`}</span>
+                      </li>
+
+                      <li hidden={booking.deleted}>
+                        <Button
+                          type="button"
+                          fullWidth
+                          variant="outlined"
+                          color="primary"
+                          onClick={() => {
+                            downloadForm1(booking._id);
+                          }}
+                          // onTouchTap = {() => {downloadForm1(person._id)}}
+                          className={classes.DownloadForm}
+                        >
+                          Download Registration Form
+                        </Button>
+                      </li>
+
+                      <li hidden={booking.deleted}>
+                        <Button
+                          type="button"
+                          fullWidth
+                          variant="outlined"
+                          color="primary"
+                          onClick={() => {
+                            downloadForm2(booking._id);
+                          }}
+                          // onTouchTap = {() => {downloadForm2(person._id)}}
+                          className={classes.DownloadForm}
+                        >
+                          Download Lab Form
+                        </Button>
+                      </li>
+
+                      <li
+                        hidden={
+                          booking.deleted ||
+                          (booking.status !== "report_sent" &&
+                            booking.status !== "report_cert_sent")
+                        }
+                      >
+                        <Button
+                          type="button"
+                          fullWidth
+                          variant="outlined"
+                          color="primary"
+                          onClick={() => {
+                            downloadLabResults(booking._id);
+                          }}
+                          // onTouchTap = {() => {downloadForm1(person._id)}}
+                          className={classes.DownloadForm}
+                        >
+                          Download Lab Results
+                        </Button>
+                      </li>
+
+                      <li
+                        hidden={
+                          booking.deleted ||
+                          booking.status !== "report_cert_sent"
+                        }
+                      >
+                        <Button
+                          type="button"
+                          fullWidth
+                          variant="outlined"
+                          color="primary"
+                          onClick={() => {
+                            downloadCertificate(booking._id);
+                          }}
+                          // onTouchTap = {() => {downloadForm1(person._id)}}
+                          className={classes.DownloadForm}
+                        >
+                          Download Certificate
+                        </Button>
+                      </li>
+                    </ul>
+                  </div>
+                </Grid>
+              </div>
+              <Backdrop
+                className={classes.backdrop}
+                open={saving || deleting || restoring}
+              >
+                <CircularProgress color="inherit" />
+              </Backdrop>
+            </DialogContent>
+
+
+            <ResendEmailsDialog booking={selectedBooking} open={openResendDialog} handleClose={handleCloseResendDialog} />
+
+          </Dialog>
         </React.Fragment>
       )}
-
     </React.Fragment>
   );
 }

@@ -20,9 +20,10 @@ import { CheckBox } from '@material-ui/icons';
 import { parse } from 'date-fns';
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
-
-
 import DeleteIcon from '@material-ui/icons/Delete';
+
+import {FormatDateFromString, RevertFormatDateFromString} from './DateFormatter';
+
 
 const useStyles = makeStyles((theme) => ({
   box: {
@@ -143,47 +144,71 @@ const useStyles = makeStyles((theme) => ({
     fontWeight : "600"
   },
   BookedLabel:{
-    backgroundColor: "#606060",
-    color: "#fff",
+    color: "#606060",
     paddingRight: "10px",
-    paddingLeft: "10px"
+    paddingLeft: "5px",
+    paddingBottom: "3px",
+    paddingTop: "3px",
+    fontWeight: "800",
+    borderLeft: "5px solid",
+    borderColor: "#606060"
   },
 
   PatientAttendedLabel:{
-    backgroundColor: "#0066aa",
-    color: "#fff",
-    paddingRight: "15px",
-    paddingLeft: "10px"
+    color: "#0066aa",
+    paddingRight: "10px",
+    paddingLeft: "5px",
+    paddingBottom: "3px",
+    paddingTop: "3px",
+    fontWeight: "800",
+    borderLeft: "5px solid",
+    borderColor: "#0066aa"
   },
 
   SampleTakenLabel:{
-    backgroundColor: "#0066cc",
-    color: "#fff",
-    paddingRight: "40px",
-    paddingLeft: "10px"
+    color: "#0066cc",
+    paddingRight: "10px",
+    paddingLeft: "5px",
+    paddingBottom: "3px",
+    paddingTop: "3px",
+    fontWeight: "800",
+    borderLeft: "5px solid",
+    borderColor: "#0066cc"
   },
 
   ReportSentLabel:{
-    backgroundColor: "#009900",
-    color: "#fff",
-    paddingRight: "90px",
-    paddingLeft: "10px"
+    color: "#009900",
+    paddingRight: "10px",
+    paddingLeft: "5px",
+    paddingBottom: "3px",
+    paddingTop: "3px",
+    fontWeight: "800",
+    borderLeft: "5px solid",
+    borderColor: "#009900"
   },
 
   ReportCertSentLabel:{
-    backgroundColor: "#009900",
-    color: "#fff",
-    paddingRight: "68px",
-    paddingLeft: "10px"
+    color: "#009900",
+    paddingRight: "10px",
+    paddingLeft: "5px",
+    paddingBottom: "3px",
+    paddingTop: "3px",
+    fontWeight: "800",
+    borderLeft: "5px solid",
+    borderColor: "#009900"
   },
 
   PositiveLabel:{
-    backgroundColor: "red",
-    color: "#fff",
-    paddingRight: "90px",
-    paddingLeft: "10px",
-    fontWeight: "800"
+    color: "red",
+    paddingRight: "10px",
+    paddingLeft: "5px",
+    paddingBottom: "3px",
+    paddingTop: "3px",
+    fontWeight: "800",
+    borderLeft: "5px solid",
+    borderColor: "red"
   },
+
 
   EditButton:
   {
@@ -367,11 +392,6 @@ export default function PersonsBox() {
       setAddress(event.target.value);
     }
 
-    const notesChanged = (event) =>
-    {
-      setNotes(event.target.value);
-    }
-
     const passportChanged = (event) =>
     {
       setPassport(event.target.value);
@@ -464,6 +484,8 @@ export default function PersonsBox() {
             `pcr-clinic-form-${id}.pdf`
         );
 
+        setState(state => ({...state, RefreshPersonInfo : !state.RefreshPersonInfo}));
+
         }).catch( (err) =>
         {
             console.log(err);
@@ -506,12 +528,12 @@ export default function PersonsBox() {
        {
          setForename(person.forenameCapital);
          setSurnme(person.surnameCapital);
-         setBookingDate(person.bookingDate);
+         setBookingDate(FormatDateFromString(person.bookingDate));
          setBookingTime(person.bookingTime.toUpperCase());
          setGender(person.gender.toUpperCase());
          setTitle(person.title.toUpperCase());
          setEmail(person.email.toUpperCase());
-         setDOB(person.birthDate);
+         setDOB(FormatDateFromString(person.birthDate));
          setTel(person.phone.toUpperCase());
          setPostCode(person.postCode.toUpperCase());
          setAddress(person.address.toUpperCase());
@@ -548,7 +570,7 @@ export default function PersonsBox() {
           booking.antiBodyTest = antiBodyTest;
           booking.gender = gender;
           booking.title = title;
-          booking.birthDate = dob;
+          booking.birthDate = RevertFormatDateFromString(dob);
           booking.email = email;
           booking.phone = tel;
           booking.postCode = postCode;
@@ -558,7 +580,7 @@ export default function PersonsBox() {
           booking.forename = forename;
           booking.surname = surname;
           booking.notes = notes;
-          booking.bookingDate = bookingDate;
+          booking.bookingDate = RevertFormatDateFromString(bookingDate);
           booking.bookingTime = bookingTime;
           booking.bookingRef = person.bookingRef;
 
@@ -721,6 +743,18 @@ export default function PersonsBox() {
         setRestoreMode({restore: false, person: null});
          console.log(err);
        });
+   }
+
+   const changeBackToBookingMade = (event, id) =>
+   {
+     setSaving(true);
+     bookingService.changeBackToBookingMade(id).then(res => {
+       setSaving(false);
+       setState(state => ({...state, RefreshPersonInfo : !state.RefreshPersonInfo}));
+     }).catch(err => {
+       console.log(err);
+       setSaving(false);
+     })
    }
 
 
@@ -942,7 +976,9 @@ export default function PersonsBox() {
                                 <span className={classes.infoTitle}>BOOKED DATE</span> 
                             
 
-                                <span hidden={(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>{person.bookingDate }</span>  
+                                <span hidden={(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>
+                                   {FormatDateFromString(person.bookingDate) }
+                                  </span>  
                                         <span hidden={!(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>
                                           <TextField 
                                                       fullWidth
@@ -1084,7 +1120,9 @@ export default function PersonsBox() {
                             </li>
                             <li className={classes.li}>
                                 <span className={classes.infoTitle}>D.O.B</span>
-                                        <span hidden={(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>{person.birthDate }</span>  
+                                        <span hidden={(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>
+                                            {FormatDateFromString(person.birthDate) }
+                                          </span>  
                                         <span hidden={!(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>
                                         <TextField 
                                                       fullWidth
@@ -1159,25 +1197,7 @@ export default function PersonsBox() {
                                           </TextField> 
                                         </span>  
                             </li>
-                            <li className={classes.li}>
-                                <span className={classes.infoTitle}>NOTES</span> 
-                                        <span hidden={(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>{person.notes?.toUpperCase()}</span>  
-                                        <span hidden={!(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>
-                                        <TextField 
-                                                      fullWidth
-                                                      className={classes.TextBox} 
-                                                      value={notes}
-                                                      onChange = {notesChanged}
-                                                      inputProps= {{
-                                                          style:{
-                                                            padding: 0
-                                                          }
-                                                        }
-                                                      }
-                                                      > 
-                                          </TextField> 
-                                        </span>   
-                            </li>
+
                             <li className={classes.li}>
                                 <span className={classes.infoTitle}>PASSPORT NO.</span>
                                 <span hidden={(editMode.edit && editMode.person._id  === person._id)} className={classes.infoData}>{person.passportNumber?.toUpperCase()}</span>  
@@ -1239,7 +1259,24 @@ export default function PersonsBox() {
                                 </span>   
                             </li>
                             <li className={classes.li}>
-                                <span className={classes.infoTitle}>STATUS</span> {getStatusLabel(person.status)} 
+                                <span className={classes.infoTitle}>STATUS</span> 
+                                {getStatusLabel(person.status)} 
+                                
+                                {person.status === "sample_taken" &&
+                                          !(
+                                            editMode.edit && editMode.person._id === person._id
+                                          ) && (
+                                            <Button 
+                                                  variant="outlined"
+                                                  color="primary"
+                                                  disabled = {saving}
+                                                  onClick = {event => changeBackToBookingMade(event,person._id)}
+
+                                                    >
+                                              Change Back To Booking Made
+                                            </Button>
+                                          )}
+
                             </li>
       
                             <li className={classes.li}>
