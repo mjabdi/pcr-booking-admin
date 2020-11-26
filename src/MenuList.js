@@ -4,6 +4,7 @@ import FindByRef from './FindByRef';
 import BookingTable from './BookingTable';
 import DashboardPreview from './DashboardPreview';
 import UnmatchedRecords from './UnmatchedRecords';
+import CalendarView from './calendar/CalendarView';
 
 import NewReleasesIcon from '@material-ui/icons/NewReleases';
 import HistoryIcon from '@material-ui/icons/History';
@@ -17,6 +18,7 @@ import WarningIcon from '@material-ui/icons/Warning';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import DeleteIcon from '@material-ui/icons/Delete';
 import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
+import DateRangeIcon from '@material-ui/icons/DateRange';
 
 export const MenuList = [
     {index: 0, id:`dashboard`, title: `Dashboard`, icon : <DashboardIcon/>, content: <DashboardPreview />},
@@ -31,7 +33,8 @@ export const MenuList = [
     {index: 9, id:`latebookings`, title: `40 Hours Late`, icon : <HourglassEmptyIcon/>, content: <BookingTable date="late"/>},
     {index: 10, id:`deletedBookings`, title: `Deleted Records`, icon : <DeleteIcon/>, content: <BookingTable date="deleted"/>},
     {index: 11, id:`unmatchedRecords`, title: `Unmatched Records`, icon : <WarningIcon/>, content: <UnmatchedRecords/>},
-    {index: 12, id:`findByRef`, title: `Find By Ref No`, icon : <SearchIcon/>, content: <FindByRef/>},
+    {index: 12, id:`calendarView`, title: `Calendar View`, icon : <DateRangeIcon/>, content: <CalendarView/>},
+    {index: 13, id:`findByRef`, title: `Find By Ref No`, icon : <SearchIcon/>, content: <FindByRef/>},
   ];
 
   export const getMenuContent = (index) =>

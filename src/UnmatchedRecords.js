@@ -350,9 +350,6 @@ export default function UnmatchedRecords() {
 
   const [sendingStatus, setSendingStatus] = React.useState('');
 
-  const [sendingCounter, setSendingCounter] = React.useState(0);
-
-
   const [sendingProgress, setSendingProgress] = React.useState(10);
 
 

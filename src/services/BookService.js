@@ -2,7 +2,22 @@ import API from './api';
 
 export default class BookService {
 
-   
+   static getBookingsCountByDateStr = (dateStr) =>
+   {
+      return API.get(`/api/book/getbookingscountbydatestr?date=${dateStr}`);
+   }
+
+   static getBookingsCountByDateStrandTime = (dateStr, time) =>
+   {
+      return API.get(`/api/book/getbookingscountbydatestrandtime?date=${dateStr}&time=${time}`);
+   }
+
+   static getBookingsByDateStrandTime = (dateStr, time) =>
+   {
+      return API.get(`/api/book/getbookingsbydatestrandtime?date=${dateStr}&time=${time}`);
+   }
+
+
    static changeBackToBookingMade = (id) =>
    {
       return API.post(`/api/book/changebacktobookingmade?id=${id}`);
