@@ -20,7 +20,6 @@ import {BrowserView, MobileView} from 'react-device-detect';
 // import { Mouse, Satellite } from '@material-ui/icons';
 // import { BrowserView } from 'react-device-detect';
 
-var timeSlots = null;
 
 const useStyles = makeStyles((theme) => ({
     
@@ -79,7 +78,10 @@ const useStyles = makeStyles((theme) => ({
   }));
 
 
-
+  function isWeekend(date)
+  {
+      return (date.getDay() === 0 || date.getDay() === 6) /// Weekend
+  }
 
 export default function TimeForm() {
     const classes = useStyles();
@@ -96,16 +98,38 @@ export default function TimeForm() {
       emptyTimeSlots.push(i);
     }
 
-    const LoadData = (date) => {
+    const [timeSlots, setTimeSlots] = React.useState(emptyTimeSlots);
+
+    const LoadData = (dateStr) => {
+
+      const date = new Date(dateStr);
 
       const promise1 = TimeService.getTimeSlots(date);
       setDataLoaded(false);
   
       Promise.all([promise1]).then( (values) => {
   
-        timeSlots = values[0].data;
+        const timeSlotsTmp = values[0].data;
+        
+        if (isWeekend(date))
+        {
+          for (var i=0 ; i < timeSlotsTmp.length ; i++)
+          {
+            if (parseInt(timeSlotsTmp[i].time.substr(0,2)) < 10 && timeSlotsTmp[i].time.indexOf('AM') > 0)
+            {
+              timeSlotsTmp[i].available = false;
+            }
   
-       setDataLoaded(true);
+            if (parseInt(timeSlotsTmp[i].time.substr(0,2)) > 1 && parseInt(timeSlotsTmp[i].time.substr(0,2)) < 12 &&timeSlotsTmp[i].time.indexOf('PM') > 0)
+            {
+              timeSlotsTmp[i].available = false;
+            }
+          }
+        }
+
+
+        setTimeSlots(timeSlotsTmp);
+        setDataLoaded(true);
   
       }).catch( (err) =>
       {
@@ -115,7 +139,8 @@ export default function TimeForm() {
     }
 
     useEffect(() => {
-      LoadData(state.bookingDate);
+      if (state.bookingDate && state.bookingDate !== 'undefined')
+         LoadData(state.bookingDate);
     }, [state.bookingDate]);
 
 

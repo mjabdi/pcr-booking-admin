@@ -24,6 +24,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 
 import {FormatDateFromString, RevertFormatDateFromString} from './DateFormatter';
 
+import PrintIcon from '@material-ui/icons/Print';
+
 
 const useStyles = makeStyles((theme) => ({
   box: {
@@ -464,10 +466,12 @@ export default function PersonsBox() {
    {
        PDFService.downloadCovidForm1(id).then( (res) => 
        {
-            FileSaver.saveAs(
-            new Blob([res.data], { type: 'application/pdf' }),
-              `pcr-reg-form-${id}.pdf`
-          );
+          const file = new Blob(
+            [res.data], 
+            {type: 'application/pdf'});
+
+          const fileURL = URL.createObjectURL(file);   
+          window.open(fileURL, "_blank");
 
        }).catch( (err) =>
        {
@@ -479,10 +483,12 @@ export default function PersonsBox() {
    {
         PDFService.downloadCovidForm2(id).then( (res) => 
         {
-            FileSaver.saveAs(
-            new Blob([res.data], { type: 'application/pdf' }),
-            `pcr-clinic-form-${id}.pdf`
-        );
+          const file = new Blob(
+            [res.data], 
+            {type: 'application/pdf'});
+
+          const fileURL = URL.createObjectURL(file);   
+          window.open(fileURL, "_blank");
 
         setState(state => ({...state, RefreshPersonInfo : !state.RefreshPersonInfo}));
 
@@ -496,10 +502,12 @@ export default function PersonsBox() {
    {
         PDFService.downloadPdfResult(id).then( (res) => 
         {
-            FileSaver.saveAs(
-            new Blob([res.data], { type: 'application/pdf' }),
-            `lab-result-${id}.pdf`
-        );
+          const file = new Blob(
+            [res.data], 
+            {type: 'application/pdf'});
+
+          const fileURL = URL.createObjectURL(file);   
+          window.open(fileURL, "_blank");
 
         }).catch( (err) =>
         {
@@ -511,10 +519,12 @@ export default function PersonsBox() {
    {
         PDFService.downloadPdfCert(id).then( (res) => 
         {
-            FileSaver.saveAs(
-            new Blob([res.data], { type: 'application/pdf' }),
-            `certificate-${id}.pdf`
-        );
+          const file = new Blob(
+            [res.data], 
+            {type: 'application/pdf'});
+
+          const fileURL = URL.createObjectURL(file);   
+          window.open(fileURL, "_blank");
 
         }).catch( (err) =>
         {
@@ -1285,6 +1295,7 @@ export default function PersonsBox() {
 
                             <li  hidden={person.deleted} >
                                  <Button
+                                    startIcon = {<PrintIcon/>}
                                     type="button"
                                     fullWidth
                                     variant="outlined"
@@ -1299,6 +1310,7 @@ export default function PersonsBox() {
 
                             <li  hidden={person.deleted}>
                                   <Button
+                                    startIcon = {<PrintIcon/>}
                                     type="button"
                                     fullWidth
                                     variant="outlined"
@@ -1313,6 +1325,7 @@ export default function PersonsBox() {
 
                             <li hidden={ person.deleted || (person.status !== 'report_sent' && person.status !== 'report_cert_sent') }>
                                  <Button
+                                    startIcon = {<PrintIcon/>}
                                     type="button"
                                     fullWidth
                                     variant="outlined"
@@ -1327,6 +1340,7 @@ export default function PersonsBox() {
 
                             <li hidden={person.deleted || person.status !== 'report_cert_sent'}>
                                  <Button
+                                    startIcon = {<PrintIcon/>}
                                     type="button"
                                     fullWidth
                                     variant="outlined"

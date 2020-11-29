@@ -4,13 +4,14 @@ import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Chart from './Chart';
-import Deposits from './Deposits';
-import Orders from './Orders';
+import CurrentVisits from './CurrentVisits';
+
 
 
 import { Tooltip } from '@material-ui/core';
 import GlobalState from './GlobalState';
 import BookingView from './BookingView';
+import ResultsTimeReport from './ResultsTimeReport';
 
 const useStyles = makeStyles((theme) => ({
  
@@ -36,18 +37,24 @@ export default function DashboardPreview() {
 
 <           Grid container spacing={3}>
                     {/* Chart */}
-                    <Grid item xs={12} md={8} lg={9}>
+                    <Grid item xs={12} md={4} lg={6}>
                     <Paper className={fixedHeightPaper}>
                         <Chart />
                     </Paper>
                     </Grid>
-                    {/* Recent Deposits */}
+                    {/* Tests Summary */}
                     <Grid item xs={12} md={4} lg={3}>
-                    <Paper className={fixedHeightPaper}>
-                        <Deposits />
+                     <Paper className={fixedHeightPaper}>
+                        <ResultsTimeReport />
                     </Paper>
                     </Grid>
-                    {/* Recent Orders */}
+                    {/* Current Visits */}
+                    <Grid item xs={12} md={4} lg={3}>
+                    <Paper className={fixedHeightPaper}>
+                        <CurrentVisits />
+                    </Paper>
+                    </Grid>
+                    {/* Recent Bookings */}
                     <Grid item xs={12}>
                     <Paper className={classes.paper}>
                         <BookingView/>

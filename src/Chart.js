@@ -1,27 +1,84 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTheme } from '@material-ui/core/styles';
 import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer } from 'recharts';
 import Title from './Title';
+import dateformat from 'dateformat';
+import BookService from './services/BookService';
 
 // Generate Sales Data
 function createData(time, amount) {
   return { time, amount };
 }
 
-const data = [
-  createData('00:00', 0),
-  createData('03:00', 3),
-  createData('06:00', 6),
-  createData('09:00', 8),
-  createData('12:00', 15),
-  createData('15:00', 20),
-  createData('18:00', 24),
-  createData('21:00', 24),
-  createData('24:00', undefined),
+
+const emptyData = [
+  createData('09:00', 0),
+  createData('10:00', 0),
+  createData('11:00', 0),
+  createData('12:00', 0),
+  createData('13:00', 0),
+  createData('14:00', 0),
+  createData('15:00', 0),
+  createData('16:00', 0),
+  createData('17:00', 0),
+  createData('18:00', undefined),
+
 ];
+
+const getCount = (data, str) =>
+{
+  if (!data)
+    return 0;
+
+  var count = 0;
+  for (var i=0; i < data.length; i++)
+  {
+    if (data[i]._id.substr(0,2) === str)
+    {
+      count += data[i].count;
+    }
+  }
+  return count;
+}
 
 export default function Chart() {
   const theme = useTheme();
+
+  const [data, setData] = React.useState(emptyData);
+
+
+  useEffect(() =>
+  {
+    const fetchData = async () =>
+    {
+      const todayStr = dateformat(new Date(), 'yyyy-mm-dd');
+      var result = [];
+      try
+      {
+          const res = await BookService.getBookingsStatsByDateStr(todayStr);
+          const data = res.data.result;
+          result.push(createData('09:00', getCount(data,'09')));
+          result.push(createData('10:00', getCount(data,'10')));
+          result.push(createData('11:00', getCount(data,'11')));
+          result.push(createData('12:00', getCount(data,'12')));
+          result.push(createData('13:00', getCount(data,'13')));
+          result.push(createData('14:00', getCount(data,'14')));
+          result.push(createData('15:00', getCount(data,'15')));
+          result.push(createData('16:00', getCount(data,'16')));
+          result.push(createData('17:00', getCount(data,'17')));
+          result.push(createData('18:00', undefined));
+ 
+           setData(result);
+      }
+      catch(err){
+        console.error(err);
+      }
+
+    }
+  
+   fetchData();
+
+  }, [] );
 
   return (
     <React.Fragment>

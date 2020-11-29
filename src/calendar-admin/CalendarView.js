@@ -51,11 +51,11 @@ export default function CalendarView() {
         const dayofWeek = today.getDay();
         const firstdayofweek = new Date(today.getTime() - ( dayofWeek * 86400000));
         setFirstDayofWeek(firstdayofweek);
-        setState(state => ({...state, calendarCache : []}));
+        setState(state => ({...state, AdminCalendarCache : []}));
 
         return () =>
         {
-            setState(state => ({...state, calendarCache : []}));
+            setState(state => ({...state, AdminCalendarCache : []}));
         }
        
     }, []);

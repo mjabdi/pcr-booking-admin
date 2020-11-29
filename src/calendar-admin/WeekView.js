@@ -121,10 +121,10 @@ const WeekView = ({dates, dayClicked}) => {
                                 {dates.map(day => (
                                     <td className={classes.td}>
                                         <WeekViewCell 
-                                            dayClicked = {dayClicked}
-                                            key={`${dateformat(day,'yyyy-mm-dd')}-${row.replace(':','-')}`} 
-                                            date={dateformat(day,'yyyy-mm-dd')}
-                                            time={row}/>
+                                                dayClicked = {dayClicked}
+                                                key={`${dateformat(day,'yyyy-mm-dd')}-${row.replace(':','-')}`} 
+                                                date={dateformat(day,'yyyy-mm-dd')} 
+                                                time={row}/>
                                     </td>
                                 ))}
                             </tr>

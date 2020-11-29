@@ -2,20 +2,48 @@ import API from './api';
 
 export default class BookService {
 
+   static getTestsTimeReport = () =>
+   {
+      return API.get(`/api/book/getteststimereport`);
+   }
+
+   static getBookingsStatsByDateStr = (dateStr) =>
+   {
+      return API.get(`/api/book/getbookingsstatsbydatestr?date=${dateStr}`);
+   }
+
    static getBookingsCountByDateStr = (dateStr) =>
    {
       return API.get(`/api/book/getbookingscountbydatestr?date=${dateStr}`);
    }
 
-   static getBookingsCountByDateStrandTime = (dateStr, time) =>
+   static getBookingsCountByDateStrandTime = (dateStr, time, source) =>
    {
-      return API.get(`/api/book/getbookingscountbydatestrandtime?date=${dateStr}&time=${time}`);
+      return API.get(`/api/book/getbookingscountbydatestrandtime?date=${dateStr}&time=${time}`, {cancelToken: source.token});
    }
 
    static getBookingsByDateStrandTime = (dateStr, time) =>
    {
       return API.get(`/api/book/getbookingsbydatestrandtime?date=${dateStr}&time=${time}`);
    }
+
+
+   static getAllBookingsCountByDateStr = (dateStr) =>
+   {
+      return API.get(`/api/book/getallbookingscountbydatestr?date=${dateStr}`);
+   }
+
+   static getAllBookingsCountByDateStrandTime = (dateStr, time, source) =>
+   {
+      return API.get(`/api/book/getallbookingscountbydatestrandtime?date=${dateStr}&time=${time}`, {cancelToken: source.token});
+   }
+
+   static getAllBookingsByDateStrandTime = (dateStr, time) =>
+   {
+      return API.get(`/api/book/getallbookingsbydatestrandtime?date=${dateStr}&time=${time}`);
+   }
+
+
 
 
    static changeBackToBookingMade = (id) =>

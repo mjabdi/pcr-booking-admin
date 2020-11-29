@@ -79,7 +79,72 @@ const useStyles = makeStyles((theme) => ({
             background: "#3f51b5",
             color: "#ebedf7"
           },
+    },
+
+    bookingBoxSampleTaken: {
+        display: "flex",
+        marginRight: "10px",
+        marginTop: "5px",
+        padding: "10px",
+        maxWidth : "150px",
+        overflowX: "hidden",
+        border : "1px solid #eee",
+        fontSize: "12px",
+        fontWeight : "500",
+        cursor: "pointer",
+        backgroundColor: "#0066cc",
+        color: "#eee",
+        boxShadow: "2px 4px #fafafa",
+
+        "&:hover": {
+            background: "#0059b3",
+            color: "#fafafa"
+          },
+    },
+
+    bookingBoxPositive: {
+        display: "flex",
+        marginRight: "10px",
+        marginTop: "5px",
+        padding: "10px",
+        maxWidth : "150px",
+        overflowX: "hidden",
+        border : "1px solid #eee",
+        fontSize: "12px",
+        fontWeight : "500",
+        cursor: "pointer",
+        backgroundColor: "#ebedf7",
+        color: "#3f51b5",
+        boxShadow: "2px 4px #fafafa",
+
+        "&:hover": {
+            background: "#3f51b5",
+            color: "#ebedf7"
+          },
+    },
+
+    bookingBoxReportSent: {
+        display: "flex",
+        marginRight: "10px",
+        marginTop: "5px",
+        padding: "10px",
+        maxWidth : "150px",
+        overflowX: "hidden",
+        border : "1px solid #eee",
+        fontSize: "12px",
+        fontWeight : "500",
+        cursor: "pointer",
+        backgroundColor: "#009900",
+        color: "#eee",
+        boxShadow: "2px 4px #fafafa",
+
+        "&:hover": {
+            background: "#006e00",
+            color: "#fafafa"
+          },
     }
+
+
 
   }));
 
@@ -117,19 +182,19 @@ const DayViewCell = ({key, date, time}) => {
                 return;
             }
          
-            if (isPast)
-            {
-                setBookings([]);
-                return;
-            }
+            // if (isPast)
+            // {
+            //     setBookings([]);
+            //     return;
+            // }
     
             setBookings(null);
     
-            var res = state.calendarCache?.find(record => record.method === 'getBookingsByDateStrandTime' && record.query === `${date}${time}`)?.res;
+            var res = state.AdminCalendarCache?.find(record => record.method === 'getBookingsByDateStrandTime' && record.query === `${date}${time}`)?.res;
             if (!res || openDialog)
             {
-                res = await BookService.getBookingsByDateStrandTime(date, time);
-                setState(state => ({...state, calendarCache : [...state.calendarCache, {method: 'getBookingsByDateStrandTime' , query : `${date}${time}`, res: res}]}));
+                res = await BookService.getAllBookingsByDateStrandTime(date, time);
+                setState(state => ({...state, AdminCalendarCache : [...state.AdminCalendarCache, {method: 'getBookingsByDateStrandTime' , query : `${date}${time}`, res: res}]}));
             }
           
           
@@ -141,9 +206,9 @@ const DayViewCell = ({key, date, time}) => {
 
         if (openDialog)
         {
-            setState(state => ({...state, calendarCache : state.calendarCache.filter(record => !(record.method === 'getBookingsByDateStrandTime' && record.query ===  `${date}${time}`))}));
-            setState(state => ({...state, calendarCache : state.calendarCache.filter(record => !(record.method === 'getBookingsCountByDateStrandTime' && record.query ===  `${date}${time}`))}));
-            setState(state => ({...state, calendarCache : state.calendarCache.filter(record => !(record.method === 'getBookingsCountByDateStr' && record.query ===  date))}));
+            setState(state => ({...state, AdminCalendarCache : state.AdminCalendarCache.filter(record => !(record.method === 'getBookingsByDateStrandTime' && record.query ===  `${date}${time}`))}));
+            setState(state => ({...state, AdminCalendarCache : state.AdminCalendarCache.filter(record => !(record.method === 'getBookingsCountByDateStrandTime' && record.query ===  `${date}${time}`))}));
+            setState(state => ({...state, AdminCalendarCache : state.AdminCalendarCache.filter(record => !(record.method === 'getBookingsCountByDateStr' && record.query ===  date))}));
         }
 
          fetchData();
@@ -156,6 +221,22 @@ const DayViewCell = ({key, date, time}) => {
         setOpenDialog(true);
     }
 
+    const getBookingClass = (status) =>
+    {
+        switch (status) {
+
+            case 'sample_taken':
+                return classes.bookingBoxSampleTaken;
+            case 'positive':
+                return classes.bookingBoxPositive;
+            case 'report_sent':
+            case 'report_cert_sent':
+                return classes.bookingBoxReportSent;     
+
+            default : 
+                return classes.bookingBox;
+        }
+    }
 
     const getBookingsBox = (_bookings) =>
     {
@@ -167,12 +248,12 @@ const DayViewCell = ({key, date, time}) => {
                 </div>
             );  
         }
-        else if (_bookings.length > 0 && !isPast)
+        else if (_bookings.length > 0)
         {
            return (
                 _bookings.map(booking => (
 
-                    <div className={classes.bookingBox} onClick={event => bookingCliked(event,booking)}>
+                    <div className={getBookingClass(booking.status)} onClick={event => bookingCliked(event,booking)}>
 
                         {`${booking.forenameCapital}-${booking.surnameCapital}`.substring(0,15)}
 
@@ -193,7 +274,7 @@ const DayViewCell = ({key, date, time}) => {
     return (
         <React.Fragment>
 
-            <div className={isPast ? classes.ContainerPast : classes.Container}>
+            <div className={classes.Container}>
 
               {getBookingsBox(bookings)}
 

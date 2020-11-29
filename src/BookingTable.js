@@ -1,8 +1,8 @@
 import React, {useEffect, useRef, useState} from 'react';
-import { DataGrid } from '@material-ui/data-grid';
+import { DataGrid, LoadingOverlay } from '@material-ui/data-grid';
 import BookService from './services/BookService';
 import Typography from '@material-ui/core/Typography';
-import { Button, Grid, Link, makeStyles, TextField, Tooltip } from '@material-ui/core';
+import { Button, CircularProgress, Grid, LinearProgress, Link, makeStyles, TextField, Tooltip } from '@material-ui/core';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import { IconButton } from '@material-ui/core';
 import LoaderSpinner from 'react-loader-spinner';
@@ -91,10 +91,22 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "red",
     color: "#fff",
     width: "70px"
-  }
+  },
 
+  HideNowRows: {
+    position: "absolute",
+    top: "40%",
+    left: "40%",
+    width: "600px",
+    height: "300px",
+    backgroundColor : "#fafafa",
+    color : "#111",
+    zIndex: "1000",
+    display: "flex",
+    alignItems: "center",
+    justifyItems: "center"
+  },
 
-  
 }));
 
 const getTableTitle = (str) =>{
@@ -609,9 +621,6 @@ export default function BookingTable(props) {
 
   }
 
-
-
-
   const refreshClicked = (event) =>{
     setFilter('');
     setRefresh(!refresh);
@@ -671,6 +680,11 @@ export default function BookingTable(props) {
                       )}
           </Grid> */}
 
+            {data.isFetching && (
+               <div className={classes.HideNowRows}>
+                  
+               </div>
+            )}
 
         <Grid item md={3}>
           <TextField

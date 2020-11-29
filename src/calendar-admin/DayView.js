@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import { Grid } from '@material-ui/core';
-import WeekViewCell from './WeekViewCell';
+import DayViewCell from './DayViewCell';
 import dateformat from 'dateformat';
 
 const rows = [
@@ -70,12 +70,27 @@ const useStyles = makeStyles((theme) => ({
         borderCollapse: "collapse",
         verticalAlign: "middle",
         height : "50px",
-        width: "12%", 
-    }
+        width: "84%", 
+    },
+
+    titleLabel: {
+        paddingBottom: "17px",
+        paddingTop: "17px",
+        color: "#777",
+        fontSize: "16px"
+    },
+
+    titleLabelToday: {
+        paddingBottom: "17px",
+        paddingTop: "17px",
+        color: "#fff",
+        backgroundColor: "#1a73e8",
+        fontSize: "16px"
+    },
 
   }));
 
-const WeekView = ({dates, dayClicked}) => {
+const DayView = ({date}) => {
     const classes = useStyles();
 
     return (
@@ -88,22 +103,11 @@ const WeekView = ({dates, dayClicked}) => {
                         <th style={{width: "7%"}}>
                         
                         </th>
-                            {dates.map(date => (
-                                <th className={classes.th}>
-                                    <div style={{paddingBottom: "5px", color: "#aaa"}}>
-                                         {dateformat(date, 'ddd')}
-                                    </div>
-                                    <div>
-                                        <span style={{color: "#aaa"}}>
-                                            {dateformat(date, 'mmm ')}
-                                        </span> 
-                                        <span  style={(dateformat(new Date(),'yyyy-mm-dd') === dateformat(date, 'yyyy-mm-dd')) ? { backgroundColor: "#1a73e8", color: "#fff", borderRadius: "50%",  padding: "5px",} : {color: "#333", fontWeight:"500"}}>
-                                             {dateformat(date, ' d')}
-                                        </span>
-                                       
-                                    </div>
-                                </th>
-                        ))}
+                        <th style={{width: "84%"}}>
+                                <div className={(dateformat(new Date(),'yyyy-mm-dd') === dateformat(date, 'yyyy-mm-dd')) ? classes.titleLabelToday : classes.titleLabel }>
+                                        {dateformat(date,'dddd')}
+                                </div>                                
+                        </th>
                     </tr>
                 </thead>
              </table>
@@ -118,15 +122,11 @@ const WeekView = ({dates, dayClicked}) => {
                                 <td style={{width: "7%"}}>
                                     {row}
                                 </td>
-                                {dates.map(day => (
-                                    <td className={classes.td}>
-                                        <WeekViewCell 
-                                            dayClicked = {dayClicked}
-                                            key={`${dateformat(day,'yyyy-mm-dd')}-${row.replace(':','-')}`} 
-                                            date={dateformat(day,'yyyy-mm-dd')}
-                                            time={row}/>
-                                    </td>
-                                ))}
+                               
+                                <td className={classes.td}>
+                                     <DayViewCell key={`${dateformat(date,'yyyy-mm-dd')}-${row}`} date={dateformat(date,'yyyy-mm-dd')} time={row}/>  
+                                </td>
+                            
                             </tr>
                         ))}            
                     </tbody>
@@ -139,10 +139,9 @@ const WeekView = ({dates, dayClicked}) => {
     );
 }
 
-WeekView.propTypes = {
-    dates: PropTypes.arrayOf(PropTypes.any).isRequired,
-    dayClicked: PropTypes.func
+DayView.propTypes = {
+    date: PropTypes.any.isRequired
   };
 
 
-export default WeekView;
+export default DayView;

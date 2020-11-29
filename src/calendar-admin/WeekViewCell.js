@@ -115,17 +115,17 @@ const WeekViewCell = ({key, date, time, dayClicked}) => {
             return;
         }
         
-        if (isPast)
-        {
-            setBookingsCount(-2);
-            return;
-        }
+        // if (isPast)
+        // {
+        //     setBookingsCount(-2);
+        //     return;
+        // }
 
         setBookingsCount(-1);
 
        
 
-        var res = state.calendarCache?.find(record => record.method === 'getBookingsCountByDateStrandTime' && record.query === `${date}${time}`)?.res;
+        var res = state.AdminCalendarCache?.find(record => record.method === 'getBookingsCountByDateStrandTime' && record.query === `${date}${time}`)?.res;
         if (res)
         {
             if (res.data.count >= 0)
@@ -136,11 +136,11 @@ const WeekViewCell = ({key, date, time, dayClicked}) => {
         }
 
         let source = axios.CancelToken.source();
-        BookService.getBookingsCountByDateStrandTime(date, time, source).then( res => {
+        BookService.getAllBookingsCountByDateStrandTime(date, time, source).then( res => {
             if (res.data.count >= 0)
             {
                 setBookingsCount(res.data.count);
-                setState(state => ({...state, calendarCache : [...state.calendarCache, {method: 'getBookingsCountByDateStrandTime' , query : `${date}${time}`, res: res}]}));
+                setState(state => ({...state, AdminCalendarCache : [...state.AdminCalendarCache, {method: 'getBookingsCountByDateStrandTime' , query : `${date}${time}`, res: res}]}));
             }  
         }).catch( err => 
             {
@@ -165,12 +165,12 @@ const WeekViewCell = ({key, date, time, dayClicked}) => {
                 </div>
             );  
         }
-        else if (_bookingsCount > 0 && !isPast)
+        else if (_bookingsCount > 0)
         {
             if (_bookingsCount >= MAX_BOOKING_COUNT)
             {
                 return (
-                    <div  onClick={(event => dayClicked(event,cellDate))} className={classes.BookingCountLabelBusy}>
+                    <div onClick={(event => dayClicked(event,cellDate))} className={classes.BookingCountLabelBusy}>
                         {_bookingsCount}
                     </div>
                 );
@@ -178,7 +178,7 @@ const WeekViewCell = ({key, date, time, dayClicked}) => {
             else
             {
                 return (
-                    <div  onClick={(event => dayClicked(event,cellDate))} className={classes.BookingCountLabel}>
+                    <div onClick={(event => dayClicked(event,cellDate))} className={classes.BookingCountLabel}>
                         {_bookingsCount}
                     </div>
                 );
@@ -188,7 +188,7 @@ const WeekViewCell = ({key, date, time, dayClicked}) => {
 
     const getBookingsCountGauge = (_bookingsCount) =>
     {
-        if (_bookingsCount > 0 && !isPast)
+        if (_bookingsCount > 0 )
         {
             let percent = (_bookingsCount / MAX_BOOKING_COUNT) * 100;
             if (percent > 100)

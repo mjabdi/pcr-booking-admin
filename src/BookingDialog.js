@@ -31,6 +31,8 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import {FormatDateFromString, RevertFormatDateFromString} from './DateFormatter';
 import ResendEmailsDialog from './ResendEmailsDialog';
 
+import PrintIcon from '@material-ui/icons/Print';
+
 const useStyles = makeStyles((theme) => ({
   box: {
     backgroundColor : "#373737",
@@ -558,10 +560,12 @@ export default function BookingDialog(props) {
    {
        PDFService.downloadCovidForm1(id).then( (res) => 
        {
-            FileSaver.saveAs(
-            new Blob([res.data], { type: 'application/pdf' }),
-              `pcr-reg-form-${id}.pdf`
-          );
+          const file = new Blob(
+            [res.data], 
+            {type: 'application/pdf'});
+
+          const fileURL = URL.createObjectURL(file);   
+          window.open(fileURL, "_blank");
 
        }).catch( (err) =>
        {
@@ -573,10 +577,12 @@ export default function BookingDialog(props) {
    {
         PDFService.downloadCovidForm2(id).then( (res) => 
         {
-            FileSaver.saveAs(
-            new Blob([res.data], { type: 'application/pdf' }),
-            `pcr-clinic-form-${id}.pdf`
-        );
+          const file = new Blob(
+            [res.data], 
+            {type: 'application/pdf'});
+
+          const fileURL = URL.createObjectURL(file);   
+          window.open(fileURL, "_blank");
 
         setRefreshData(!refreshData);
 
@@ -589,11 +595,15 @@ export default function BookingDialog(props) {
    const downloadLabResults = (id) =>
    {
         PDFService.downloadPdfResult(id).then( (res) => 
-        {
-            FileSaver.saveAs(
-            new Blob([res.data], { type: 'application/pdf' }),
-            `lab-result-${id}.pdf`
-        );
+        {       
+          const file = new Blob(
+            [res.data], 
+            {type: 'application/pdf'});
+
+          const fileURL = URL.createObjectURL(file);   
+          window.open(fileURL, "_blank");
+
+        
 
         }).catch( (err) =>
         {
@@ -605,11 +615,13 @@ export default function BookingDialog(props) {
    {
         PDFService.downloadPdfCert(id).then( (res) => 
         {
-            FileSaver.saveAs(
-            new Blob([res.data], { type: 'application/pdf' }),
-            `certificate-${id}.pdf`
-        );
+          const file = new Blob(
+            [res.data], 
+            {type: 'application/pdf'});
 
+          const fileURL = URL.createObjectURL(file);   
+          window.open(fileURL, "_blank");
+      
         }).catch( (err) =>
         {
             console.log(err);
@@ -1792,6 +1804,7 @@ export default function BookingDialog(props) {
 
                       <li hidden={booking.deleted}>
                         <Button
+                          startIcon = {<PrintIcon/>}
                           type="button"
                           fullWidth
                           variant="outlined"
@@ -1808,6 +1821,7 @@ export default function BookingDialog(props) {
 
                       <li hidden={booking.deleted}>
                         <Button
+                          startIcon = {<PrintIcon/>}
                           type="button"
                           fullWidth
                           variant="outlined"
@@ -1830,6 +1844,7 @@ export default function BookingDialog(props) {
                         }
                       >
                         <Button
+                          startIcon = {<PrintIcon/>}
                           type="button"
                           fullWidth
                           variant="outlined"
@@ -1851,6 +1866,7 @@ export default function BookingDialog(props) {
                         }
                       >
                         <Button
+                          startIcon = {<PrintIcon/>}
                           type="button"
                           fullWidth
                           variant="outlined"
