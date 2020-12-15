@@ -45,6 +45,7 @@ import ValidateInfo from './Validation';
 import BookService from '../services/BookService';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import AccessibilityNewIcon from '@material-ui/icons/AccessibilityNew';
 
 
 function Copyright() {
@@ -293,7 +294,19 @@ const saveClicked = (event) => {
             antiBodyTest: antiBodyCheck,
             bookingDate: state.userBooking.bookingDate,
             bookingTime: state.userBooking.bookingTime,
-            bookingRef: state.userBooking.bookingRef
+            bookingRef: state.userBooking.bookingRef,
+            
+            selfIsolate : selfIsolate,
+            ethnicity: ethnicity,
+            NHSNumber: NHSNumber,
+            addressSI : addressSI,
+            postCodeSI: postCodeSI,
+            arrivalDate: arrivalDate,
+            flightNumber: flightNumber,
+            lastDepartedDate: lastDepartedDate,
+            travellingFrom: travellingFrom,
+
+
         };
 
         BookService.updateBooking({bookingId: state.userBooking._id, person: person}).then( (res) => {
@@ -327,10 +340,23 @@ const [lastname, setLastname] = React.useState(state.userBooking.surname ?? '');
 const [email, setEmail] = React.useState(state.userBooking.email ?? '');
 const [retypeEmail, setRetypeEmail] = React.useState(state.userBooking.email ?? '');
 
+const [NHSNumber, setNHSNumber] = React.useState(state.userBooking.NHSNumber ?? '');
+const [ethnicity, setEthnicity] = React.useState(state.userBooking.ethnicity ?? '');
+
+const [selfIsolate, setSelfIsolate] = React.useState(state.userBooking.selfIsolate ?? false);
+
+const [arrivalDate, setArrivalDate] = React.useState(state.userBooking.arrivalDate ?? '');
+const [flightNumber, setFlightNumber] = React.useState(state.userBooking.flightNumber ?? '');
+const [lastDepartedDate, setLastDepartedDate] = React.useState(state.userBooking.lastDepartedDate ?? '');
+const [travellingFrom, setTravellingFrom] = React.useState(state.userBooking.travellingFrom ?? '');
+
+const [postCodeSI, setPostCodeSI] = React.useState(state.userBooking.postCodeSI ?? '');
+const [addressSI, setAddressSI] = React.useState(state.userBooking.addressSI ?? '');
+
 const [gender, setGender] = React.useState(state.userBooking.gender ?? '');
 const [title, setTitle] = React.useState(state.userBooking.title ?? '');
 
-const [emailConfirmed, setEmailConfirmed] = React.useState(false);
+
 
 const [phone, setPhone] = React.useState(state.userBooking.phone ?? '');
 const [postCode, setPostCode] = React.useState(state.userBooking.postCode ?? '');
@@ -361,26 +387,70 @@ useEffect( () => {
     setState(state => ({...state, passportNumber2 : state.userBooking.passportNumber2}));
     setState(state => ({...state, antiBodyTest : state.userBooking.antiBodyTest}));
 
+    setState(state => ({...state, NHSNumber : state.userBooking.NHSNumber}));
+    setState(state => ({...state, ethnicity : state.userBooking.ethnicity}));
+
+    setState(state => ({...state, addressSI : state.userBooking.addressSI}));
+    setState(state => ({...state, postCodeSI : state.userBooking.postCodeSI}));
+    setState(state => ({...state, selfIsolate : state.userBooking.selfIsolate ?? false}));
+    setState(state => ({...state, arrivalDate : state.userBooking.arrivalDate}));
+    setState(state => ({...state, flightNumber : state.userBooking.flightNumber}));
+    setState(state => ({...state, lastDepartedDate : state.userBooking.lastDepartedDate}));
+    setState(state => ({...state, travellingFrom : state.userBooking.travellingFrom}));
+
+
+
+
+
 }, []);
 
 
 useEffect( () => {
-    setChanged(
-            title !== state.userBooking.title 
-         || gender !== state.userBooking.gender 
-         || dateFormat(birthDate,'yyyy-mm-dd') !== state.userBooking.birthDate 
-         || firstname !== state.userBooking.forename 
-         || lastname !== state.userBooking.surname 
-         || email !== state.userBooking.email 
-         || phone !== state.userBooking.phone 
-         || certificate !== state.userBooking.certificate 
-         || postCode !== state.userBooking.postCode 
-         || address !== state.userBooking.address 
-         || passportNumber !== state.userBooking.passportNumber 
-         || passportNumber2 !== state.userBooking.passportNumber2 
-         || antiBodyCheck !== state.userBooking.antiBodyTest 
-    );
 
+  if (!state.userBooking.tr)
+  {
+    setChanged(
+      title !== state.userBooking.title 
+   || gender !== state.userBooking.gender 
+   || dateFormat(birthDate,'yyyy-mm-dd') !== state.userBooking.birthDate 
+   || firstname !== state.userBooking.forename 
+   || lastname !== state.userBooking.surname 
+   || email !== state.userBooking.email 
+   || phone !== state.userBooking.phone 
+   || certificate !== state.userBooking.certificate 
+   || postCode !== state.userBooking.postCode 
+   || address !== state.userBooking.address 
+   || passportNumber !== state.userBooking.passportNumber 
+   || passportNumber2 !== state.userBooking.passportNumber2 
+   || antiBodyCheck !== state.userBooking.antiBodyTest 
+    );
+  }else
+  {
+    setChanged(
+      title !== state.userBooking.title 
+   || gender !== state.userBooking.gender 
+   || dateFormat(birthDate,'yyyy-mm-dd') !== state.userBooking.birthDate 
+   || firstname !== state.userBooking.forename 
+   || lastname !== state.userBooking.surname 
+   || email !== state.userBooking.email 
+   || phone !== state.userBooking.phone 
+   || postCode !== state.userBooking.postCode 
+   || address !== state.userBooking.address 
+   || passportNumber !== state.userBooking.passportNumber 
+   || NHSNumber !== state.userBooking.NHSNumber
+   || ethnicity !== state.userBooking.ethnicity
+   || selfIsolate !==  (state.userBooking.selfIsolate ?? false)
+   || (selfIsolate && postCodeSI !==  state.userBooking.postCodeSI)
+   || (selfIsolate && addressSI !==  state.userBooking.addressSI)
+   || arrivalDate !==  state.userBooking.arrivalDate
+   || flightNumber !==  state.userBooking.flightNumber
+   || lastDepartedDate !==  state.userBooking.lastDepartedDate
+   || travellingFrom !==  state.userBooking.travellingFrom
+ 
+
+    );
+  }
+   
 }, [fieldChanged])
 
 
@@ -458,6 +528,107 @@ const retypeEmailChanged = (event) =>
 
     setFieldChanged(!fieldChanged);
 }
+
+const NHSNumberChanged = (event) =>
+{
+    setNHSNumber(event.target.value);
+    setState(state => ({...state, NHSNumber : event.target.value }));
+    if (event.target.value && event.target.value.trim().length >= 0)
+    {
+      setState(state => ({...state, NHSNumberError : false}));
+    }
+    setFieldChanged(!fieldChanged);
+}
+
+const ethnicityChanged = (event) =>
+{
+    setEthnicity(event.target.value);
+    setState(state => ({...state, ethnicity : event.target.value }));
+    if (event.target.value && event.target.value.trim().length >= 0)
+    {
+      setState(state => ({...state, ethnicityError : false}));
+    }
+    setFieldChanged(!fieldChanged);
+}
+
+const selfIsolateChanged = (event) =>
+{
+  setSelfIsolate(event.target.checked);
+  setState(state => ({...state, selfIsolate : event.target.checked}));
+  setFieldChanged(!fieldChanged);
+
+  if (!event.target.checked)
+  {
+    setAddressSI('');
+    setState(state => ({...state, addressSI : '' }));
+    setPostCodeSI('');
+    setState(state => ({...state, postCodeSI :''}));
+  }
+}
+
+const postCodeSIChanged = (event) =>
+{
+    setPostCodeSI(event.target.value);
+    setState(state => ({...state, postCodeSI : event.target.value }));
+    if (event.target.value && event.target.value.trim().length >= 5)
+    {
+      setState(state => ({...state, postCodeSIError : false}));
+    }
+    setFieldChanged(!fieldChanged);
+}
+
+const addressSIChanged = (event) =>
+{
+    setAddressSI(event.target.value);
+    setState(state => ({...state, addressSI : event.target.value }));
+    if (event.target.value && event.target.value.trim().length >= 10)
+    {
+      setState(state => ({...state, addressSIError : false}));
+    }
+    setFieldChanged(!fieldChanged);
+}
+
+const arrivalDateChanged = (event) =>
+{
+    setArrivalDate(event.target.value);
+    setState(state => ({...state, arrivalDate : event.target.value }));
+    if (event.target.value && event.target.value.trim().length === 10)
+    {
+      setState(state => ({...state, arrivalDateError : false}));
+    }
+    setFieldChanged(!fieldChanged);
+}
+const flightNumberChanged = (event) =>
+{
+    setFlightNumber(event.target.value);
+    setState(state => ({...state, flightNumber : event.target.value }));
+    if (event.target.value && event.target.value.trim().length >= 1)
+    {
+      setState(state => ({...state, flightNumberError : false}));
+    }
+    setFieldChanged(!fieldChanged);
+}
+const lastDepartedDateChanged = (event) =>
+{
+    setLastDepartedDate(event.target.value);
+    setState(state => ({...state, lastDepartedDate : event.target.value }));
+    if (event.target.value && event.target.value.trim().length === 10)
+    {
+      setState(state => ({...state, lastDepartedDateError : false}));
+    }
+    setFieldChanged(!fieldChanged);
+}
+const travellingFromChanged = (event) =>
+{
+    setTravellingFrom(event.target.value);
+    setState(state => ({...state, travellingFrom : event.target.value }));
+    if (event.target.value && event.target.value.trim().length >= 1)
+    {
+      setState(state => ({...state, travellingFromError : false}));
+    }
+    setFieldChanged(!fieldChanged);
+}
+
 
 
 
@@ -579,25 +750,41 @@ const antiBodyCheckChanged = (event) =>
                             justifyContent: 'center'
                         }}>
               
-                  <AirplanemodeActiveIcon className={classes.AirIcon} color="primary" />  
-                            RT-PCR Fit to Fly Test
+              {!state.userBooking.tr ? (
+                  <React.Fragment>
+                          <AirplanemodeActiveIcon className={classes.AirIcon} color="primary" />  
+                              RT-PCR Fit to Fly Test
+                  </React.Fragment>
+
+              ) : (
+                  <React.Fragment>
+                        <AccessibilityNewIcon className={classes.AirIcon} color="primary" />  
+                            RT-PCR Test to Release
+                 </React.Fragment>
+                
+              )}
 
                     </div>
           </Typography>
 
-          <div className={classes.Box}>
+          {!state.userBooking.tr && (
+                  <div className={classes.Box}>
 
-                <div className= {classes.Label}>
-                    Add to your Appointment...
+                  <div className= {classes.Label}>
+                      Add to your Appointment...
+                  </div>
+
+                  <div className= {classes.CheckBox}>
+                  <FormControlLabel className={classes.formControl} 
+                          control={<Checkbox className={classes.formControl}  color="secondary" name="emailConfirmCheckBox" checked={antiBodyCheck} onChange={antiBodyCheckChanged} />}
+                          label={<span style={{ fontSize: '0.7rem' }}>{`COVID-19 Antibody Test (IgM & IgG)`} 
+                          <span  style={{ fontSize: '0.8rem', textDecoration: "italic" ,fontWeight:"600" ,color:"#333" }}> £99.00 </span> </span> } />
+                  </div>
                 </div>
 
-                <div className= {classes.CheckBox}>
-                <FormControlLabel className={classes.formControl} 
-                        control={<Checkbox className={classes.formControl}  color="secondary" name="emailConfirmCheckBox" checked={antiBodyCheck} onChange={antiBodyCheckChanged} />}
-                        label={<span style={{ fontSize: '0.7rem' }}>{`COVID-19 Antibody Test (IgM & IgG)`} 
-                        <span  style={{ fontSize: '0.8rem', textDecoration: "italic" ,fontWeight:"600" ,color:"#333" }}> £99.00 </span> </span> } />
-                </div>
-        </div>
+          )}
+
+       
 
           <Grid container spacing={3} alignItems="baseline" style={{paddingTop:"20px", paddingBottom:"20px"}}>
 
@@ -693,12 +880,60 @@ const antiBodyCheckChanged = (event) =>
                             />  
                         </Grid>
 
-                        {/* <Grid item xs={12} className={classes.formControl} >
-                            <FormControlLabel className={classes.formControl}  style={ {color: state.emailConfirmedError ? "red" : ''}} 
-                            control={<Checkbox className={classes.formControl} style={ {color: state.emailConfirmedError ? "red" : ''}}  color="secondary" name="emailConfirmCheckBox" checked={emailConfirmed} onChange={emailConfirmedChanged} />}
-                            label={<span style={{ fontSize: '0.8rem' }}>{`I confirm that this is a private email address to which I am happy for you to send my results.`} </span>}
-                            />
-                        </Grid> */}
+                        {state.userBooking.tr && (
+                              <React.Fragment>
+                                  <Grid item xs={12} md={6}>
+                                      <TextField 
+                                                  error={state.phoneError ? true : false}
+                                          
+                                                  required id="phone" label="Telephone Number" 
+                                                  fullWidth autoComplete="tel" 
+                                                  value = {phone}
+                                                  onChange = {phoneChanged} 
+                                      />  
+                                  </Grid>
+
+                                  <Grid item  xs={12} md={6}>
+                                              
+                                              <TextField 
+                                                        error={state.passportNumberError ? true : false}
+                                                        required id="passport" label="Passport Number" 
+                                                        fullWidth autoComplete="none" 
+                                                        value = {passportNumber}
+                                                        onChange = {passportNumberChanged} 
+                                              />  
+        
+                                              </Grid>
+                              </React.Fragment>
+                            )}
+
+
+                        {state.userBooking.tr && (
+                              <React.Fragment>
+                                  <Grid item  xs={12} md={6}>
+                                        <TextField 
+                                                  error={state.NHSNumberError ? true : false}
+                                                  id="NHSNumber" label="NHS Number (optional)" 
+                                                  helperText="(if known and applicable)" 
+                                                  fullWidth autoComplete="none"  
+                                                  value = {NHSNumber}
+                                                  onChange = {NHSNumberChanged} 
+                                        />        
+                                  </Grid>
+
+                                  <Grid item  xs={12} md={6}>
+                                    
+                                        <TextField 
+                                                  error={state.ethnicityError ? true : false}
+                                                  required id="ethnicity" label="Ethnicity" 
+                                                  fullWidth autoComplete="none"  
+                                                  value = {ethnicity}
+                                                  onChange = {ethnicityChanged} 
+                                        />        
+                                  </Grid>
+                              </React.Fragment>
+
+                            )}
 
 
                         </Grid>
@@ -707,17 +942,21 @@ const antiBodyCheckChanged = (event) =>
 
             <Grid container spacing={3} alignItems="baseline" style={{paddingTop:"20px", paddingBottom:"20px"}}>
 
-                    <Grid item xs={12} md={6}>
-                                <TextField 
-                                            error={state.phoneError ? true : false}
-                                    
-                                            required id="phone" label="Phone Number" 
-                                            fullWidth autoComplete="tel" 
-                                            value = {phone}
-                                            onChange = {phoneChanged} 
-                                />  
-                            </Grid>
-                            <Grid item xs={12} md={6}>
+                          {!state.userBooking.tr && (
+                                  <Grid item xs={12} md={6}>
+                                      <TextField 
+                                                  error={state.phoneError ? true : false}
+                                          
+                                                  required id="phone" label="Telephone Number" 
+                                                  fullWidth autoComplete="tel" 
+                                                  value = {phone}
+                                                  onChange = {phoneChanged} 
+                                      />  
+                                  </Grid>
+                          )}
+
+                           
+                            <Grid item xs={12} md={state.userBooking.tr ? 12 : 6}>
                                 <TextField 
                                             error={state.postCodeError ? true : false}
                                     
@@ -739,35 +978,137 @@ const antiBodyCheckChanged = (event) =>
                                 />  
                             </Grid>
 
-                            <Grid item xs={12} className={classes.formControl} >
-                            <FormControlLabel className={classes.formControl} 
-                                control={<Checkbox className={classes.formControl}  color="secondary" name="certificate" checked={certificate} onChange={certificateChanged} />}
-                                label={<span style={{ fontSize: '0.8rem' }}>{`I also require a medical certificate signed by a doctor declaring me 'fit-to-fly'.`} 
-                                
-                                <span  style={{ fontSize: '1rem', textDecoration: "italic" ,fontWeight:"600" ,color:"#333" }}>  + £50.00 </span> 
-                                </span>}
-                            />
-                            </Grid>
-                            <Grid item xs={12} hidden={!certificate} >
-                                <TextField 
-                                            error={state.passportNumberError ? true : false}
-                                            required id="passport" label="Passport Number" 
-                                            helperText="your passport number will be noted on your certificate" 
-                                            fullWidth autoComplete="" 
-                                            value = {passportNumber}
-                                            onChange = {passportNumberChanged} 
-                                />  
-                            </Grid>
-                            <Grid item xs={12} hidden={!certificate} >
-                                <TextField 
-                                            // error={state.passportNumberError ? true : false}
-                                            id="passport2" label="Second Passport Number (optional)" 
-                                            helperText="your passport number will be noted on your certificate" 
-                                            fullWidth autoComplete="" 
-                                            value = {passportNumber2}
-                                            onChange = {passportNumberChanged2} 
-                                />  
-                            </Grid>
+                            {state.userBooking.tr && (
+                              <React.Fragment>
+                                   <Grid item xs={12} className={classes.formControl} >
+                                    <FormControlLabel className={classes.formControl} 
+                                      control={<Checkbox className={classes.formControl} color="secondary" name="emailConfirmCheckBox" checked={selfIsolate} onChange={selfIsolateChanged} />}
+                                      label={<span style={{ fontSize: '1rem' }}>{`I intend to self-isolate at a different address`} </span>}
+                                    />
+                                  </Grid>
+
+                                  { selfIsolate && (
+                                           <React.Fragment>
+                                                <Grid item xs={12}>
+                                                <TextField 
+                                                            error={state.postCodeSIError ? true : false}
+                                                  
+                                                            required id="postCodeSI" label="Self-Isolate Post Code" 
+                                                            fullWidth autoComplete="postal-code"
+                                                            value = {postCodeSI}
+                                                            onChange = {postCodeSIChanged} 
+                                                />  
+                                                </Grid>
+                                                <Grid item xs={12}>
+                                                <TextField 
+                                                            error={state.addressSIError ? true : false}
+                                                            required id="addressSI" label="Self-Isolate Address" 
+                                                           
+                                                            multiline rowsMax={2} 
+                                                            fullWidth autoComplete="street-address" 
+                                                            value = {addressSI}
+                                                            onChange = {addressSIChanged} 
+                                                />  
+                                                </Grid>
+
+                                          </React.Fragment>
+
+                                  )}
+
+                                  <Grid item xs={12} md={6}>
+                                      <TextField 
+                                                  error={state.arrivalDateError ? true : false}
+                                                
+                                                  required id="arrivalDate" label="Arrival Date" 
+                                                  helperText = "Date of your arrival in the UK (dd/MM/YYYY)"
+                                                  fullWidth autoComplete="none"
+                                                  value = {arrivalDate}
+                                                  onChange = {arrivalDateChanged} 
+                                      />  
+                                  </Grid>
+
+                                  <Grid item xs={12} md={6}>
+                                      <TextField 
+                                                  error={state.flightNumberError ? true : false}
+                                                 
+                                                  required id="flightNumber" label="Flight Number" 
+                                                  helperText = "Your coach number, flight number or vessel name (as appropriate)"
+                                                  fullWidth  autoComplete="none"
+                                                  value = {flightNumber}
+                                                  onChange = {flightNumberChanged} 
+                                      />  
+                                  </Grid>
+
+                                  <Grid item xs={12} md={6}>
+                                    <TextField 
+                                                error={state.lastDepartedDateError ? true : false}
+                                             
+                                                required id="lastDepartedDate" label="Last Departed Date" 
+                                                helperText = "The date on which you last departed from or transited through a non-exempt country or territory, or a non-exempt region of a country or territory ‒ a destination not on the travel corridors list"
+                                                fullWidth autoComplete="none"
+                                                value = {lastDepartedDate}
+                                                onChange = {lastDepartedDateChanged} 
+                                    />  
+                                  </Grid>
+
+            
+                                <Grid item xs={12} md={6}>
+                                    <TextField 
+                                                error={state.travellingFromError ? true : false}
+                                               
+                                                required id="travellingFrom" label="Travelling from" 
+                                                helperText = "The country or territory you were travelling from when you arrived in the UK, and any country or territory you transited through as part of that journey"
+                                                fullWidth  autoComplete="none"
+                                                value = {travellingFrom}
+                                                onChange = {travellingFromChanged} 
+                                    />  
+                                </Grid>
+
+
+                          </React.Fragment>
+                          )}
+
+
+
+
+                            {!state.userBooking.tr && (
+                              <React.Fragment>
+
+                                    <Grid item xs={12} className={classes.formControl} >
+                                      <FormControlLabel className={classes.formControl} 
+                                          control={<Checkbox className={classes.formControl}  color="secondary" name="certificate" checked={certificate} onChange={certificateChanged} />}
+                                          label={<span style={{ fontSize: '0.8rem' }}>{`I also require a medical certificate signed by a doctor declaring me 'fit-to-fly'.`} 
+                                          
+                                          <span  style={{ fontSize: '1rem', textDecoration: "italic" ,fontWeight:"600" ,color:"#333" }}>  + £50.00 </span> 
+                                          </span>}
+                                      />
+                                      </Grid>
+                                      <Grid item xs={12} hidden={!certificate} >
+                                          <TextField 
+                                                      error={state.passportNumberError ? true : false}
+                                                      required id="passport" label="Passport Number" 
+                                                      helperText="your passport number will be noted on your certificate" 
+                                                      fullWidth autoComplete="" 
+                                                      value = {passportNumber}
+                                                      onChange = {passportNumberChanged} 
+                                          />  
+                                      </Grid>
+                                      <Grid item xs={12} hidden={!certificate} >
+                                          <TextField 
+                                                      // error={state.passportNumberError ? true : false}
+                                                      id="passport2" label="Second Passport Number (optional)" 
+                                                      helperText="your passport number will be noted on your certificate" 
+                                                      fullWidth autoComplete="" 
+                                                      value = {passportNumber2}
+                                                      onChange = {passportNumberChanged2} 
+                                          />  
+                                      </Grid>
+
+                              </React.Fragment>
+
+                            )}
+
+                     
              </Grid>
 
 

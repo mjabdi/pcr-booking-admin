@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import MonthView from './MonthView';
-import { Button, Grid, IconButton, Tooltip } from '@material-ui/core';
+import { Button, Grid, IconButton, InputAdornment, TextField, Tooltip } from '@material-ui/core';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 
@@ -11,7 +11,7 @@ import WeekView from './WeekView';
 import dateformat from 'dateformat';
 import DayView from './DayView';
 import GlobalState from '../GlobalState';
-
+import CloseIcon from '@material-ui/icons/Close';
 
 
 const monthNames = ["January", "February", "March", "April", "May", "June",
@@ -46,6 +46,20 @@ export default function CalendarView() {
     const [selectedTab, setSeletedTab] = React.useState('month');
 
 
+    const [filter,setFilter] = React.useState('');
+
+    const filterChanged = (event) =>{
+        setFilter(event.target.value);
+        setState(state => ({...state, dayViewCalFilter : event.target.value?.trim()?.toUpperCase()}))
+      }
+
+      const removeFilter = () =>
+      {
+        setFilter('');
+        setState(state => ({...state, dayViewCalFilter : ''}));
+      }
+
+
     useEffect( () => {
         const today = new Date();
         const dayofWeek = today.getDay();
@@ -56,6 +70,7 @@ export default function CalendarView() {
         return () =>
         {
             setState(state => ({...state, calendarCache : []}));
+            removeFilter();
         }
        
     }, []);
@@ -287,7 +302,51 @@ export default function CalendarView() {
             </Grid>
 
             <Grid item md={6}>
-                {getCalendarTitleFromMode(mode)}
+            <Grid
+                        container
+                        direction="row"
+                        justify="center"
+                        alignItems="flex-end"
+                        spacing = {3}
+                        >
+                            <Grid item>
+                                    {getCalendarTitleFromMode(mode)}
+                            </Grid>
+                            {mode === 'day' && (
+                                        <Grid item>
+                                                <TextField
+                                                    variant="standard"
+                                                    style={{marginBottom : "5px"}}
+                                                    value={filter}
+                                                    onChange={filterChanged}
+                                                    margin="normal"
+                                                    size="small"
+                                                    id="filter"
+                                                    label="Filter"
+                                                    name="filter"
+                                                    autoComplete="off"
+                                                    InputProps={{
+                                                        endAdornment : 
+                                                            <InputAdornment position="end">
+                                                                <Tooltip title="Clear">
+                                                                            <IconButton
+                                                                            aria-label="remove filter"
+                                                                            onClick={() => removeFilter()}
+                                                                            onMouseDown={() => removeFilter()}
+                                                                        >
+                                                                            <CloseIcon/>
+                                                                        </IconButton>
+                                                                </Tooltip>
+                                                            
+                                                            </InputAdornment>
+                                                          
+                                                    }}
+                                                   
+                                                />
+                                        </Grid>
+                            )}
+                           
+                    </Grid>
             </Grid>
 
             <Grid item md={3}>

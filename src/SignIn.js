@@ -99,8 +99,18 @@ export default function SignIn() {
 
 
   const signIn = () => {
-    if (username && password && username.toLowerCase() === 'admin' && password === 'MELLIM2020!gbc')
+    if (username && password && ((username.toLowerCase() === 'admin' && password === 'MELLIM2020!gbc')
+                             || ((username.toLowerCase() === 'rptadmin' && password === 'MELLIM2020!gbc'))))
     {
+        if (username.toLowerCase() === 'rptadmin')
+        {
+          setState(state => ({...state, showCreateExcel : true}));
+        }
+        else
+        {
+          setState(state => ({...state, showCreateExcel : false}));
+        }
+
         setState(state => ({...state, signedIn : true }));
         if (saveChecked)
         {

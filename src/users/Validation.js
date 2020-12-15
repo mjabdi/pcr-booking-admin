@@ -65,5 +65,72 @@ export default function ValidateInfo (state,setState)
         error = true;
       }
 
+
+      if (state.userBooking.tr)
+      {
+        if (!state.passportNumber || state.passportNumber.trim().length < 6)
+        {
+          setState(state => ({...state, passportNumberError : true}));
+          error = true;
+        }
+
+        if (!state.ethnicity || state.ethnicity.trim().length < 1)
+        {
+          setState(state => ({...state, ethnicityError : true}));
+          error = true;
+        }
+
+        if (!state.ethnicity || state.ethnicity.trim().length < 1)
+        {
+          setState(state => ({...state, ethnicityError : true}));
+          error = true;
+        }        
+        
+        if (!state.arrivalDate || state.arrivalDate.trim().length !== 10)
+        {
+          setState(state => ({...state, arrivalDateError : true}));
+          error = true;
+        }
+
+        if (!state.lastDepartedDate || state.lastDepartedDate.trim().length !== 10)
+        {
+          setState(state => ({...state, lastDepartedDateError : true}));
+          error = true;
+        }
+
+        
+        if (!state.flightNumber || state.flightNumber.trim().length < 1)
+        {
+          setState(state => ({...state, flightNumberError : true}));
+          error = true;
+        }   
+        
+        if (!state.travellingFrom || state.travellingFrom.trim().length < 1)
+        {
+          setState(state => ({...state, travellingFromError : true}));
+          error = true;
+        }       
+
+        if (state.selfIsolate)
+        {
+          if (!state.postCodeSI || state.postCodeSI.trim().length < 5)
+          {
+            setState(state => ({...state, postCodeSIError : true}));
+            error = true;
+          }
+          if (!state.addressSI || state.addressSI.trim().length < 10)
+          {
+            setState(state => ({...state, addressSIError : true}));
+            error = true;
+          }    
+
+        }
+
+
+
+
+
+      }
+
       return !error;   
   }

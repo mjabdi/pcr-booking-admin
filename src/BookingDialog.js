@@ -1,15 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import GlobalState from './GlobalState';
 import Grid from '@material-ui/core/Grid';
 import dateFormat from 'dateformat';
-import { Button, Checkbox, FormControlLabel, Link, TextField, Tooltip } from '@material-ui/core';
+import { Button, Checkbox, DialogActions, DialogContentText, FormControlLabel, IconButton,  TextField, Tooltip } from '@material-ui/core';
 import PDFService from './services/PDFService';
 
 import {calculatePrice} from './PriceCalculator';
-
-import FileSaver from 'file-saver';
 
 import bookingService from './services/BookService';
 import CheckIcon from '@material-ui/icons/Check';
@@ -30,8 +28,17 @@ import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import {FormatDateFromString, RevertFormatDateFromString} from './DateFormatter';
 import ResendEmailsDialog from './ResendEmailsDialog';
+import PayDialog from './PayDialog';
 
 import PrintIcon from '@material-ui/icons/Print';
+import UndoIcon from '@material-ui/icons/Undo';
+
+import HistoryIcon from '@material-ui/icons/History';
+
+
+import FileCopyOutlinedIcon from '@material-ui/icons/FileCopyOutlined';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
+import TimeStampDialog from './TimeStampDialog';
 
 const useStyles = makeStyles((theme) => ({
   box: {
@@ -236,6 +243,25 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: "50px"   
   },
 
+  PayButton:
+  {
+    marginLeft : "83px",
+    paddingLeft: "30px",
+    paddingRight: "30px"   
+  },
+
+  PayLabel:
+  {
+    marginLeft : "20px",
+    
+    color : "#2f942e",
+    fontWeight : "500",
+    textAlign: 'center'
+
+  },
+
+
+
 
   RestoreButton:
   {
@@ -293,6 +319,11 @@ const useStyles = makeStyles((theme) => ({
     color: "green",   
   },
 
+  checkIconSmall:{
+    color: "green",
+    paddingTop: "5px"   
+  },
+
   closeIcon:{
     color: "red"
   },
@@ -333,7 +364,10 @@ export default function BookingDialog(props) {
 
     const [state, setState] = React.useContext(GlobalState);
 
+    const [copied, setCopied] = useState(false);
+  
     const [openResendDialog, setOpenResendDialog] = React.useState(false);
+    const [openPayDialog, setOpenPayDialog] = React.useState(false);
     const [selectedBooking, setSelectedBooking] = React.useState(null);
 
     const [editMode, setEditMode] = React.useState({edit : false, person : null});
@@ -373,9 +407,30 @@ export default function BookingDialog(props) {
 
     const [fieldChanged, setFieldChanged] = React.useState(false);
 
+    const [openUndoPayDialog, setOpenUndoPayDialog] = React.useState(false);
+
+    const [openTimeStampDialog, setOpenTimeStampDialog] = React.useState(false);
+
+    const handleCloseTimeStampDialog = () =>
+    {
+      setOpenTimeStampDialog(false);
+      setSelectedBooking(null);
+    }
+
+    const handleCloseUndoPayDialog = () =>
+    {
+      setOpenUndoPayDialog(false);
+    }
+
     const handleCloseResendDialog = () =>
     {
       setOpenResendDialog(false);
+      setSelectedBooking(null);
+    }
+
+    const handleClosePayDialog = () =>
+    {
+      setOpenPayDialog(false);
       setSelectedBooking(null);
     }
 
@@ -905,6 +960,12 @@ export default function BookingDialog(props) {
     setOpenResendDialog(true);
   }
 
+  const Pay = (event, id) =>
+  {
+    setSelectedBooking(booking);
+    setOpenPayDialog(true);
+  }
+
   useEffect( () => 
   {
     if (props.booking)
@@ -918,7 +979,7 @@ export default function BookingDialog(props) {
       setState(state => ({...state, bookingDialogDataChanged : !state.bookingDialogDataChanged ? true : false}));
     }
 
-  } , [refreshData]);
+  } , [refreshData,state.bookingPayChanged]);
 
 
   useEffect( () => {
@@ -928,6 +989,24 @@ export default function BookingDialog(props) {
     }
 
   }, [props.booking]);
+
+  const undoPaymentClicked = async () =>
+  {
+    setSaving(true);
+    try{
+      await BookService.unPayBooking(booking._id);
+      setSaving(false);
+      setOpenUndoPayDialog(false);
+      setRefreshData(!refreshData);
+    }
+    catch(err)
+    {
+      console.error(err);
+      setSaving(false);
+      setOpenUndoPayDialog(false);
+    }
+  
+  }
 
 
 
@@ -946,6 +1025,24 @@ export default function BookingDialog(props) {
             aria-describedby="alert-dialog-slide-description"
           >
             <DialogTitle id="alert-dialog-slide-title">
+
+              <div style={{position:"absolute", top: "25x", left: "25px"}}>
+                <Tooltip title="COPY EDIT LINK TO CLIPBOARD">
+                    <IconButton onClick={() => {navigator.clipboard.writeText(`https://travelpcrtest.com/user/edit/${booking.bookingRef}-${booking.birthDate}`); setCopied(true); setTimeout(() => { 
+                      setCopied(false)
+                    }, 1500);}}
+
+                           aria-label="delete" 
+                           className={classes.margin} 
+                           size="small">
+                          <FileCopyOutlinedIcon fontSize="14px" />
+                    </IconButton>
+                </Tooltip>
+          
+                  <span hidden={!copied} style={{fontSize:"12px", transition: "all 1s ease-in"}}> Copied </span>
+               
+              </div>
+
               <Grid
                 container
                 direction="row"
@@ -1800,6 +1897,39 @@ export default function BookingDialog(props) {
                               : classes.infoDataChargesHigher
                           }
                         >{`£${calculatePrice(booking)}`}</span>
+
+                          {
+                          !(
+                            editMode.edit && editMode.person._id === booking._id
+                          ) && (!booking.paid) && (
+                            <Button 
+                                  variant="outlined"
+                                  color="secondary"
+                                  className = {classes.PayButton}
+                                  onClick = {event => Pay(event,booking._id)}
+
+                                     >
+                              Pay
+                            </Button>
+                          )}
+
+                          {
+                          !(
+                            editMode.edit && editMode.person._id === booking._id
+                          ) && (booking.paid) && (
+                                 <React.Fragment>
+                                      <span className={classes.PayLabel}>  <CheckIcon className={classes.checkIconSmall} /> Paid by {booking.paidBy} 
+                                         {booking.paidBy === 'corporate' ? ` "${booking.corporate}" ` : ''}
+                                      </span>
+
+                                      <Tooltip title='Undo Payment'>
+                                          <IconButton onClick={() => setOpenUndoPayDialog(true)}>
+                                            <UndoIcon style={{color: 'red'}}/>
+                                          </IconButton>
+                                      </Tooltip>
+
+                                </React.Fragment>                    
+                          )}
                       </li>
 
                       <li hidden={booking.deleted}>
@@ -1880,6 +2010,26 @@ export default function BookingDialog(props) {
                           Download Certificate
                         </Button>
                       </li>
+
+
+                      <li>
+
+                        <Button
+                          startIcon = {<HistoryIcon/>}
+                          type="button"
+                          fullWidth
+                          variant="outlined"
+                          color="secondary"
+                          onClick={() => {
+                            setSelectedBooking(booking);
+                            setOpenTimeStampDialog(true);
+                          }}
+                          // onTouchTap = {() => {downloadForm1(person._id)}}
+                          className={classes.DownloadForm}
+                        >
+                          Show Audit Trail
+                        </Button>
+                      </li>
                     </ul>
                   </div>
                 </Grid>
@@ -1894,10 +2044,39 @@ export default function BookingDialog(props) {
 
 
             <ResendEmailsDialog booking={selectedBooking} open={openResendDialog} handleClose={handleCloseResendDialog} />
+            <PayDialog booking={selectedBooking} open={openPayDialog} handleClose={handleClosePayDialog} />
+            <TimeStampDialog booking={selectedBooking} open={openTimeStampDialog} handleClose={handleCloseTimeStampDialog} />
 
           </Dialog>
+
+
+          <Dialog
+              open={openUndoPayDialog}
+              onClose={handleCloseUndoPayDialog}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+            >
+              <DialogTitle style={{color:"#999"}} id="alert-dialog-title">{"Undo Payment"}</DialogTitle>
+              <DialogContent>
+                <DialogContentText style={{color:"#333", fontWeight:"400"}} id="alert-dialog-description">
+                  Are you sure you want to undo payment for this booking?  
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleCloseUndoPayDialog} color="default">
+                  Back
+                </Button>
+                <Button onClick={undoPaymentClicked} color="secondary" autoFocus>
+                  Yes, Undo Payment
+                </Button>
+              </DialogActions>
+      </Dialog>
+
+        
+
         </React.Fragment>
       )}
+
     </React.Fragment>
   );
 }

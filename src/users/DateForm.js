@@ -16,6 +16,31 @@ import Skeleton from '@material-ui/lab/Skeleton';
 
 import dateformat from 'dateformat';
 
+import { format, addMinutes } from 'date-fns';
+
+import { enGB, } from 'date-fns/locale'
+
+
+
+class UTCUtils extends DateFnsUtils {
+ 
+  locale = enGB;
+  // format(date, formatString) {
+  //   return format(new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000 ), formatString,enGB);
+  // }
+
+  // getCalendarHeaderText(date){
+  //   return dateformat(date, 'mmmm yyyy');
+  // }
+
+  // getDayText(date)
+  // {
+  //   return dateformat(date, 'd');
+  // }
+
+}
+
+
 const useStyles = makeStyles((theme) => ({
 
   loadingBox: {
@@ -45,7 +70,15 @@ export default function DateForm() {
 
       Promise.all([promise1, promise2]).then( (values) => {
 
-        setFirstAvailableDay(new Date((values[0].data).date));
+        let firstday = new Date((values[0].data).date);
+        firstday.setHours(0,0,0,0);
+        let dec21 = new Date(2020,11,21,0,0,0,0);
+        if (firstday < dec21 && state.userBooking.tr)
+          firstday = dec21;
+        
+        firstday = new Date(firstday.getTime() - firstday.getTimezoneOffset() * 60 * 1000);
+
+        setFirstAvailableDay(firstday);
         setFullyBookedDays(values[1].data);
 
         setDataLoaded(true);
@@ -73,6 +106,11 @@ export default function DateForm() {
 
     const dateChanged = (date) =>
     {
+        date = new Date(date.getFullYear(), date.getMonth(), date.getDate(),0,0,0,0);
+        // const offset = parseInt(date.getTimezoneOffset());
+        // console.log(offset);
+
+        date = new Date(date.getTime() - (date.getTimezoneOffset() * 60 * 1000));
         handleDateChange(date);
         setState(state => ({...state, bookingDate : date}));
         if (dateformat(date,'yyyy-mm-dd') === state.userBooking.bookingDate)
@@ -90,18 +128,16 @@ export default function DateForm() {
   {
     var result = false;
 
-    if (date.setHours(0,0,0,0) < firstAvailableDay.setHours(0,0,0,0))
+    if (dateformat(date,'yyyy-mm-dd') < dateformat(firstAvailableDay,'yyyy-mm-dd'))
     {
-       result = true;
+       return true;
     }
 
     else if (fullyBookedDays && fullyBookedDays.length > 0)
     {
-     
-
       for (var i=0 ; i < fullyBookedDays.length ; i++ )
       {
-        if (new Date(fullyBookedDays[i]).setHours(0,0,0,0) === date.setHours(0,0,0,0))
+        if (dateformat(new Date(fullyBookedDays[i]), 'yyyy-mm-dd') === dateformat(date,'yyyy-mm-dd'))
         {
           result = true;
         }
@@ -135,7 +171,7 @@ export default function DateForm() {
                   >
 
                         <BrowserView>
-                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                            <MuiPickersUtilsProvider utils={UTCUtils} locale={enGB}>
                                     <DatePicker autoOk 
                                                 disablePast="true" 
                                                 openTo="date"
@@ -150,7 +186,7 @@ export default function DateForm() {
                         </BrowserView>
 
                         <MobileView>
-                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                            <MuiPickersUtilsProvider utils={UTCUtils} locale={enGB}>
                                         <DatePicker autoOk 
                                                     disablePast="true" 
                                                     openTo="date"

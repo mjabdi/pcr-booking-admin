@@ -27,6 +27,8 @@ import logoImage from './../images/logo.png';
 import dateFormat from 'dateformat';
 import {calculatePrice} from './../PriceCalculator';
 
+import AccessibilityNewIcon from '@material-ui/icons/AccessibilityNew';
+
 
 function Copyright() {
   return (
@@ -287,8 +289,20 @@ const cancelTimeClicked = (event) => {
                             justifyContent: 'center'
                         }}>
               
-                  <AirplanemodeActiveIcon className={classes.AirIcon} color="primary" />  
-                            RT-PCR Fit to Fly Test
+              {!state.userBooking.tr ? (
+                  <React.Fragment>
+                          <AirplanemodeActiveIcon className={classes.AirIcon} color="primary" />  
+                              RT-PCR Fit to Fly Test
+                  </React.Fragment>
+
+              ) : (
+                  <React.Fragment>
+                        <AccessibilityNewIcon className={classes.AirIcon} color="primary" />  
+                            RT-PCR Test to Release
+                 </React.Fragment>
+                
+              )}
+                  
 
                     </div>
           </Typography>
@@ -302,62 +316,146 @@ const cancelTimeClicked = (event) => {
           </p>
 
           <Divider/>
+
+          {!state.userBooking.tr && (
+                    <div style={{textAlign: "left", paddingLeft: "20px", paddingTop:"10px"}}>
+                    <ul className={classes.ul}>
+                    <li className={classes.li}>
+                    <span className={classes.infoTitle}>Booked Date</span> <span className={classes.infoData}>{state.userBooking.bookingDate}</span>   
+                    </li>
+                    <li className={classes.li}>
+                    <span className={classes.infoTitle}>Booked Time</span> <span className={classes.infoData}>{state.userBooking.bookingTime}</span>   
+                    </li>
+                    <li className={classes.li}>
+                    <span className={classes.infoTitle}>Gender</span> <span className={classes.infoData}>{state.userBooking.gender}</span>   
+                    </li>
+                    <li className={classes.li}>
+                    <span className={classes.infoTitle}>Title</span>  <span className={classes.infoData}>{state.userBooking.title}</span>   
+                    </li>
+                    <li className={classes.li}>
+                    <span className={classes.infoTitle}>Forename</span> <span className={classes.infoData}>{state.userBooking.forename.toUpperCase()}</span>   
+                    </li>
+                    <li className={classes.li}>
+                        <span className={classes.infoTitle}>Surname</span> <span className={classes.infoData}>{state.userBooking.surname.toUpperCase()}</span>   
+                    </li>
+                    <li className={classes.li}>
+                        <span className={classes.infoTitle}>Email</span> <span className={classes.infoData}>{state.userBooking.email.toUpperCase()}</span>   
+                    </li>
+                    <li className={classes.li}>
+                        <span className={classes.infoTitle}>D.O.B</span> <span className={classes.infoData}>{dateFormat(new Date(state.userBooking.birthDate),'dd/mm/yyyy') }</span>  
+                    </li>
+                    <li className={classes.li}>
+                        <span className={classes.infoTitle}>Telephone</span> <span className={classes.infoData}>{state.userBooking.phone}</span>  
+                    </li>
+                    <li className={classes.li}>
+                        <span className={classes.infoTitle}>Post Code</span> <span className={classes.infoData}>{state.userBooking.postCode}</span>  
+                    </li>
+                    <li className={classes.li}>
+                        <span className={classes.infoTitle}>Address</span> <span className={classes.infoData}>{state.userBooking.address}</span>  
+                    </li>
+                    <li className={classes.li}>
+                        <span className={classes.infoTitle}>Passport No.</span> <span className={classes.infoData}>{state.userBooking.passportNumber ?? 'N/A'}</span>  
+                    </li>
+                    <li className={classes.li} hidden={!state.userBooking.passportNumber2 || state.userBooking.passportNumber2.length === 0}>
+                        <span className={classes.infoTitle}>Second Passport No.</span> <span className={classes.infoData}>{state.userBooking.passportNumber2 ?? 'N/A'}</span>  
+                    </li>
+
+                    <li className={classes.li}>
+                        <span className={classes.infoTitle}>Request for Certificate</span> <span className={classes.infoData}>{state.userBooking.certificate ? 'Yes' : 'No'}</span>  
+                    </li>
+                    <li className={classes.li}>
+                        <span className={classes.infoTitle}>Request for Antibody Test</span> <span className={classes.infoData}>{state.userBooking.antiBodyTest ? 'Yes' : 'No'}</span>  
+                    </li>
+
+                    <li className={classes.li}>
+                        <span className={classes.infoTitle}>Price</span> <span className={classes.infoData}>{`£${calculatePrice(state.userBooking)}`}</span>  
+                    </li>
+
+                    </ul>
+                  </div>
+          )} 
+
+          {state.userBooking.tr && (
+                    <div style={{textAlign: "left", paddingLeft: "20px", paddingTop:"10px"}}>
+                    <ul className={classes.ul}>
+                    <li className={classes.li}>
+                    <span className={classes.infoTitle}>Booked Date</span> <span className={classes.infoData}>{state.userBooking.bookingDate}</span>   
+                    </li>
+                    <li className={classes.li}>
+                    <span className={classes.infoTitle}>Booked Time</span> <span className={classes.infoData}>{state.userBooking.bookingTime}</span>   
+                    </li>
+                    <li className={classes.li}>
+                    <span className={classes.infoTitle}>Gender</span> <span className={classes.infoData}>{state.userBooking.gender}</span>   
+                    </li>
+                    <li className={classes.li}>
+                    <span className={classes.infoTitle}>Title</span>  <span className={classes.infoData}>{state.userBooking.title}</span>   
+                    </li>
+                    <li className={classes.li}>
+                    <span className={classes.infoTitle}>Forename</span> <span className={classes.infoData}>{state.userBooking.forename.toUpperCase()}</span>   
+                    </li>
+                    <li className={classes.li}>
+                        <span className={classes.infoTitle}>Surname</span> <span className={classes.infoData}>{state.userBooking.surname.toUpperCase()}</span>   
+                    </li>
+                    <li className={classes.li}>
+                        <span className={classes.infoTitle}>Email</span> <span className={classes.infoData}>{state.userBooking.email.toUpperCase()}</span>   
+                    </li>
+                    <li className={classes.li}>
+                        <span className={classes.infoTitle}>D.O.B</span> <span className={classes.infoData}>{dateFormat(new Date(state.userBooking.birthDate),'dd/mm/yyyy') }</span>  
+                    </li>
+                    <li className={classes.li}>
+                        <span className={classes.infoTitle}>Telephone</span> <span className={classes.infoData}>{state.userBooking.phone}</span>  
+                    </li>
+                    <li className={classes.li}>
+                        <span className={classes.infoTitle}>Passport Number</span> <span className={classes.infoData}>{state.userBooking.passportNumber ?? '-'}</span>  
+                    </li>
+                    <li className={classes.li}>
+                        <span className={classes.infoTitle}>NHS Number</span> <span className={classes.infoData}>{state.userBooking.NHSNumber ?? '-'}</span>  
+                    </li>
+                    <li className={classes.li}>
+                        <span className={classes.infoTitle}>Ethnicity</span> <span className={classes.infoData}>{state.userBooking.ethnicity ?? '-'}</span>  
+                    </li>
+                    <li className={classes.li}>
+                        <span className={classes.infoTitle}>Post Code</span> <span className={classes.infoData}>{state.userBooking.postCode}</span>  
+                    </li>
+                    <li className={classes.li}>
+                        <span className={classes.infoTitle}>Address</span> <span className={classes.infoData}>{state.userBooking.address}</span>  
+                    </li>
+
+                    {state.userBooking.selfIsolate && (
+                      <React.Fragment>
+                           <li className={classes.li}>
+                              <span className={classes.infoTitle}>Self-Isolate Post Code</span> <span className={classes.infoData}>{state.userBooking.postCodeSI}</span>  
+                          </li>
+                          <li className={classes.li}>
+                              <span className={classes.infoTitle}>Self-Isolate Address</span> <span className={classes.infoData}>{state.userBooking.addressSI}</span>  
+                          </li>
+                      </React.Fragment>
+                    )}
+
+                    <li className={classes.li}>
+                        <span className={classes.infoTitle}>Arrival Date</span> <span className={classes.infoData}>{state.userBooking.arrivalDate}</span>  
+                    </li>
+                    <li className={classes.li}>
+                        <span className={classes.infoTitle}>Flight Number</span> <span className={classes.infoData}>{state.userBooking.flightNumber}</span>  
+                    </li>
+                    <li className={classes.li}>
+                        <span className={classes.infoTitle}>Last Departed Date</span> <span className={classes.infoData}>{state.userBooking.lastDepartedDate}</span>  
+                    </li>
+                    <li className={classes.li}>
+                        <span className={classes.infoTitle}>Travelling From</span> <span className={classes.infoData}>{state.userBooking.travellingFrom}</span>  
+                    </li>
+                  
+                   
+                    <li className={classes.li}>
+                        <span className={classes.infoTitle}>Price</span> <span className={classes.infoData}>{`£${calculatePrice(state.userBooking)}`}</span>  
+                    </li>
+
+                    </ul>
+                  </div>
+
+          )}
         
-        <div style={{textAlign: "left", paddingLeft: "20px", paddingTop:"10px"}}>
-                            <ul className={classes.ul}>
-                            <li className={classes.li}>
-                            <span className={classes.infoTitle}>Booked Date</span> <span className={classes.infoData}>{state.userBooking.bookingDate}</span>   
-                            </li>
-                            <li className={classes.li}>
-                            <span className={classes.infoTitle}>Booked Time</span> <span className={classes.infoData}>{state.userBooking.bookingTime}</span>   
-                            </li>
-                            <li className={classes.li}>
-                            <span className={classes.infoTitle}>Gender</span> <span className={classes.infoData}>{state.userBooking.gender}</span>   
-                            </li>
-                            <li className={classes.li}>
-                            <span className={classes.infoTitle}>Title</span>  <span className={classes.infoData}>{state.userBooking.title}</span>   
-                            </li>
-                            <li className={classes.li}>
-                            <span className={classes.infoTitle}>Forename</span> <span className={classes.infoData}>{state.userBooking.forename.toUpperCase()}</span>   
-                            </li>
-                            <li className={classes.li}>
-                                <span className={classes.infoTitle}>Surname</span> <span className={classes.infoData}>{state.userBooking.surname.toUpperCase()}</span>   
-                            </li>
-                            <li className={classes.li}>
-                                <span className={classes.infoTitle}>Email</span> <span className={classes.infoData}>{state.userBooking.email.toUpperCase()}</span>   
-                            </li>
-                            <li className={classes.li}>
-                                <span className={classes.infoTitle}>D.O.B</span> <span className={classes.infoData}>{dateFormat(new Date(state.userBooking.birthDate),'dd/mm/yyyy') }</span>  
-                            </li>
-                            <li className={classes.li}>
-                                <span className={classes.infoTitle}>Telephone</span> <span className={classes.infoData}>{state.userBooking.phone}</span>  
-                            </li>
-                            <li className={classes.li}>
-                                <span className={classes.infoTitle}>Post Code</span> <span className={classes.infoData}>{state.userBooking.postCode}</span>  
-                            </li>
-                            <li className={classes.li}>
-                                <span className={classes.infoTitle}>Address</span> <span className={classes.infoData}>{state.userBooking.address}</span>  
-                            </li>
-                            <li className={classes.li}>
-                                <span className={classes.infoTitle}>Passport No.</span> <span className={classes.infoData}>{state.userBooking.passportNumber ?? 'N/A'}</span>  
-                            </li>
-                            <li className={classes.li} hidden={!state.userBooking.passportNumber2 || state.userBooking.passportNumber2.length === 0}>
-                                <span className={classes.infoTitle}>Second Passport No.</span> <span className={classes.infoData}>{state.userBooking.passportNumber2 ?? 'N/A'}</span>  
-                            </li>
-
-                            <li className={classes.li}>
-                                <span className={classes.infoTitle}>Request for Certificate</span> <span className={classes.infoData}>{state.userBooking.certificate ? 'Yes' : 'No'}</span>  
-                            </li>
-                            <li className={classes.li}>
-                                <span className={classes.infoTitle}>Request for Antibody Test</span> <span className={classes.infoData}>{state.userBooking.antiBodyTest ? 'Yes' : 'No'}</span>  
-                            </li>
-
-                            <li className={classes.li}>
-                                <span className={classes.infoTitle}>Price</span> <span className={classes.infoData}>{`£${calculatePrice(state.userBooking)}`}</span>  
-                            </li>
-
-                        </ul>
-                    </div>
+     
 
                     <Divider/>
 

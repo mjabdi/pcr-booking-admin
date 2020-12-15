@@ -25,6 +25,7 @@ import AirplanemodeActiveIcon from '@material-ui/icons/AirplanemodeActive';
 import { Grid } from '@material-ui/core';
 
 import logoImage from './../images/logo.png';
+import AccessibilityNewIcon from '@material-ui/icons/AccessibilityNew';
 
 
 function Copyright() {
@@ -229,8 +230,9 @@ const getStartedClicked = (event) => {
                             justifyContent: 'center'
                         }}>
               
-                  <AirplanemodeActiveIcon className={classes.AirIcon} color="primary" />  
-                            RT-PCR Fit to Fly Test
+             
+
+                        RT-PCR Test
 
                     </div>
           </Typography>
@@ -247,11 +249,11 @@ const getStartedClicked = (event) => {
                     }
                     <br/><br/>
 
-                    Please book for a new appointment.   
+                    You can book a new appointment if needed later on. 
                 </Typography>
                 <br/>
                 
-                <Button 
+                {/* <Button 
                   variant="contained" 
                   className={classes.getStartedButton} 
                   color="primary"
@@ -259,7 +261,7 @@ const getStartedClicked = (event) => {
                   onTouchTap={getStartedClicked} 
                   >
             Book New appointment
-         </Button>
+         </Button> */}
 
         </React.Fragment>
       

@@ -38,6 +38,7 @@ import Box from '@material-ui/core/Box';
 import WarningIcon from '@material-ui/icons/Warning';
 
 import {FormatDateFromString, RevertFormatDateFromString} from './DateFormatter';
+import PDFService from './services/PDFService';
 
 var interval;
 
@@ -175,6 +176,11 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft : "90px",
     paddingRight: "90px"   
   },
+
+  downloadPDFButton:
+  {
+    marginLeft: "50px"
+  }
   
   
 }));
@@ -242,7 +248,7 @@ export default function UnmatchedRecords() {
     {
       return FormatDateFromString(params.value);
     }},
-    { field: '_id' , headerName:'Action', width: 300 , renderCell: (params) => {
+    { field: '_id' , headerName:'Action', width: 500 , renderCell: (params) => {
         if (selectedTab === 'unresolved')
         {
             return (
@@ -270,6 +276,18 @@ export default function UnmatchedRecords() {
                   >
                     archive
               </Button>
+
+
+              <Button
+                    disabled = {params.value === disableId}
+                    type="button"                   
+                    color="primary"
+                    onClick = { event => downloadLabReport(params.value)}
+                    className={classes.downloadPDFButton}
+                  >
+                    view pdf
+              </Button>
+
 
               </React.Fragment>
 
@@ -301,6 +319,16 @@ export default function UnmatchedRecords() {
                     className={classes.archiveButton}
                   >
                     Undo
+                  </Button>
+
+                  <Button
+                    disabled = {params.value === disableId}
+                    type="button"                   
+                    color="primary"
+                    onClick = { event => downloadLabReport(params.value)}
+                    className={classes.downloadPDFButton}
+                  >
+                    view pdf
                   </Button>
 
               </React.Fragment>
@@ -688,6 +716,24 @@ export default function UnmatchedRecords() {
     setMatched(false);
   }
 
+  const downloadLabReport = (id) =>
+  {
+       PDFService.downloadPdfLabReport(id).then( (res) => 
+       {       
+         const file = new Blob(
+           [res.data], 
+           {type: 'application/pdf'});
+
+         const fileURL = URL.createObjectURL(file);   
+         window.open(fileURL, "_blank");
+
+       
+
+       }).catch( (err) =>
+       {
+           console.log(err);
+       });
+  }
 
 
   return (

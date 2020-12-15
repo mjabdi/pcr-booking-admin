@@ -1,9 +1,24 @@
 import API from './api';
+import axiosRetry from 'axios-retry';
 
 export default class BookService {
 
+
+   static payBooking = (bookingId, paymentMethod, corporate) =>
+   {
+      return API.post(`/api/book/paybooking?id=${bookingId}&paymentmethod=${paymentMethod}&corporate=${corporate}`);
+   }
+
+   static unPayBooking = (bookingId) =>
+   {
+      return API.post(`/api/book/unpaybooking?id=${bookingId}`);
+   }
+
    static getTestsTimeReport = () =>
    {
+      axiosRetry( API, { retries: 3,  retryDelay: (retryCount) => {
+         return retryCount * 1000;
+       } });
       return API.get(`/api/book/getteststimereport`);
    }
 

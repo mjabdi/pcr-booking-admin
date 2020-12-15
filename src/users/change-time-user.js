@@ -19,6 +19,7 @@ import HttpsIcon from "@material-ui/icons/Https";
 
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import AccessibilityNewIcon from '@material-ui/icons/AccessibilityNew';
 
 import {
   BrowserView,
@@ -237,7 +238,7 @@ export default function ChangeTimeUser() {
     BookService.updateBookingTime({
       bookingId: state.userBooking._id,
       bookingTime: state.bookingTime,
-      bookingDate: dateformat(state.bookingDate, "yyyy-mm-dd"),
+      bookingDate: dateformat(new Date(new Date(state.bookingDate).toUTCString().slice(0, -4)),'yyyy-mm-dd')
     })
       .then((res) => {
         setSaving(false);
@@ -309,11 +310,20 @@ export default function ChangeTimeUser() {
                 justifyContent: "center",
               }}
             >
-              <AirplanemodeActiveIcon
-                className={classes.AirIcon}
-                color="primary"
-              />
-              RT-PCR Fit to Fly Test
+                  {!state.userBooking.tr ? (
+                  <React.Fragment>
+                          <AirplanemodeActiveIcon className={classes.AirIcon} color="primary" />  
+                              RT-PCR Fit to Fly Test
+                  </React.Fragment>
+
+              ) : (
+                  <React.Fragment>
+                        <AccessibilityNewIcon className={classes.AirIcon} color="primary" />  
+                            RT-PCR Test to Release
+                 </React.Fragment>
+                
+              )}
+                  
             </div>
           </Typography>
 

@@ -25,6 +25,7 @@ import AirplanemodeActiveIcon from '@material-ui/icons/AirplanemodeActive';
 import { Grid } from '@material-ui/core';
 
 import logoImage from './../images/logo.png';
+import AccessibilityNewIcon from '@material-ui/icons/AccessibilityNew';
 
 
 function Copyright() {
@@ -237,9 +238,19 @@ export default function TimeChangedResult() {
                             justifyContent: 'center'
                         }}>
               
-                  <AirplanemodeActiveIcon className={classes.AirIcon} color="primary" />  
-                            RT-PCR Fit to Fly Test
+              {!state.userBooking.tr ? (
+                  <React.Fragment>
+                          <AirplanemodeActiveIcon className={classes.AirIcon} color="primary" />  
+                              RT-PCR Fit to Fly Test
+                  </React.Fragment>
 
+              ) : (
+                  <React.Fragment>
+                        <AccessibilityNewIcon className={classes.AirIcon} color="primary" />  
+                            RT-PCR Test to Release
+                 </React.Fragment>
+                
+              )}
                     </div>
           </Typography>
 

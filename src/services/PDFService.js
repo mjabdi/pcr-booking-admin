@@ -43,5 +43,15 @@ export default class PDFService {
         });
     }
 
+    static downloadPdfLabReport = (id) =>
+    {
+       return API.get(`/api/pdf/downloadpdflabreport?id=${id}`, {
+        responseType: 'arraybuffer',
+        headers: {
+            Accept: 'application/pdf',
+        }
+        });
+    }
+
 
 }

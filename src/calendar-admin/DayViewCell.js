@@ -155,6 +155,7 @@ const DayViewCell = ({key, date, time}) => {
 
     const [state, setState] = React.useContext(GlobalState);
     const [bookings, setBookings] = React.useState(null);
+    const [filteredBookings, setFilteredBookings] = React.useState(null);
     const [selectedBooking, setSelectedBooking] = React.useState(null);
 
     const [refresh, setRefresh] = React.useState(true); 
@@ -170,6 +171,27 @@ const DayViewCell = ({key, date, time}) => {
 
     }, [date]);
 
+    useEffect( () => 
+    {
+        if (bookings) {
+
+
+            if (state.dayViewCalFilter && state.dayViewCalFilter.trim().length > 0)
+            {
+                const search = state.dayViewCalFilter.trim().toUpperCase();
+                setFilteredBookings( bookings.filter(booking => booking.forenameCapital.indexOf(search) >= 0
+                                                            ||  booking.surnameCapital.indexOf(search) >= 0
+                                                            ||  `${booking.forenameCapital} ${booking.surnameCapital}`.indexOf(search) >= 0
+                    
+                    ));
+            }
+            else
+            {
+                setFilteredBookings([...bookings]);
+            }
+        }
+
+    }, [state.dayViewCalFilter, bookings]);
  
 
 
@@ -276,7 +298,7 @@ const DayViewCell = ({key, date, time}) => {
 
             <div className={classes.Container}>
 
-              {getBookingsBox(bookings)}
+              {getBookingsBox(filteredBookings)}
 
             </div>
 
