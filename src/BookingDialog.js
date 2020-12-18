@@ -1024,7 +1024,7 @@ export default function BookingDialog(props) {
             aria-labelledby="alert-dialog-slide-title"
             aria-describedby="alert-dialog-slide-description"
           >
-            <DialogTitle id="alert-dialog-slide-title">
+            <DialogTitle id="alert-dialog-slide-title" style={booking.tr ? {backgroundColor:'#7e0082', color: "#fff"} : {}}>
 
               <div style={{position:"absolute", top: "25x", left: "25px"}}>
                 <Tooltip title="COPY EDIT LINK TO CLIPBOARD">
@@ -1035,13 +1035,21 @@ export default function BookingDialog(props) {
                            aria-label="delete" 
                            className={classes.margin} 
                            size="small">
-                          <FileCopyOutlinedIcon fontSize="14px" />
+                          <FileCopyOutlinedIcon style={booking.tr ? { color: "#ddd"} : {}} fontSize="14px" />
                     </IconButton>
                 </Tooltip>
           
                   <span hidden={!copied} style={{fontSize:"12px", transition: "all 1s ease-in"}}> Copied </span>
                
               </div>
+              
+              {booking.tr && (
+                <div style={{position:"absolute",  right: "15px"}}>
+                     TR
+                </div>
+
+              )}
+              
 
               <Grid
                 container
@@ -1069,7 +1077,15 @@ export default function BookingDialog(props) {
                   <Grid item>
                     <Tooltip title="This record has been deleted.">
                       <DeleteIcon
-                        style={{
+                        style={booking.tr ? 
+                          {
+                            padding: 0,
+                            margin: 0,
+                            color: "#fff",
+                            fontSize: 25,
+                          }
+                          
+                          : {
                           padding: 0,
                           margin: 0,
                           color: "#333",
@@ -1706,6 +1722,17 @@ export default function BookingDialog(props) {
                         </span>
                       </li>
 
+                      {booking.selfIsolate && (
+                                    <React.Fragment>
+                                            <li className={classes.li}>
+                                            <span className={classes.infoTitle}>Self-Isolate Post Code</span> <span className={classes.infoData}>{booking.postCodeSI}</span>  
+                                            </li>
+                                            <li className={classes.li}>
+                                            <span className={classes.infoTitle}>Self-Isolate Address</span> <span className={classes.infoData}>{booking.addressSI}</span>  
+                                            </li>
+                                    </React.Fragment>
+                      )}
+
                       <li className={classes.li}>
                         <span className={classes.infoTitle}>PASSPORT NO.</span>
                         <span
@@ -1739,7 +1766,30 @@ export default function BookingDialog(props) {
                         </span>
                       </li>
 
-                      <li className={classes.li}>
+                      <li hidden={!booking.tr} className={classes.li}>
+                                     <span className={classes.infoTitle}>NHS Number</span> <span className={classes.infoData}>{booking.NHSNumber ?? '-'}</span>  
+                                  </li>
+                      <li hidden={!booking.tr} className={classes.li}>
+                          <span className={classes.infoTitle}>Ethnicity</span> <span className={classes.infoData}>{booking.ethnicity}</span>  
+                      </li>
+
+                    
+
+                      <li hidden={!booking.tr} className={classes.li}>
+                          <span className={classes.infoTitle}>Arrival Date</span> <span className={classes.infoData}>{booking.arrivalDate}</span>  
+                      </li>
+                      <li hidden={!booking.tr} className={classes.li}>
+                          <span className={classes.infoTitle}>Flight Number</span> <span className={classes.infoData}>{booking.flightNumber}</span>  
+                      </li>
+                      <li hidden={!booking.tr} className={classes.li}>
+                          <span className={classes.infoTitle}>Last Departed Date</span> <span className={classes.infoData}>{booking.lastDepartedDate}</span>  
+                      </li>
+                      <li hidden={!booking.tr} className={classes.li}>
+                          <span className={classes.infoTitle}>Travelling From</span> <span className={classes.infoData}>{booking.travellingFrom}</span>  
+                      </li>
+
+
+                      <li hidden={booking.tr} className={classes.li}>
                         <span className={classes.infoTitle}>
                           SECOND PASSPORT NO.
                         </span>
@@ -1774,7 +1824,7 @@ export default function BookingDialog(props) {
                         </span>
                       </li>
 
-                      <li className={classes.li}>
+                      <li hidden={booking.tr} className={classes.li}>
                         <span className={classes.infoTitle}>
                           REQUEST FOR CERTIFICATE
                         </span>
@@ -1814,7 +1864,7 @@ export default function BookingDialog(props) {
                           />
                         </span>
                       </li>
-                      <li className={classes.li}>
+                      <li hidden={booking.tr} className={classes.li}>
                         <span className={classes.infoTitle}>
                           REQUEST FOR ANTIBODY TEST
                         </span>
@@ -1901,7 +1951,7 @@ export default function BookingDialog(props) {
                           {
                           !(
                             editMode.edit && editMode.person._id === booking._id
-                          ) && (!booking.paid) && (
+                          ) && (!booking.paid) && (!booking.deleted) && (
                             <Button 
                                   variant="outlined"
                                   color="secondary"

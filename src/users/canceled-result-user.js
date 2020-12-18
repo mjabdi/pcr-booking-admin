@@ -262,7 +262,7 @@ const getStartedClicked = (event) => {
                 </Typography>
                 <br/>
                 
-                <Button 
+                {/* <Button 
                   variant="contained" 
                   className={classes.getStartedButton} 
                   color="primary"
@@ -270,7 +270,7 @@ const getStartedClicked = (event) => {
                   onTouchTap={getStartedClicked} 
                   >
             Book New appointment
-         </Button>
+         </Button> */}
 
         </React.Fragment>
       

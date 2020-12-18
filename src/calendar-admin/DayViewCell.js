@@ -113,13 +113,13 @@ const useStyles = makeStyles((theme) => ({
         fontSize: "12px",
         fontWeight : "500",
         cursor: "pointer",
-        backgroundColor: "#ebedf7",
-        color: "#3f51b5",
+        backgroundColor: "#d40b0b",
+        color: "#fff2f2",
         boxShadow: "2px 4px #fafafa",
 
         "&:hover": {
-            background: "#3f51b5",
-            color: "#ebedf7"
+            background: "#bf0000",
+            color: "#fff"
           },
     },
 
@@ -142,9 +142,9 @@ const useStyles = makeStyles((theme) => ({
             background: "#006e00",
             color: "#fafafa"
           },
-    }
+    },
 
-
+  
 
   }));
 
@@ -243,6 +243,8 @@ const DayViewCell = ({key, date, time}) => {
         setOpenDialog(true);
     }
 
+    
+
     const getBookingClass = (status) =>
     {
         switch (status) {
@@ -275,7 +277,7 @@ const DayViewCell = ({key, date, time}) => {
            return (
                 _bookings.map(booking => (
 
-                    <div className={getBookingClass(booking.status)} onClick={event => bookingCliked(event,booking)}>
+                    <div style={booking.tr ? {borderTop: "5px solid #d00fd6"} : {} } className={getBookingClass(booking.status)} onClick={event => bookingCliked(event,booking)}>
 
                         {`${booking.forenameCapital}-${booking.surnameCapital}`.substring(0,15)}
 

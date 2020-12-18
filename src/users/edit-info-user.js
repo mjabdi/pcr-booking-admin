@@ -46,6 +46,7 @@ import BookService from '../services/BookService';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import AccessibilityNewIcon from '@material-ui/icons/AccessibilityNew';
+import DateField from './DateField';
 
 
 function Copyright() {
@@ -281,7 +282,7 @@ const saveClicked = (event) => {
             bookingId: state.userBooking._id,
             title: title,
             gender: gender,
-            birthDate: dateFormat(birthDate, 'yyyy-mm-dd'),
+            birthDate: birthDate,
             forename: firstname,
             surname: lastname,
             email: email,
@@ -412,7 +413,7 @@ useEffect( () => {
     setChanged(
       title !== state.userBooking.title 
    || gender !== state.userBooking.gender 
-   || dateFormat(birthDate,'yyyy-mm-dd') !== state.userBooking.birthDate 
+   || birthDate !== state.userBooking.birthDate 
    || firstname !== state.userBooking.forename 
    || lastname !== state.userBooking.surname 
    || email !== state.userBooking.email 
@@ -429,7 +430,7 @@ useEffect( () => {
     setChanged(
       title !== state.userBooking.title 
    || gender !== state.userBooking.gender 
-   || dateFormat(birthDate,'yyyy-mm-dd') !== state.userBooking.birthDate 
+   || birthDate !== state.userBooking.birthDate 
    || firstname !== state.userBooking.forename 
    || lastname !== state.userBooking.surname 
    || email !== state.userBooking.email 
@@ -842,7 +843,7 @@ const antiBodyCheckChanged = (event) =>
                         />  
                         </Grid>
                         <Grid item xs={12} md={12}>
-                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                        {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
                             <KeyboardDatePicker  
                                         error={state.birthDateError ? true : false}
                                         autoOk
@@ -856,7 +857,13 @@ const antiBodyCheckChanged = (event) =>
                                         value={birthDate}
                                         onChange={birthDateChanged}
                                         />
-                            </MuiPickersUtilsProvider>
+                            </MuiPickersUtilsProvider> */}
+                               <DateField
+                                      error={state.birthDateError}
+                                      title="Date of Birth"
+                                      value={birthDate}
+                                      dateChanged={birthDateChanged}
+                                  ></DateField>
                         </Grid>
                         <Grid item xs={12} md={6}>
                             <TextField

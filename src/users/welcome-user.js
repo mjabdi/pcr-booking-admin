@@ -28,6 +28,7 @@ import dateFormat from 'dateformat';
 import {calculatePrice} from './../PriceCalculator';
 
 import AccessibilityNewIcon from '@material-ui/icons/AccessibilityNew';
+import { FormatDateFromStringWithSlash } from '../DateFormatter';
 
 
 function Copyright() {
@@ -321,7 +322,7 @@ const cancelTimeClicked = (event) => {
                     <div style={{textAlign: "left", paddingLeft: "20px", paddingTop:"10px"}}>
                     <ul className={classes.ul}>
                     <li className={classes.li}>
-                    <span className={classes.infoTitle}>Booked Date</span> <span className={classes.infoData}>{state.userBooking.bookingDate}</span>   
+                    <span className={classes.infoTitle}>Booked Date</span> <span className={classes.infoData}>{FormatDateFromStringWithSlash(state.userBooking.bookingDate)}</span>   
                     </li>
                     <li className={classes.li}>
                     <span className={classes.infoTitle}>Booked Time</span> <span className={classes.infoData}>{state.userBooking.bookingTime}</span>   
@@ -342,7 +343,7 @@ const cancelTimeClicked = (event) => {
                         <span className={classes.infoTitle}>Email</span> <span className={classes.infoData}>{state.userBooking.email.toUpperCase()}</span>   
                     </li>
                     <li className={classes.li}>
-                        <span className={classes.infoTitle}>D.O.B</span> <span className={classes.infoData}>{dateFormat(new Date(state.userBooking.birthDate),'dd/mm/yyyy') }</span>  
+                        <span className={classes.infoTitle}>D.O.B</span> <span className={classes.infoData}>{FormatDateFromStringWithSlash(state.userBooking.birthDate)}</span>  
                     </li>
                     <li className={classes.li}>
                         <span className={classes.infoTitle}>Telephone</span> <span className={classes.infoData}>{state.userBooking.phone}</span>  
@@ -379,7 +380,7 @@ const cancelTimeClicked = (event) => {
                     <div style={{textAlign: "left", paddingLeft: "20px", paddingTop:"10px"}}>
                     <ul className={classes.ul}>
                     <li className={classes.li}>
-                    <span className={classes.infoTitle}>Booked Date</span> <span className={classes.infoData}>{state.userBooking.bookingDate}</span>   
+                    <span className={classes.infoTitle}>Booked Date</span> <span className={classes.infoData}>{FormatDateFromStringWithSlash(state.userBooking.bookingDate)}</span>   
                     </li>
                     <li className={classes.li}>
                     <span className={classes.infoTitle}>Booked Time</span> <span className={classes.infoData}>{state.userBooking.bookingTime}</span>   
@@ -400,7 +401,7 @@ const cancelTimeClicked = (event) => {
                         <span className={classes.infoTitle}>Email</span> <span className={classes.infoData}>{state.userBooking.email.toUpperCase()}</span>   
                     </li>
                     <li className={classes.li}>
-                        <span className={classes.infoTitle}>D.O.B</span> <span className={classes.infoData}>{dateFormat(new Date(state.userBooking.birthDate),'dd/mm/yyyy') }</span>  
+                        <span className={classes.infoTitle}>D.O.B</span> <span className={classes.infoData}>{FormatDateFromStringWithSlash(state.userBooking.birthDate)}</span>  
                     </li>
                     <li className={classes.li}>
                         <span className={classes.infoTitle}>Telephone</span> <span className={classes.infoData}>{state.userBooking.phone}</span>  

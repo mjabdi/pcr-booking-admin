@@ -372,14 +372,31 @@ export default function BookingTable(props) {
   
       {field: '_id', headerName:' ', width: 70, renderCell: (params) =>{
           return (
-            <Button 
-                    color="primary"
-                    onClick = {event => openDetailsDialog(event, params.value)}
-            > 
+
+           <React.Fragment>
+
+                {params.getValue('tr') ? 
+                
+                  <span style={{ position:"absolute", fontSize:"12px", fontWeight:"600", color:"#7e0082"}}>
+                    TR
+                  </span> 
+                
+                : 
+                
+                ''}
+
+                <Button 
+                        color="primary"
+                        onClick = {event => openDetailsDialog(event, params.value)}
+                > 
             
             <SearchIcon/> 
             
             </Button>
+
+           </React.Fragment>
+
+          
   
           ); 
       
@@ -518,14 +535,28 @@ export default function BookingTable(props) {
   
       {field: '_id', headerName:' ', width: 70, renderCell: (params) =>{
           return (
-            <Button 
-                    color="primary"
-                    onClick = {event => openDetailsDialog(event, params.value)}
-            > 
+            <React.Fragment>
+
+                {params.getValue('tr') ? 
+                
+                  <span style={{ position:"absolute", fontSize:"12px", fontWeight:"600", color:"#7e0082"}}>
+                    TR
+                  </span> 
+                
+                : 
+                
+                ''}
+
+                <Button 
+                        color="primary"
+                        onClick = {event => openDetailsDialog(event, params.value)}
+                > 
             
             <SearchIcon/> 
             
             </Button>
+
+           </React.Fragment>
   
           ); 
       

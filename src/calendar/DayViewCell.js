@@ -193,7 +193,7 @@ const DayViewCell = ({key, date, time}) => {
            return (
                 _bookings.map(booking => (
 
-                    <div className={classes.bookingBox} onClick={event => bookingCliked(event,booking)}>
+                    <div style={booking.tr ? {borderTop: "5px solid #d00fd6"} : {} } className={classes.bookingBox} onClick={event => bookingCliked(event,booking)}>
 
                         {`${booking.forenameCapital}-${booking.surnameCapital}`.substring(0,15)}
 

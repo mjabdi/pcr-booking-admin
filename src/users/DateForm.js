@@ -72,7 +72,7 @@ export default function DateForm() {
 
         let firstday = new Date((values[0].data).date);
         firstday.setHours(0,0,0,0);
-        let dec21 = new Date(2020,11,21,0,0,0,0);
+        let dec21 = new Date(2021,0,2,0,0,0,0);
         if (firstday < dec21 && state.userBooking.tr)
           firstday = dec21;
         
