@@ -13,6 +13,8 @@ import Skeleton from '@material-ui/lab/Skeleton';
 
 import {BrowserView, MobileView} from 'react-device-detect';
 
+import dateformat from 'dateformat';
+
 // import Card from '@material-ui/core/Card';
 // import CardActions from '@material-ui/core/CardActions';
 // import CardContent from '@material-ui/core/CardContent';
@@ -111,20 +113,12 @@ export default function TimeForm() {
   
         const timeSlotsTmp = values[0].data;
         
-        if (isWeekend(date))
+        if (dateformat(date,'yyyy-mm-dd') < '2021-02-01')
         {
-          for (var i=0 ; i < timeSlotsTmp.length ; i++)
-          {
-            if (parseInt(timeSlotsTmp[i].time.substr(0,2)) < 10 && timeSlotsTmp[i].time.indexOf('AM') > 0)
+          timeSlotsTmp.forEach(time =>
             {
-              timeSlotsTmp[i].available = false;
-            }
-  
-            if (parseInt(timeSlotsTmp[i].time.substr(0,2)) > 1 && parseInt(timeSlotsTmp[i].time.substr(0,2)) < 12 &&timeSlotsTmp[i].time.indexOf('PM') > 0)
-            {
-              timeSlotsTmp[i].available = false;
-            }
-          }
+              time.available = false;
+            });
         }
 
 
@@ -165,6 +159,19 @@ export default function TimeForm() {
           
 
             <React.Fragment>
+
+              {checkFullyBooked(timeSlots) &&  (
+
+              <React.Fragment>
+                <div style={{fontSize:"1.2rem", paddingTop:"10px", paddingBottom:"10px", color:"#db0000" , fontWeight: "500", background:"#fff5f5"}}>
+                  Sorry this day is already fully booked! 
+                  <br/>Please choose an alternative day.
+                  <br/> * All dates are fully booked until 1st February 2021. 
+                </div>
+                
+              </React.Fragment>
+
+              )}
 
               <BrowserView>
                   <div className={classes.root}>
@@ -229,7 +236,15 @@ export default function TimeForm() {
   );
 }
 
-const checkFullyBooked = (time) =>
+const checkFullyBooked = (timeSlots) =>
 {
-    return false;
+    let available = false;
+    timeSlots.forEach(time => {
+      if (time.available)
+      {
+        available = true;
+      }
+    });
+
+    return !available;
 }

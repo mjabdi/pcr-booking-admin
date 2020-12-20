@@ -1922,7 +1922,7 @@ export default function BookingDialog(props) {
                             </Button>
                           )}
 
-                          {(booking.status === "report_sent" || booking.status === "report_cert_sent") &&
+                          {(booking.status === "report_sent" || booking.status === "report_cert_sent" ||  booking.status !== "positive") &&
                           !(
                             editMode.edit && editMode.person._id === booking._id
                           ) && (
@@ -2020,7 +2020,9 @@ export default function BookingDialog(props) {
                         hidden={
                           booking.deleted ||
                           (booking.status !== "report_sent" &&
-                            booking.status !== "report_cert_sent")
+                            booking.status !== "report_cert_sent" &&
+                            booking.status !== "positive"
+                            )
                         }
                       >
                         <Button
@@ -2042,7 +2044,7 @@ export default function BookingDialog(props) {
                       <li
                         hidden={
                           booking.deleted ||
-                          booking.status !== "report_cert_sent"
+                          (booking.status !== "report_cert_sent" && booking.status !== "positive")
                         }
                       >
                         <Button
