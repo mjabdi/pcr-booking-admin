@@ -1922,7 +1922,7 @@ export default function BookingDialog(props) {
                             </Button>
                           )}
 
-                          {(booking.status === "report_sent" || booking.status === "report_cert_sent" ||  booking.status !== "positive") &&
+                          {(booking.status === "report_sent" || booking.status === "report_cert_sent" ||  booking.status === "positive") &&
                           !(
                             editMode.edit && editMode.person._id === booking._id
                           ) && (
