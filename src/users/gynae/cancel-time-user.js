@@ -7,7 +7,7 @@ import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
-import GlobalState from './../GlobalState';
+import GlobalState from './../../GlobalState';
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -17,15 +17,20 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 import HttpsIcon from '@material-ui/icons/Https';
 
-import errorImage from './../images/error.png';
-
-import {BrowserView, MobileView, isMobile} from 'react-device-detect';
+import {BrowserView, MobileView, isMobile, isBrowser} from 'react-device-detect';
 
 import AirplanemodeActiveIcon from '@material-ui/icons/AirplanemodeActive';
-import { Grid } from '@material-ui/core';
+import { Divider, Grid } from '@material-ui/core';
 
-import logoImage from './../images/logo.png';
+import logoImage from './../../images/logo.png';
+
+import BookService from '../../services/GynaeBookService';
+
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import AccessibilityNewIcon from '@material-ui/icons/AccessibilityNew';
+
+import gynaeImage from './../../images/gynae-clinic.png'
 
 
 function Copyright() {
@@ -37,10 +42,7 @@ function Copyright() {
       <Link color="inherit" href="#">
            <strong> Medical Express Clinic </strong> 
       </Link>{isMobile ? ' ' : ' All rights reserved.' }
-   
-       
  
-     
     </Typography>
   );
 }
@@ -111,40 +113,81 @@ const useStyles = makeStyles((theme) => ({
   },
 
   textContent : {
-      color : "#666f77",
+      color : "#222",
       fontSize : "1.1rem",
       textAlign: "justify",
-      paddingLeft: "30px",
-      paddingRight: "30px",
-      lineHeight: "2.2em",
+      paddingLeft: "20px",
+      paddingRight: "20px",
+      lineHeight: "1.5em",
       fontWeight : "400"
   },
 
   textContentMobile : {
-    color : "#666f77",
-    fontSize : "0.9rem",
+    color : "#222",
+    fontSize : "1.1rem",
     textAlign: "justify",
-    paddingLeft: "30px",
-    paddingRight: "30px",
-    lineHeight: "2.2em",
+    paddingLeft: "20px",
+    paddingRight: "20px",
+    lineHeight: "1.5em",
     fontWeight : "400"
 },
 
   getStartedButton: {
       marginTop : "10px",
       marginBottom : "10px",
-
   },
+
+  backButton: {
+    marginBottom : "20px",
+    textDecoration : "none !important",
+    padding: "10px"  
+  },
+
+  cancelTimeButton: {
+
+    marginTop : "20px",
+    backgroundColor : "#d90015",
+    "&:hover": {
+      background: "#b80012",
+      color: "#fff"
+    },
+
+    padding: "10px"
+  },
+
 
   AirIcon : {
       marginRight : "10px",
       fontSize: "32px"
   },
 
-  errorImage: {
-    width: "200px",
-    height: "190px",
-    marginBottom: "30px"
+  
+  ul: {
+    listStyle: "none",
+    padding: "0",
+    margin: "0"
+ },
+
+ li: {
+   marginBottom : "5px"
+ },
+
+ infoDetails:{
+    textAlign: "left"
+  },
+
+  infoTitle:{
+    fontWeight: "800",
+    marginRight: "10px"
+  },
+
+  infoData:{
+    fontWeight: "400",
+  },
+
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
   },
 
 
@@ -153,7 +196,7 @@ const useStyles = makeStyles((theme) => ({
 
 
 
-export default function ErrorUser() {
+export default function CancelTimeUser() {
   const [state, setState] = React.useContext(GlobalState);
   const classes = useStyles();
 
@@ -162,6 +205,8 @@ export default function ErrorUser() {
 
   const [open, setOpen] = React.useState(false);
   const [scroll, setScroll] = React.useState('paper');
+
+  const [canceling,  setCanceling] =  React.useState(false);
 
   const descriptionElementRef = React.useRef(null);
   React.useEffect(() => {
@@ -185,9 +230,25 @@ export default function ErrorUser() {
 
 
 
-const getStartedClicked = (event) => {
-    window.location.href = 'https://travelpcrtest.com/';
+const cancelTimeClicked = (event) => {
+    setCanceling(true);
+    BookService.deleteBooking(state.userBooking._id).then( (res) => {
+        setCanceling(false);
+        setState(state => ({...state, cancelTimeClicked  : false, canceledResult : true}));
+
+    }).catch ((err) => {
+        console.log(err);
+        setCanceling(false);
+
+    });
 }
+
+
+const backButtonClicked = (event) => {
+    setState(state => ({...state, welcomeUser: false, cancelTimeClicked  : false}));
+}
+
+
 
   return (
     <React.Fragment>
@@ -204,7 +265,7 @@ const getStartedClicked = (event) => {
         >
 
 
-            <Grid item item xs={10}>
+            <Grid item xs={10}>
                   <Typography  style={{fontWeight: "400"}} variant="h6" color="inherit" noWrap>
                     Medical Express Clinic
                   </Typography>
@@ -229,42 +290,66 @@ const getStartedClicked = (event) => {
                             alignItems: 'center',
                             justifyContent: 'center'
                         }}>
-              
-             
-
-                       
+                        
+                        <img
+                          className={classes.gynaeLogo}
+                          src={gynaeImage}
+                          alt="logo image"
+                        />
 
                     </div>
           </Typography>
 
-          <React.Fragment>
 
-                <img className={classes.errorImage} src={errorImage} alt="Error image"/>
+          <p className={isMobile ? classes.textContentMobile : classes.textContent}>
+                 Are you sure you want to cancel the appointment?
+          </p>
 
-                <Typography variant="h6" gutterBottom>
-                    {state.pathIdNotFound ? 
-                         'Sorry, we cannot find your booking! '
-                    :
-                         'Sorry, your booking appointment is expired! '
-                    }
-                    <br/><br/>
+          <Divider/>
+        
+           
 
-                    You can book a new appointment if needed later on. 
-                </Typography>
-                <br/>
-                
-                {/* <Button 
-                  variant="contained" 
-                  className={classes.getStartedButton} 
-                  color="primary"
-                  onClick={getStartedClicked}
-                  onTouchTap={getStartedClicked} 
-                  >
-            Book New appointment
-         </Button> */}
+          <div style={isBrowser ? {paddingLeft: "50px", paddingRight: "50px"} :  {paddingLeft: "10px", paddingRight: "10px"}}>
 
-        </React.Fragment>
-      
+                <Grid
+                        container
+                        spacing = {3}
+                        direction="column"
+                        justify="space-between"
+                        alignItems="stretch"
+                        >
+                    
+                                <Grid item xs>
+                                        <Button 
+                                            fullWidth
+                                            disabled = {canceling}
+                                            variant="contained" 
+                                            className={classes.cancelTimeButton} 
+                                            color="primary"
+                                            onClick={cancelTimeClicked}
+                                            onTouchTap={cancelTimeClicked} 
+                                            >
+                                        Yes cancel my appointment
+                                    </Button>
+                                </Grid>
+
+                                <Grid item xs>
+                                    <Button 
+                                                fullWidth
+                                                disabled = {canceling}
+                                                variant="contained" 
+                                                className={classes.backButton} 
+                                                color="default"
+                                                onClick={backButtonClicked}
+                                                onTouchTap={backButtonClicked} 
+                                                >
+                                            Back
+                                        </Button>
+                                </Grid>
+
+                    </Grid>
+
+            </div>
 
         </Paper>
 
@@ -309,6 +394,9 @@ const getStartedClicked = (event) => {
                         </DialogActions>
       </Dialog>
 
+      <Backdrop className={classes.backdrop} open={canceling} >
+        <CircularProgress color="inherit" />
+      </Backdrop>
 
 
 

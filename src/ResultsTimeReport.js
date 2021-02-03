@@ -135,7 +135,7 @@ export default function ResultsTimeReport() {
         });
 
 
-    } , [current] );
+    } , [] );
 
     const getReportLabels = () =>
     {

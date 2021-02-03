@@ -4,13 +4,13 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 
 import { makeStyles } from '@material-ui/core/styles';
 
-import GlobalState from './../GlobalState';
+import GlobalState from './../../GlobalState';
 
 
 
 import WelcomeUser from './welcome-user';
 
-import BookService from './../services/BookService';
+import GynaeBookService from './../../services/GynaeBookService';
 import ErrorUser from './error-user';
 import CancelTimeUser from './cancel-time-user';
 import EditInfoUser from './edit-info-user';
@@ -63,42 +63,13 @@ export default function NavigatorUser(props) {
 
     useEffect( () => {
 
-        if (props.pathId && props.pathId.length === 22)
+if (props.pathId && props.pathId.length === 24)
         {
-            const bookingRef = props.pathId.substr(0,11);
-            const birthDate = props.pathId.substr(12,10);
-
-            BookService.findBookingByRefBirthDate(bookingRef,birthDate).then( res => {
-
-                if (res.data.status === 'OK')
-                {
-                    setState(state => ({...state,  userBooking : res.data.booking}) );
-                    setLoaded(true);
-                }else if (res.data.status === 'FAILED')
-                {
-                    if (res.data.error === 'Not Found')
-                    {
-                        setState(state => ({...state, pathIdNotFound : true}));
-                    }else if (res.data.error === 'Time Passed')
-                    {
-                        setState(state => ({...state, pathIdNotFound:false, timePassed : true}));
-                    }
-                  
-                    setLoaded(true);
-                }
-            }).catch((err) => {
-                console.log(err);
-                setLoaded(true);
-            });
-        }
-        else if (props.pathId && props.pathId.length === 24)
-        {
-            BookService.getBookingById(props.pathId).then( res => {
+            GynaeBookService.getBookingById(props.pathId).then( res => {
                 const result = res.data
-                
                 if (result)
                 {
-                   if ((result.status && result.status.length > 0) && (result.status !== 'booked' || timePassed(result.bookingDate)))
+                    if ((result.status && result.status.length > 0) && (result.status !== 'booked' || timePassed(result.bookingDate)))
                    {
                      setState(state => ({...state, pathIdNotFound:false, timePassed : true}));
                      setLoaded(true);

@@ -7,7 +7,7 @@ import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
-import GlobalState from './../GlobalState';
+import GlobalState from './../../GlobalState';
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -17,15 +17,18 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 import HttpsIcon from '@material-ui/icons/Https';
 
-import errorImage from './../images/error.png';
-
-import {BrowserView, MobileView, isMobile} from 'react-device-detect';
+import {BrowserView, MobileView, isMobile, isBrowser} from 'react-device-detect';
 
 import AirplanemodeActiveIcon from '@material-ui/icons/AirplanemodeActive';
-import { Grid } from '@material-ui/core';
+import { Divider, Grid } from '@material-ui/core';
 
-import logoImage from './../images/logo.png';
+import logoImage from './../../images/logo.png';
+
+
 import AccessibilityNewIcon from '@material-ui/icons/AccessibilityNew';
+import { FormatDateFromStringWithSlash } from '../../DateFormatter';
+
+import gynaeImage from './../../images/gynae-clinic.png'
 
 
 function Copyright() {
@@ -111,40 +114,89 @@ const useStyles = makeStyles((theme) => ({
   },
 
   textContent : {
-      color : "#666f77",
+      color : "#222",
       fontSize : "1.1rem",
       textAlign: "justify",
-      paddingLeft: "30px",
-      paddingRight: "30px",
-      lineHeight: "2.2em",
+      paddingLeft: "20px",
+      paddingRight: "20px",
+      lineHeight: "1.5em",
       fontWeight : "400"
   },
 
   textContentMobile : {
-    color : "#666f77",
-    fontSize : "0.9rem",
+    color : "#222",
+    fontSize : "1.1rem",
     textAlign: "justify",
-    paddingLeft: "30px",
-    paddingRight: "30px",
-    lineHeight: "2.2em",
+    paddingLeft: "20px",
+    paddingRight: "20px",
+    lineHeight: "1.5em",
     fontWeight : "400"
 },
 
   getStartedButton: {
       marginTop : "10px",
       marginBottom : "10px",
+  },
+
+  changeTimeButton: {
+    marginTop : "20px",
+    textDecoration : "none !important",
+    padding: "10px"  
+  },
+
+  editInfoButton: {
+    
+
+    backgroundColor : "#2f942e",
+    "&:hover": {
+      background: "green",
+      color: "#fff"
+    },
+    textDecoration : "none !important",
+    padding: "10px"  
 
   },
+
+  cancelTimeButton: {
+
+    marginBottom : "20px",
+    backgroundColor : "#d90015",
+    "&:hover": {
+      background: "#b80012",
+      color: "#fff"
+    },
+
+    padding: "10px"
+  },
+
 
   AirIcon : {
       marginRight : "10px",
       fontSize: "32px"
   },
 
-  errorImage: {
-    width: "200px",
-    height: "190px",
-    marginBottom: "30px"
+  
+  ul: {
+    listStyle: "none",
+    padding: "0",
+    margin: "0"
+ },
+
+ li: {
+   marginBottom : "5px"
+ },
+
+ infoDetails:{
+    textAlign: "left"
+  },
+
+  infoTitle:{
+    fontWeight: "800",
+    marginRight: "10px"
+  },
+
+  infoData:{
+    fontWeight: "400",
   },
 
 
@@ -153,7 +205,7 @@ const useStyles = makeStyles((theme) => ({
 
 
 
-export default function ErrorUser() {
+export default function WelcomeUser() {
   const [state, setState] = React.useContext(GlobalState);
   const classes = useStyles();
 
@@ -185,8 +237,16 @@ export default function ErrorUser() {
 
 
 
-const getStartedClicked = (event) => {
-    window.location.href = 'https://travelpcrtest.com/';
+const changeTimeClicked = (event) => {
+    setState(state => ({...state, welcomeUser: true, changeTimeClicked : true}));
+}
+
+const editInfoClicked = (event) => {
+    setState(state => ({...state, welcomeUser: true, editInfoClicked  : true}));
+}
+
+const cancelTimeClicked = (event) => {
+    setState(state => ({...state, welcomeUser: true, cancelTimeClicked  : true}));
 }
 
   return (
@@ -204,7 +264,7 @@ const getStartedClicked = (event) => {
         >
 
 
-            <Grid item item xs={10}>
+            <Grid item xs={10}>
                   <Typography  style={{fontWeight: "400"}} variant="h6" color="inherit" noWrap>
                     Medical Express Clinic
                   </Typography>
@@ -230,41 +290,112 @@ const getStartedClicked = (event) => {
                             justifyContent: 'center'
                         }}>
               
-             
-
-                       
-
+                        <img
+                          className={classes.gynaeLogo}
+                          src={gynaeImage}
+                          alt="logo image"
+                        />
+                      
                     </div>
           </Typography>
 
-          <React.Fragment>
+          <p className={isMobile ? classes.textContentMobile : classes.textContent}>
+                 Welcome Back {state.userBooking.fullname},
+          </p>
 
-                <img className={classes.errorImage} src={errorImage} alt="Error image"/>
+          <p className={isMobile ? classes.textContentMobile : classes.textContent}>
+                  Do you want to change or cancel your appointment?
+          </p>
 
-                <Typography variant="h6" gutterBottom>
-                    {state.pathIdNotFound ? 
-                         'Sorry, we cannot find your booking! '
-                    :
-                         'Sorry, your booking appointment is expired! '
-                    }
-                    <br/><br/>
+          <Divider/>
 
-                    You can book a new appointment if needed later on. 
-                </Typography>
-                <br/>
-                
-                {/* <Button 
-                  variant="contained" 
-                  className={classes.getStartedButton} 
-                  color="primary"
-                  onClick={getStartedClicked}
-                  onTouchTap={getStartedClicked} 
-                  >
-            Book New appointment
-         </Button> */}
+          {!state.userBooking.tr && (
+                    <div style={{textAlign: "left", paddingLeft: "20px", paddingTop:"10px"}}>
+                    <ul className={classes.ul}>
+                    <li className={classes.li}>
+                    <span className={classes.infoTitle}>Booked Date</span> <span className={classes.infoData}>{FormatDateFromStringWithSlash(state.userBooking.bookingDate)}</span>   
+                    </li>
+                    <li className={classes.li}>
+                    <span className={classes.infoTitle}>Booked Time</span> <span className={classes.infoData}>{state.userBooking.bookingTime}</span>   
+                    </li>
+                    <li className={classes.li}>
+                    <span className={classes.infoTitle}>Fullname</span> <span className={classes.infoData}>{state.userBooking.fullname}</span>   
+                    </li>
+                    <li className={classes.li}>
+                        <span className={classes.infoTitle}>Email</span> <span className={classes.infoData}>{state.userBooking.email}</span>   
+                    </li>
+                    <li className={classes.li}>
+                        <span className={classes.infoTitle}>Telephone</span> <span className={classes.infoData}>{state.userBooking.phone}</span>  
+                    </li>
+                    <li className={classes.li}>
+                        <span className={classes.infoTitle}>Service</span> <span className={classes.infoData}>{state.userBooking.service}</span>  
+                    </li>
+                    <li className={classes.li}>
+                        <span className={classes.infoTitle}>Notes</span> <span className={classes.infoData}>{state.userBooking.notes || '-'}</span>  
+                    </li>
 
-        </React.Fragment>
-      
+
+
+                    </ul>
+                  </div>
+          )} 
+
+                    <Divider/>
+
+          <div style={isBrowser ? {paddingLeft: "50px", paddingRight: "50px"} :  {paddingLeft: "10px", paddingRight: "10px"}}>
+
+                <Grid
+                        container
+                        spacing = {3}
+                        direction="column"
+                        justify="space-between"
+                        alignItems="stretch"
+                        >
+                    
+                                <Grid item xs>
+                                        <Button 
+                                            fullWidth
+                                            variant="contained" 
+                                            className={classes.changeTimeButton} 
+                                            color="primary"
+                                            onClick={changeTimeClicked}
+                                            onTouchTap={changeTimeClicked} 
+                                            >
+                                        Change My appointment Time
+                                    </Button>
+                                </Grid>
+
+                                <Grid item xs>
+                                    <Button 
+                                                fullWidth
+                                                variant="contained" 
+                                                className={classes.editInfoButton} 
+                                                color="primary"
+                                                onClick={editInfoClicked}
+                                                onTouchTap={editInfoClicked} 
+                                                >
+                                            Edit My Info
+                                        </Button>
+                                </Grid>
+
+
+                                <Grid item xs>
+
+                                    <Button 
+                                            fullWidth
+                                            variant="contained" 
+                                            className={classes.cancelTimeButton} 
+                                            color="primary"
+                                            onClick={cancelTimeClicked}
+                                            onTouchTap={cancelTimeClicked} 
+                                            >
+                                            Cancel my appointment
+                                </Button>
+                                                
+                                </Grid>
+                    </Grid>
+
+            </div>
 
         </Paper>
 

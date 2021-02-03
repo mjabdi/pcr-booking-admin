@@ -7,7 +7,7 @@ import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
-import GlobalState from './../GlobalState';
+import GlobalState from './../../GlobalState';
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -17,14 +17,14 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 import HttpsIcon from '@material-ui/icons/Https';
 
-import errorImage from './../images/error.png';
+import errorImage from './../../images/error.png';
 
 import {BrowserView, MobileView, isMobile} from 'react-device-detect';
 
 import AirplanemodeActiveIcon from '@material-ui/icons/AirplanemodeActive';
 import { Grid } from '@material-ui/core';
 
-import logoImage from './../images/logo.png';
+import logoImage from './../../images/logo.png';
 import AccessibilityNewIcon from '@material-ui/icons/AccessibilityNew';
 
 
@@ -232,7 +232,7 @@ const getStartedClicked = (event) => {
               
              
 
-                       
+                      
 
                     </div>
           </Typography>

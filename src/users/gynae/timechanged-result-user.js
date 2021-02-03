@@ -7,7 +7,7 @@ import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
-import GlobalState from './../GlobalState';
+import GlobalState from './../../GlobalState';
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -17,15 +17,17 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 import HttpsIcon from '@material-ui/icons/Https';
 
-import errorImage from './../images/error.png';
+import doneImage from './../../images/ok.png';
 
 import {BrowserView, MobileView, isMobile} from 'react-device-detect';
 
 import AirplanemodeActiveIcon from '@material-ui/icons/AirplanemodeActive';
 import { Grid } from '@material-ui/core';
 
-import logoImage from './../images/logo.png';
+import logoImage from './../../images/logo.png';
 import AccessibilityNewIcon from '@material-ui/icons/AccessibilityNew';
+
+import gynaeImage from './../../images/gynae-clinic.png'
 
 
 function Copyright() {
@@ -153,7 +155,7 @@ const useStyles = makeStyles((theme) => ({
 
 
 
-export default function ErrorUser() {
+export default function TimeChangedResult() {
   const [state, setState] = React.useContext(GlobalState);
   const classes = useStyles();
 
@@ -183,11 +185,19 @@ export default function ErrorUser() {
     setOpen(false);
   };
 
-
-
-const getStartedClicked = (event) => {
-    window.location.href = 'https://travelpcrtest.com/';
-}
+  const backButtonClicked = (event) =>
+  {
+    setState((state) => ({
+        ...state,
+        RefreshInfo : state.RefreshInfo ? false : true       
+      })); 
+    setState((state) => ({
+        ...state,
+        welcomeUser: false,
+        changeTimeClicked: false,
+        timeChangedResult : false
+      }));
+  }
 
   return (
     <React.Fragment>
@@ -230,38 +240,38 @@ const getStartedClicked = (event) => {
                             justifyContent: 'center'
                         }}>
               
-             
-
-                       
-
+              <img
+                          className={classes.gynaeLogo}
+                          src={gynaeImage}
+                          alt="logo image"
+                        />
                     </div>
           </Typography>
 
           <React.Fragment>
 
-                <img className={classes.errorImage} src={errorImage} alt="Error image"/>
+                <img className={classes.doneImage} src={doneImage} alt="Error image"/>
 
                 <Typography variant="h6" gutterBottom>
-                    {state.pathIdNotFound ? 
-                         'Sorry, we cannot find your booking! '
-                    :
-                         'Sorry, your booking appointment is expired! '
-                    }
-                    <br/><br/>
+                    
+                   <p>Your Appointment Time was Successfully Changed.</p> 
+                   <p> We have emailed your new booking information, and will look forward to meet you at the clinic.</p>
+                   <p> If you still have more changes to do click the button below: </p>
+                   
 
-                    You can book a new appointment if needed later on. 
                 </Typography>
                 <br/>
                 
-                {/* <Button 
-                  variant="contained" 
-                  className={classes.getStartedButton} 
+                <Button
+                  fullWidth
+                  variant="contained"
+                  className={classes.backButton}
                   color="primary"
-                  onClick={getStartedClicked}
-                  onTouchTap={getStartedClicked} 
-                  >
-            Book New appointment
-         </Button> */}
+                  onClick={backButtonClicked}
+                  onTouchTap={backButtonClicked}
+                >
+                 I have more changes
+                </Button>
 
         </React.Fragment>
       
