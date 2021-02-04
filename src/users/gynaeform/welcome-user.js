@@ -238,6 +238,8 @@ export default function WelcomeUser() {
 
   const [submitting, setSubmitting] = React.useState(false);
 
+  const [hasErrors, setHasErrors] = React.useState(false);
+
   const descriptionElementRef = React.useRef(null);
   React.useEffect(() => {
     if (open) {
@@ -247,6 +249,59 @@ export default function WelcomeUser() {
       }
     }
   }, [open]);
+
+  React.useEffect(() => {
+    try {
+      if (state.userBooking && state.userBooking.formData) {
+        const {
+          gender,
+          title,
+          forename,
+          surname,
+          birthDate,
+          postCode,
+          address,
+          phone,
+          mobile,
+          attendReason,
+          medication,
+          allergy,
+          medicationDetail,
+          checkedVisitedCountry,
+          countryVisitedDetail,
+          tarvelledOutsideEU,
+          haveGPUK,
+        } = JSON.parse(state.userBooking.formData);
+
+
+
+        console.log(JSON.parse(state.userBooking.formData))
+
+        setState((state) => ({
+          ...state,
+          gender: gender,
+          title: title,
+          forename: forename,
+          surname: surname,
+          birthDate: birthDate,
+          postCode: postCode,
+          address: address,
+          phone: phone,
+          mobile: mobile,
+          attendReason: attendReason,
+          medication: medication,
+          allergy: allergy,
+          medicationDetail: medicationDetail,
+          checkedVisitedCountry: checkedVisitedCountry,
+          countryVisitedDetail: countryVisitedDetail,
+          tarvelledOutsideEU: tarvelledOutsideEU,
+          haveGPUK: haveGPUK,
+        }));
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }, []);
 
   const handleClickOpen = (scrollType) => () => {
     setOpen(true);
@@ -513,19 +568,26 @@ export default function WelcomeUser() {
       haveGPUK,
     };
 
+    setHasErrors(false);
     if (ValidateFormData(formData)) {
       setSubmitting(true);
       GynaeBookService.submitFormData(state.userBooking._id, formData)
         .then((res) => {
           setSubmitting(false);
           if (res && res.data && res.data.status === "OK") {
-            setState((state) => ({ ...state, welcomeUser : true,  submitFormData: true }));
+            setState((state) => ({
+              ...state,
+              welcomeUser: true,
+              submitFormData: true,
+            }));
           }
         })
         .catch((err) => {
           console.error(err);
           setSubmitting(false);
         });
+    } else {
+      setHasErrors(true);
     }
   };
 
@@ -615,7 +677,7 @@ export default function WelcomeUser() {
                   fullWidth
                   labelId="gender-label-id"
                   id="gender-id"
-                  value={state.gender}
+                  value={state.gender || ''}
                   onChange={genderChanged}
                 >
                   <MenuItem value={"Male"}>Male</MenuItem>
@@ -631,7 +693,7 @@ export default function WelcomeUser() {
                   fullWidth
                   labelId="title-label-id"
                   id="title-id"
-                  value={state.title}
+                  value={state.title || ''}
                   onChange={titleChanged}
                 >
                   <MenuItem value={"Mr"}>Mr</MenuItem>
@@ -769,7 +831,7 @@ export default function WelcomeUser() {
                   fullWidth
                   labelId="medication-label-id"
                   id="medication-id"
-                  value={state.medication}
+                  value={state.medication || ''}
                   onChange={medicationChanged}
                 >
                   <MenuItem value={"YES"}>YES</MenuItem>
@@ -788,7 +850,7 @@ export default function WelcomeUser() {
                   fullWidth
                   labelId="allergy-label-id"
                   id="allergy-id"
-                  value={state.allergy}
+                  value={state.allergy || ''}
                   onChange={allergyChanged}
                 >
                   <MenuItem value={"YES"}>YES</MenuItem>
@@ -995,6 +1057,22 @@ export default function WelcomeUser() {
               </Paper>
             </Grid>
           </Grid>
+
+          <div
+            style={{
+              color: "red",
+              fontWeight: "500",
+              width: "100%",
+              textAlign: "left",
+            }}
+            hidden={!hasErrors}
+          >
+            <p>
+              * Please check the form again, some fields are not filled
+              correctly
+            </p>
+            <p>* Incorrect fields are shown in RED color</p>
+          </div>
 
           <div
             style={
