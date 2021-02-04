@@ -843,21 +843,6 @@ const antiBodyCheckChanged = (event) =>
                         />  
                         </Grid>
                         <Grid item xs={12} md={12}>
-                        {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <KeyboardDatePicker  
-                                        error={state.birthDateError ? true : false}
-                                        autoOk
-                                        fullWidth
-                                        variant="inline"
-                                        label="Birthdate"
-                                        format="dd/MM/yyyy"
-                                        disableFuture
-                                        InputAdornmentProps={{ position: "start" }}
-                                        helperText="dd/MM/yyyy"
-                                        value={birthDate}
-                                        onChange={birthDateChanged}
-                                        />
-                            </MuiPickersUtilsProvider> */}
                                <DateField
                                       error={state.birthDateError}
                                       title="Date of Birth"

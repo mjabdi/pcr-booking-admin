@@ -241,7 +241,9 @@ const Packages = [
   {packageName: `Cervical cancer vaccination`},
   {packageName: `HPV`},
   {packageName: `Pap Smear`},
-  {packageName: `Others`},
+  {packageName: `Warts Treatment`},
+  {packageName: `Consultation`},
+
 ]
 
 

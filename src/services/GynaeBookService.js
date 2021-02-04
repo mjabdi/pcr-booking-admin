@@ -3,6 +3,11 @@ import API from './api';
 export default class GynaeBookService {
 
 
+   static submitFormData = (bookingId, formData) =>
+   {
+      return API.post(`/api/gynae/book/submitformdata`, {bookingId: bookingId, formData: formData});
+   }
+
    static payBooking = (bookingId,price, paymentMethod, corporate) =>
    {
       return API.post(`/api/gynae/book/paybooking?id=${bookingId}&paymentmethod=${paymentMethod}&corporate=${corporate}&price=${price}`);

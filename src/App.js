@@ -4,6 +4,7 @@ import React from "react";
 import Navigator from "./Navigator";
 import NavigatorUser from "./users/navigator-user";
 import GyaneNavigatorUser from "./users/gynae/navigator-user";
+import GyaneFormNavigatorUser from "./users/gynaeform/navigator-user";
 
 
 function App() {
@@ -22,7 +23,14 @@ function App() {
       if (urlElements[urlElements.length - 2] === "pcr") {
         return  {id: urlElements[urlElements.length - 1] , type: 'pcr'};
       } else if (urlElements[urlElements.length - 2] === "gynae") {
-        return  {id: urlElements[urlElements.length - 1] , type: 'gynae'};
+        if (urlElements[urlElements.length - 3] === "edit")
+        {
+          return  {id: urlElements[urlElements.length - 1] , type: 'gynae', page: "edit"};
+        }else if  (urlElements[urlElements.length - 3] === "form")
+        {
+          return  {id: urlElements[urlElements.length - 1] , type: 'gynae', page: "form"};
+        }
+        
       }
     }
 
@@ -33,7 +41,8 @@ function App() {
     <GlobalState.Provider value={[state, setState]}>
       <div className="App">
         {getPathId() && getPathId().type === 'pcr' && <NavigatorUser pathId={`${getPathId().id}`} />}
-        {getPathId() && getPathId().type === 'gynae' && <GyaneNavigatorUser pathId={`${getPathId().id}`} />}
+        {getPathId() && getPathId().type === 'gynae' && getPathId().page === 'edit' && <GyaneNavigatorUser pathId={`${getPathId().id}`} />}
+        {getPathId() && getPathId().type === 'gynae' && getPathId().page === 'form' && <GyaneFormNavigatorUser pathId={`${getPathId().id}`} />}
 
 
         {!getPathId() && <Navigator />}
