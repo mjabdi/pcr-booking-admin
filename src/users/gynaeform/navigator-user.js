@@ -53,7 +53,7 @@ export default function NavigatorUser(props) {
     const [loaded, setLoaded] = React.useState(false);
 
     useEffect(() => {
-        document.title = "Edit Booking Info"
+        document.title = "Gynae Registration Form"
      }, []);
 
     useEffect( () => {

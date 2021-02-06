@@ -273,9 +273,7 @@ export default function WelcomeUser() {
           haveGPUK,
         } = JSON.parse(state.userBooking.formData);
 
-
-
-        console.log(JSON.parse(state.userBooking.formData))
+        console.log(JSON.parse(state.userBooking.formData));
 
         setState((state) => ({
           ...state,
@@ -677,7 +675,7 @@ export default function WelcomeUser() {
                   fullWidth
                   labelId="gender-label-id"
                   id="gender-id"
-                  value={state.gender || ''}
+                  value={state.gender || ""}
                   onChange={genderChanged}
                 >
                   <MenuItem value={"Male"}>Male</MenuItem>
@@ -693,7 +691,7 @@ export default function WelcomeUser() {
                   fullWidth
                   labelId="title-label-id"
                   id="title-id"
-                  value={state.title || ''}
+                  value={state.title || ""}
                   onChange={titleChanged}
                 >
                   <MenuItem value={"Mr"}>Mr</MenuItem>
@@ -831,7 +829,7 @@ export default function WelcomeUser() {
                   fullWidth
                   labelId="medication-label-id"
                   id="medication-id"
-                  value={state.medication || ''}
+                  value={state.medication || ""}
                   onChange={medicationChanged}
                 >
                   <MenuItem value={"YES"}>YES</MenuItem>
@@ -850,7 +848,7 @@ export default function WelcomeUser() {
                   fullWidth
                   labelId="allergy-label-id"
                   id="allergy-id"
-                  value={state.allergy || ''}
+                  value={state.allergy || ""}
                   onChange={allergyChanged}
                 >
                   <MenuItem value={"YES"}>YES</MenuItem>
@@ -1137,9 +1135,11 @@ export default function WelcomeUser() {
                 via this registration form is never shared with any other
                 organisations, except when this is required by law. Information
                 provided will never be used for marketing purposes, you cannot
-                opt in. In the case of a positive swab result, our doctor will
+                opt in. In the case of a notable health result, our doctor will
                 call on the telephone number provided to inform you of your
-                result and provide additional advice or guidance.
+                result and provide additional advice or guidance. If we cannot
+                get hold of you, we will email you asking you to contact the
+                clinic.
               </div>
             </DialogContentText>
           </DialogContent>

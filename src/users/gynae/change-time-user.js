@@ -17,11 +17,11 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 
 import HttpsIcon from "@material-ui/icons/Https";
 
-import Backdrop from '@material-ui/core/Backdrop';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import AccessibilityNewIcon from '@material-ui/icons/AccessibilityNew';
+import Backdrop from "@material-ui/core/Backdrop";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import AccessibilityNewIcon from "@material-ui/icons/AccessibilityNew";
 
-import gynaeImage from './../../images/gynae-clinic.png'
+import gynaeImage from "./../../images/gynae-clinic.png";
 
 import {
   BrowserView,
@@ -200,7 +200,7 @@ const useStyles = makeStyles((theme) => ({
 
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
-    color: '#fff',
+    color: "#fff",
   },
 }));
 
@@ -239,7 +239,10 @@ export default function ChangeTimeUser() {
     BookService.updateBookingTime({
       bookingId: state.userBooking._id,
       bookingTime: state.bookingTime,
-      bookingDate: dateformat(new Date(new Date(state.bookingDate).toUTCString().slice(0, -4)),'yyyy-mm-dd')
+      bookingDate: dateformat(
+        new Date(new Date(state.bookingDate).toUTCString().slice(0, -4)),
+        "yyyy-mm-dd"
+      ),
     })
       .then((res) => {
         setSaving(false);
@@ -311,12 +314,11 @@ export default function ChangeTimeUser() {
                 justifyContent: "center",
               }}
             >
-                                      <img
-                          className={classes.gynaeLogo}
-                          src={gynaeImage}
-                          alt="logo image"
-                        />
-                  
+              <img
+                className={classes.gynaeLogo}
+                src={gynaeImage}
+                alt="logo image"
+              />
             </div>
           </Typography>
 
@@ -410,9 +412,11 @@ export default function ChangeTimeUser() {
                 via this registration form is never shared with any other
                 organisations, except when this is required by law. Information
                 provided will never be used for marketing purposes, you cannot
-                opt in. In the case of a positive swab result, our doctor will
+                opt in. In the case of a notable health result, our doctor will
                 call on the telephone number provided to inform you of your
-                result and provide additional advice or guidance.
+                result and provide additional advice or guidance. If we cannot
+                get hold of you, we will email you asking you to contact the
+                clinic.{" "}
               </div>
             </DialogContentText>
           </DialogContent>
@@ -423,10 +427,9 @@ export default function ChangeTimeUser() {
           </DialogActions>
         </Dialog>
 
-        <Backdrop className={classes.backdrop} open={saving} >
-        <CircularProgress color="inherit" />
-      </Backdrop>
-
+        <Backdrop className={classes.backdrop} open={saving}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
 
         <Copyright />
       </main>
