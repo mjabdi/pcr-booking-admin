@@ -406,7 +406,7 @@ export default function ChangeTimeUser() {
               tabIndex={-1}
             >
               <div style={{ textAlign: "justify", padding: "10px" }}>
-                Medical Express Clinic will not contact you for any other reason
+              Medical Express Clinic will not contact you for any other reason
                 than to share your test results, and certificate if selected,
                 via the email address provided. The information provided to us
                 via this registration form is never shared with any other
@@ -416,7 +416,7 @@ export default function ChangeTimeUser() {
                 call on the telephone number provided to inform you of your
                 result and provide additional advice or guidance. If we cannot
                 get hold of you, we will email you asking you to contact the
-                clinic.{" "}
+                clinic.
               </div>
             </DialogContentText>
           </DialogContent>

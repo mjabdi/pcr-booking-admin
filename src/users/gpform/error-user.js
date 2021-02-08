@@ -17,22 +17,15 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 
 import HttpsIcon from "@material-ui/icons/Https";
 
-import {
-  BrowserView,
-  MobileView,
-  isMobile,
-  isBrowser,
-} from "react-device-detect";
+import errorImage from "./../../images/error.png";
+
+import { BrowserView, MobileView, isMobile } from "react-device-detect";
 
 import AirplanemodeActiveIcon from "@material-ui/icons/AirplanemodeActive";
-import { Divider, Grid } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 
 import logoImage from "./../../images/logo.png";
-
 import AccessibilityNewIcon from "@material-ui/icons/AccessibilityNew";
-import { FormatDateFromStringWithSlash } from "../../DateFormatter";
-
-import gynaeImage from "./../../images/gynae-clinic.png";
 
 function Copyright() {
   return (
@@ -112,22 +105,22 @@ const useStyles = makeStyles((theme) => ({
   },
 
   textContent: {
-    color: "#222",
+    color: "#666f77",
     fontSize: "1.1rem",
     textAlign: "justify",
-    paddingLeft: "20px",
-    paddingRight: "20px",
-    lineHeight: "1.5em",
+    paddingLeft: "30px",
+    paddingRight: "30px",
+    lineHeight: "2.2em",
     fontWeight: "400",
   },
 
   textContentMobile: {
-    color: "#222",
-    fontSize: "1.1rem",
+    color: "#666f77",
+    fontSize: "0.9rem",
     textAlign: "justify",
-    paddingLeft: "20px",
-    paddingRight: "20px",
-    lineHeight: "1.5em",
+    paddingLeft: "30px",
+    paddingRight: "30px",
+    lineHeight: "2.2em",
     fontWeight: "400",
   },
 
@@ -136,63 +129,19 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: "10px",
   },
 
-  changeTimeButton: {
-    marginTop: "20px",
-    textDecoration: "none !important",
-    padding: "10px",
-  },
-
-  editInfoButton: {
-    backgroundColor: "#2f942e",
-    "&:hover": {
-      background: "green",
-      color: "#fff",
-    },
-    textDecoration: "none !important",
-    padding: "10px",
-  },
-
-  cancelTimeButton: {
-    marginBottom: "20px",
-    backgroundColor: "#d90015",
-    "&:hover": {
-      background: "#b80012",
-      color: "#fff",
-    },
-
-    padding: "10px",
-  },
-
   AirIcon: {
     marginRight: "10px",
     fontSize: "32px",
   },
 
-  ul: {
-    listStyle: "none",
-    padding: "0",
-    margin: "0",
-  },
-
-  li: {
-    marginBottom: "5px",
-  },
-
-  infoDetails: {
-    textAlign: "left",
-  },
-
-  infoTitle: {
-    fontWeight: "800",
-    marginRight: "10px",
-  },
-
-  infoData: {
-    fontWeight: "400",
+  errorImage: {
+    width: "200px",
+    height: "190px",
+    marginBottom: "30px",
   },
 }));
 
-export default function WelcomeUser() {
+export default function ErrorUser() {
   const [state, setState] = React.useContext(GlobalState);
   const classes = useStyles();
 
@@ -220,28 +169,8 @@ export default function WelcomeUser() {
     setOpen(false);
   };
 
-  const changeTimeClicked = (event) => {
-    setState((state) => ({
-      ...state,
-      welcomeUser: true,
-      changeTimeClicked: true,
-    }));
-  };
-
-  const editInfoClicked = (event) => {
-    setState((state) => ({
-      ...state,
-      welcomeUser: true,
-      editInfoClicked: true,
-    }));
-  };
-
-  const cancelTimeClicked = (event) => {
-    setState((state) => ({
-      ...state,
-      welcomeUser: true,
-      cancelTimeClicked: true,
-    }));
+  const getStartedClicked = (event) => {
+    window.location.href = "https://travelpcrtest.com/";
   };
 
   return (
@@ -256,7 +185,7 @@ export default function WelcomeUser() {
             justify="center"
             alignItems="center"
           >
-            <Grid item xs={10}>
+            <Grid item item xs={10}>
               <Typography
                 style={{ fontWeight: "400" }}
                 variant="h6"
@@ -291,146 +220,36 @@ export default function WelcomeUser() {
                 alignItems: "center",
                 justifyContent: "center",
               }}
-            >
-              <img
-                className={classes.gynaeLogo}
-                src={gynaeImage}
-                alt="logo image"
-              />
-            </div>
+            ></div>
           </Typography>
 
-          <p
-            className={
-              isMobile ? classes.textContentMobile : classes.textContent
-            }
-          >
-            Welcome Back {state.userBooking.fullname},
-          </p>
+          <React.Fragment>
+            <img
+              className={classes.errorImage}
+              src={errorImage}
+              alt="Error image"
+            />
 
-          <p
-            className={
-              isMobile ? classes.textContentMobile : classes.textContent
-            }
-          >
-            Do you want to change or cancel your appointment?
-          </p>
+            <Typography variant="h6" gutterBottom>
+              {state.pathIdNotFound
+                ? "Sorry, we cannot find your booking! "
+                : "Sorry, your booking appointment is expired! "}
+              <br />
+              <br />
+              You can book a new appointment if needed later on.
+            </Typography>
+            <br />
 
-          <Divider />
-
-          {!state.userBooking.tr && (
-            <div
-              style={{
-                textAlign: "left",
-                paddingLeft: "20px",
-                paddingTop: "10px",
-              }}
-            >
-              <ul className={classes.ul}>
-                <li className={classes.li}>
-                  <span className={classes.infoTitle}>Booked Date</span>{" "}
-                  <span className={classes.infoData}>
-                    {FormatDateFromStringWithSlash(
-                      state.userBooking.bookingDate
-                    )}
-                  </span>
-                </li>
-                <li className={classes.li}>
-                  <span className={classes.infoTitle}>Booked Time</span>{" "}
-                  <span className={classes.infoData}>
-                    {state.userBooking.bookingTime}
-                  </span>
-                </li>
-                <li className={classes.li}>
-                  <span className={classes.infoTitle}>Fullname</span>{" "}
-                  <span className={classes.infoData}>
-                    {state.userBooking.fullname}
-                  </span>
-                </li>
-                <li className={classes.li}>
-                  <span className={classes.infoTitle}>Email</span>{" "}
-                  <span className={classes.infoData}>
-                    {state.userBooking.email}
-                  </span>
-                </li>
-                <li className={classes.li}>
-                  <span className={classes.infoTitle}>Telephone</span>{" "}
-                  <span className={classes.infoData}>
-                    {state.userBooking.phone}
-                  </span>
-                </li>
-                <li className={classes.li}>
-                  <span className={classes.infoTitle}>Service</span>{" "}
-                  <span className={classes.infoData}>
-                    {state.userBooking.service}
-                  </span>
-                </li>
-                <li className={classes.li}>
-                  <span className={classes.infoTitle}>Notes</span>{" "}
-                  <span className={classes.infoData}>
-                    {state.userBooking.notes || "-"}
-                  </span>
-                </li>
-              </ul>
-            </div>
-          )}
-
-          <Divider />
-
-          <div
-            style={
-              isBrowser
-                ? { paddingLeft: "50px", paddingRight: "50px" }
-                : { paddingLeft: "10px", paddingRight: "10px" }
-            }
-          >
-            <Grid
-              container
-              spacing={3}
-              direction="column"
-              justify="space-between"
-              alignItems="stretch"
-            >
-              <Grid item xs>
-                <Button
-                  fullWidth
-                  variant="contained"
-                  className={classes.changeTimeButton}
+            {/* <Button 
+                  variant="contained" 
+                  className={classes.getStartedButton} 
                   color="primary"
-                  onClick={changeTimeClicked}
-                  onTouchTap={changeTimeClicked}
-                >
-                  Change My appointment Time
-                </Button>
-              </Grid>
-
-              <Grid item xs>
-                <Button
-                  fullWidth
-                  variant="contained"
-                  className={classes.editInfoButton}
-                  color="primary"
-                  onClick={editInfoClicked}
-                  onTouchTap={editInfoClicked}
-                >
-                  Edit My Info
-                </Button>
-              </Grid>
-
-              <Grid item xs>
-                <Button
-                  fullWidth
-                  variant="contained"
-                  className={classes.cancelTimeButton}
-                  color="primary"
-                  onClick={cancelTimeClicked}
-                  onTouchTap={cancelTimeClicked}
-                >
-                  Cancel my appointment
-                </Button>
-              </Grid>
-            </Grid>
-          </div>
+                  onClick={getStartedClicked}
+                  onTouchTap={getStartedClicked} 
+                  >
+            Book New appointment
+         </Button> */}
+          </React.Fragment>
         </Paper>
 
         <Button
@@ -460,7 +279,7 @@ export default function WelcomeUser() {
               tabIndex={-1}
             >
               <div style={{ textAlign: "justify", padding: "10px" }}>
-              Medical Express Clinic will not contact you for any other reason
+                Medical Express Clinic will not contact you for any other reason
                 than to share your test results, and certificate if selected,
                 via the email address provided. The information provided to us
                 via this registration form is never shared with any other
@@ -470,7 +289,7 @@ export default function WelcomeUser() {
                 call on the telephone number provided to inform you of your
                 result and provide additional advice or guidance. If we cannot
                 get hold of you, we will email you asking you to contact the
-                clinic.
+                clinic.{" "}
               </div>
             </DialogContentText>
           </DialogContent>

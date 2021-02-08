@@ -6,6 +6,9 @@ import NavigatorUser from "./users/navigator-user";
 import GyaneNavigatorUser from "./users/gynae/navigator-user";
 import GyaneFormNavigatorUser from "./users/gynaeform/navigator-user";
 
+import GPNavigatorUser from "./users/gp/navigator-user";
+import GPFormNavigatorUser from "./users/gpform/navigator-user";
+
 
 function App() {
   const [state, setState] = React.useState({
@@ -31,6 +34,15 @@ function App() {
           return  {id: urlElements[urlElements.length - 1] , type: 'gynae', page: "form"};
         }
         
+      }else if (urlElements[urlElements.length - 2] === "gp") {
+        if (urlElements[urlElements.length - 3] === "edit")
+        {
+          return  {id: urlElements[urlElements.length - 1] , type: 'gp', page: "edit"};
+        }else if  (urlElements[urlElements.length - 3] === "form")
+        {
+          return  {id: urlElements[urlElements.length - 1] , type: 'gp', page: "form"};
+        }
+        
       }
     }
 
@@ -43,6 +55,8 @@ function App() {
         {getPathId() && getPathId().type === 'pcr' && <NavigatorUser pathId={`${getPathId().id}`} />}
         {getPathId() && getPathId().type === 'gynae' && getPathId().page === 'edit' && <GyaneNavigatorUser pathId={`${getPathId().id}`} />}
         {getPathId() && getPathId().type === 'gynae' && getPathId().page === 'form' && <GyaneFormNavigatorUser pathId={`${getPathId().id}`} />}
+        {getPathId() && getPathId().type === 'gp' && getPathId().page === 'edit' && <GPNavigatorUser pathId={`${getPathId().id}`} />}
+        {getPathId() && getPathId().type === 'gp' && getPathId().page === 'form' && <GPFormNavigatorUser pathId={`${getPathId().id}`} />}
 
 
         {!getPathId() && <Navigator />}

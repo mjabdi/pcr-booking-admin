@@ -7,7 +7,7 @@ import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
 import Link from "@material-ui/core/Link";
 import Typography from "@material-ui/core/Typography";
-import GlobalState from "./../../GlobalState";
+import GlobalState from "../../GlobalState";
 
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -38,7 +38,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import logoImage from "./../../images/logo.png";
 
 import ValidateInfo from "./Validation";
-import BookService from "../../services/GynaeBookService";
+import BookService from "../../services/GPBookService";
 import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import AccessibilityNewIcon from "@material-ui/icons/AccessibilityNew";
@@ -436,19 +436,7 @@ export default function EditInfoUser() {
             variant="h6"
             align="center"
           >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <img
-                className={classes.gynaeLogo}
-                src={gynaeImage}
-                alt="logo image"
-              />
-            </div>
+
           </Typography>
 
           <Grid
@@ -521,24 +509,6 @@ export default function EditInfoUser() {
             alignItems="baseline"
             style={{ paddingTop: "0px", paddingBottom: "20px" }}
           >
-            <Grid item xs={12} md={12}>
-              <FormControl className={classes.formControl} fullWidth required>
-                <InputLabel id="service-label-id">Service</InputLabel>
-                <Select
-                  fullWidth
-                  labelId="service-label-id"
-                  id="service-id"
-                  value={service}
-                  onChange={serviceChanged}
-                >
-                  {Packages.map((item) => (
-                    <MenuItem value={item.packageName}>
-                      {item.packageName}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
 
             <Grid item xs={12} md={12}>
               <TextField

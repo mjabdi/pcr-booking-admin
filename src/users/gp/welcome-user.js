@@ -7,7 +7,7 @@ import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
 import Link from "@material-ui/core/Link";
 import Typography from "@material-ui/core/Typography";
-import GlobalState from "./../../GlobalState";
+import GlobalState from "../../GlobalState";
 
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -28,6 +28,8 @@ import AirplanemodeActiveIcon from "@material-ui/icons/AirplanemodeActive";
 import { Divider, Grid } from "@material-ui/core";
 
 import logoImage from "./../../images/logo.png";
+import doctorImage from "./../../images/doctor.png";
+
 
 import AccessibilityNewIcon from "@material-ui/icons/AccessibilityNew";
 import { FormatDateFromStringWithSlash } from "../../DateFormatter";
@@ -190,6 +192,19 @@ const useStyles = makeStyles((theme) => ({
   infoData: {
     fontWeight: "400",
   },
+
+  pageTitle:{
+    color : "#f68529",
+    marginTop : "10px"
+  },
+
+  doctorImage: {
+    width: "40px",
+    height: "40px",
+    marginRight: "10px",
+  },
+
+
 }));
 
 export default function WelcomeUser() {
@@ -292,11 +307,16 @@ export default function WelcomeUser() {
                 justifyContent: "center",
               }}
             >
+
               <img
-                className={classes.gynaeLogo}
-                src={gynaeImage}
-                alt="logo image"
+                className={classes.doctorImage}
+                src={doctorImage}
+                alt="doctor image"
               />
+              
+              <span className={classes.pageTitle}> 
+                  Private GP in London 
+              </span>
             </div>
           </Typography>
 
@@ -357,12 +377,6 @@ export default function WelcomeUser() {
                   <span className={classes.infoTitle}>Telephone</span>{" "}
                   <span className={classes.infoData}>
                     {state.userBooking.phone}
-                  </span>
-                </li>
-                <li className={classes.li}>
-                  <span className={classes.infoTitle}>Service</span>{" "}
-                  <span className={classes.infoData}>
-                    {state.userBooking.service}
                   </span>
                 </li>
                 <li className={classes.li}>
@@ -460,7 +474,7 @@ export default function WelcomeUser() {
               tabIndex={-1}
             >
               <div style={{ textAlign: "justify", padding: "10px" }}>
-              Medical Express Clinic will not contact you for any other reason
+                Medical Express Clinic will not contact you for any other reason
                 than to share your test results, and certificate if selected,
                 via the email address provided. The information provided to us
                 via this registration form is never shared with any other
@@ -470,7 +484,7 @@ export default function WelcomeUser() {
                 call on the telephone number provided to inform you of your
                 result and provide additional advice or guidance. If we cannot
                 get hold of you, we will email you asking you to contact the
-                clinic.
+                clinic.{" "}
               </div>
             </DialogContentText>
           </DialogContent>
