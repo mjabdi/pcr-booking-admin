@@ -388,7 +388,7 @@ export default function WelcomeUser() {
                 <li className={classes.li}>
                   <span className={classes.infoTitle}>Estimated Price</span>{" "}
                   <span className={classes.infoData}>
-                    {`${state.userBooking.estimatedPrice.toLocaleString("en-GB", { style: 'currency', currency: 'GBP' })}`}
+                    {`${state.userBooking.estimatedPrice}`}
                   </span>
                 </li>
                 <li className={classes.li}>

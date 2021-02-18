@@ -243,6 +243,8 @@ export default function CanceledResultUser() {
               <br />
               Your appointment was successfully cancelled.
               <br />
+              <strong>Your refund will be processed in 3 working days.</strong>
+              <br/>
               <br />
               You can book a new appointment if needed later on.
             </Typography>
