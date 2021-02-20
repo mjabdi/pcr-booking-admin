@@ -10,6 +10,7 @@ import GPNavigatorUser from "./users/gp/navigator-user";
 import GPFormNavigatorUser from "./users/gpform/navigator-user";
 
 import STDNavigatorUser from "./users/std/navigator-user";
+import STDFormNavigatorUser from "./users/stdform/navigator-user";
 
 
 function App() {
@@ -49,7 +50,11 @@ function App() {
         if (urlElements[urlElements.length - 3] === "edit")
         {
           return  {id: urlElements[urlElements.length - 1] , type: 'std', page: "edit"};
+        }else if  (urlElements[urlElements.length - 3] === "form")
+        {
+          return  {id: urlElements[urlElements.length - 1] , type: 'std', page: "form"};
         }      
+
       }
     }
 
@@ -65,6 +70,7 @@ function App() {
         {getPathId() && getPathId().type === 'gp' && getPathId().page === 'edit' && <GPNavigatorUser pathId={`${getPathId().id}`} />}
         {getPathId() && getPathId().type === 'gp' && getPathId().page === 'form' && <GPFormNavigatorUser pathId={`${getPathId().id}`} />}
         {getPathId() && getPathId().type === 'std' && getPathId().page === 'edit' && <STDNavigatorUser pathId={`${getPathId().id}`} />}
+        {getPathId() && getPathId().type === 'std' && getPathId().page === 'form' && <STDFormNavigatorUser pathId={`${getPathId().id}`} />}
 
 
         {!getPathId() && <Navigator />}
