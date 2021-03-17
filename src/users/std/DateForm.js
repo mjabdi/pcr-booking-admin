@@ -134,8 +134,8 @@ export default function DateForm() {
     // if (isWeekend(date))
     // return true
 
-    if (getDay(date) === 1 || getDay(date) === 2 || getDay(date) === 3 ||  getDay(date) === 6 ||  getDay(date) === 0)
-    return true  
+    // if (getDay(date) === 1 || getDay(date) === 2 || getDay(date) === 3 ||  getDay(date) === 6 ||  getDay(date) === 0)
+    // return true  
 
     if (dateformat(date,'yyyy-mm-dd') < dateformat(firstAvailableDay,'yyyy-mm-dd'))
     {

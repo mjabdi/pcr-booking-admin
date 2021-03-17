@@ -4,16 +4,22 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 
 import { makeStyles } from '@material-ui/core/styles';
 
-import GlobalState from './../../GlobalState';
+import GlobalState from '../../GlobalState';
 
 
 
 import WelcomeUser from './welcome-user';
 
-import STDBookService from './../../services/STDBookService';
+import BloodBookService from '../../services/BloodBookService';
 import ErrorUser from './error-user';
+import CancelTimeUser from './cancel-time-user';
+import EditInfoUser from './edit-info-user';
+import ChangeTimeUser from './change-time-user';
+import CanceledResultUser from './canceled-result-user';
+import TimeChangedResult from './timechanged-result-user';
+import EditInfoResult from './edit-info-result-user';
 import dateformat from 'dateformat'
-import SubmitFormDataResult from './edit-info-result-user';
+import bloodBookService from '../../services/BloodBookService';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -53,14 +59,14 @@ export default function NavigatorUser(props) {
     const [loaded, setLoaded] = React.useState(false);
 
     useEffect(() => {
-        document.title = "Private STD Registration Form"
+        document.title = "Edit Booking Info"
      }, []);
 
     useEffect( () => {
 
 if (props.pathId && props.pathId.length === 24)
         {
-            STDBookService.getBookingById(props.pathId).then( res => {
+            bloodBookService.getBookingById(props.pathId).then( res => {
                 const result = res.data
                 if (result)
                 {
@@ -115,9 +121,32 @@ if (props.pathId && props.pathId.length === 24)
                     <ErrorUser/>
                 )}
 
-                {loaded && state.welcomeUser && state.submitFormData && (
-                    <SubmitFormDataResult/>
+                {loaded && state.welcomeUser && state.changeTimeClicked && (
+                    <ChangeTimeUser/>
                 )}
+
+                {loaded && state.welcomeUser && state.editInfoClicked && (
+                    <EditInfoUser/>
+                )}
+
+                {loaded && state.welcomeUser && state.cancelTimeClicked && (
+                    <CancelTimeUser/>
+                )}
+
+                {loaded && state.welcomeUser && state.canceledResult && (
+                    <CanceledResultUser/>
+                )}
+
+                {loaded && state.welcomeUser && state.timeChangedResult && (
+                    <TimeChangedResult/>
+                )}
+
+                {loaded && state.welcomeUser && state.editInfoResult && (
+                    <EditInfoResult/>
+                )}
+
+
+
         
         </React.Fragment>
     );

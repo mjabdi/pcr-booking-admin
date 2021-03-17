@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react';
 import Typography from '@material-ui/core/Typography';
 
-import GlobalState from './../GlobalState';
+import GlobalState from '../../GlobalState';
 import { makeStyles , useTheme} from '@material-ui/core/styles';
 
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 
-import TimeService from './../services/TimeService';
+import TimeService from '../../services/BloodTimeService';
 import Grid from '@material-ui/core/Grid';
 import Skeleton from '@material-ui/lab/Skeleton';
 
@@ -164,9 +164,8 @@ export default function TimeForm() {
 
               <React.Fragment>
                 <div style={{fontSize:"1.2rem", paddingTop:"10px", paddingBottom:"10px", color:"#db0000" , fontWeight: "500", background:"#fff5f5"}}>
-                  Sorry this day is already fully booked! 
+                      Sorry this day is already fully booked! 
                   <br/>Please choose an alternative day.
-                  {/* <br/> * All dates are fully booked until 1st February 2021.  */}
                 </div>
                 
               </React.Fragment>
@@ -179,8 +178,8 @@ export default function TimeForm() {
                               {timeSlots.map((timeSlot) => (
                                 <GridListTile key={timeSlot.time} cols={1}>
                                   <div 
-                                      onClick= {() => {timeSlot.available? boxClicked(timeSlot.time) : boxClicked(null)}}
-                                      className={(timeSlot.available) ? ((state.bookingTime === timeSlot.time)? classes.boxSelected : classes.box ): classes.boxDisable}>
+                                      onClick= {() => {timeSlot.available || state.userBooking.bookingTime === timeSlot.time? boxClicked(timeSlot.time) : boxClicked(null)}}
+                                      className={(timeSlot.available || state.userBooking.bookingTime === timeSlot.time) ? ((state.bookingTime === timeSlot.time)? classes.boxSelected : classes.box ): classes.boxDisable}>
                                       {timeSlot.time}
                                   </div>
                                 </GridListTile>

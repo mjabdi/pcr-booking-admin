@@ -28,7 +28,7 @@ import AirplanemodeActiveIcon from "@material-ui/icons/AirplanemodeActive";
 import { Divider, Grid } from "@material-ui/core";
 
 import logoImage from "./../../images/logo.png";
-import doctorImage from "./../../images/std-icon.png";
+import doctorImage from "./../../images/blood-logo.png";
 
 import AccessibilityNewIcon from "@material-ui/icons/AccessibilityNew";
 import { FormatDateFromStringWithSlash } from "../../DateFormatter";
@@ -193,7 +193,7 @@ const useStyles = makeStyles((theme) => ({
   },
 
   pageTitle: {
-    color: "#f68529",
+    color: "#dc2626",
     marginTop: "10px",
   },
 
@@ -256,6 +256,16 @@ export default function WelcomeUser() {
     }));
   };
 
+  const getIndivisualTestsString = (indivisualTests) => {
+    const tests = JSON.parse(indivisualTests);
+    let testsString = "";
+    tests.forEach((item) => {
+      testsString += item.description;
+      testsString += " , ";
+    });
+    return testsString;
+  };
+
   return (
     <React.Fragment>
       <CssBaseline />
@@ -311,7 +321,7 @@ export default function WelcomeUser() {
               />
 
               <span className={classes.pageTitle}>
-                Private STD Check in London
+                Private Blood Test in London
               </span>
             </div>
           </Typography>
@@ -375,13 +385,33 @@ export default function WelcomeUser() {
                     {state.userBooking.phone || "-"}
                   </span>
                 </li>
-
                 <li className={classes.li}>
-                  <span className={classes.infoTitle}>Package</span>{" "}
+                  <span className={classes.infoTitle}>Date of Birth</span>{" "}
                   <span className={classes.infoData}>
-                    {state.userBooking.packageName}
+                    {FormatDateFromStringWithSlash(state.userBooking.birthDate)}
                   </span>
                 </li>
+
+                {state.userBooking.packageName && (
+                  <li className={classes.li}>
+                    <span className={classes.infoTitle}>Package</span>{" "}
+                    <span className={classes.infoData}>
+                      {state.userBooking.packageName}
+                    </span>
+                  </li>
+                )}
+
+                {state.userBooking.indivisualTests && (
+                  <li className={classes.li}>
+                    <span className={classes.infoTitle}>Indivisual Tests</span>{" "}
+                    <span className={classes.infoData}>
+                      {getIndivisualTestsString(
+                        state.userBooking.indivisualTests
+                      )}
+                    </span>
+                  </li>
+                )}
+
                 <li className={classes.li}>
                   <span className={classes.infoTitle}>Estimated Price</span>{" "}
                   <span className={classes.infoData}>

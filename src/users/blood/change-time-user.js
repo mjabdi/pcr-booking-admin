@@ -17,6 +17,12 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 
 import HttpsIcon from "@material-ui/icons/Https";
 
+import Backdrop from "@material-ui/core/Backdrop";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import AccessibilityNewIcon from "@material-ui/icons/AccessibilityNew";
+
+import gynaeImage from "./../../images/gynae-clinic.png";
+
 import {
   BrowserView,
   MobileView,
@@ -28,12 +34,11 @@ import AirplanemodeActiveIcon from "@material-ui/icons/AirplanemodeActive";
 import { Divider, Grid } from "@material-ui/core";
 
 import logoImage from "./../../images/logo.png";
-import doctorImage from "./../../images/std-icon.png";
 
-import AccessibilityNewIcon from "@material-ui/icons/AccessibilityNew";
-import { FormatDateFromStringWithSlash } from "../../DateFormatter";
-
-import gynaeImage from "./../../images/gynae-clinic.png";
+import dateformat from "dateformat";
+import DateForm from "./DateForm";
+import TimeForm from "./TimeForm";
+import BookService from "../../services/BloodBookService";
 
 function Copyright() {
   return (
@@ -137,30 +142,31 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: "10px",
   },
 
-  changeTimeButton: {
-    marginTop: "20px",
-    textDecoration: "none !important",
-    padding: "10px",
-  },
-
-  editInfoButton: {
-    backgroundColor: "#2f942e",
-    "&:hover": {
-      background: "green",
-      color: "#fff",
-    },
+  backButton: {
+    marginBottom: "20px",
     textDecoration: "none !important",
     padding: "10px",
   },
 
   cancelTimeButton: {
-    marginBottom: "20px",
+    marginTop: "20px",
     backgroundColor: "#d90015",
     "&:hover": {
       background: "#b80012",
       color: "#fff",
     },
 
+    padding: "10px",
+  },
+
+  editInfoButton: {
+    marginTop: "20px",
+    backgroundColor: "#2f942e",
+    "&:hover": {
+      background: "green",
+      color: "#fff",
+    },
+    textDecoration: "none !important",
     padding: "10px",
   },
 
@@ -192,22 +198,17 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "400",
   },
 
-  pageTitle: {
-    color: "#f68529",
-    marginTop: "10px",
-  },
-
-  doctorImage: {
-    width: "40px",
-    height: "40px",
-    marginRight: "10px",
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: "#fff",
   },
 }));
 
-export default function WelcomeUser() {
+export default function ChangeTimeUser() {
   const [state, setState] = React.useContext(GlobalState);
   const classes = useStyles();
 
+  const [saving, setSaving] = React.useState(false);
   //// ** Dialog
 
   const [open, setOpen] = React.useState(false);
@@ -232,27 +233,36 @@ export default function WelcomeUser() {
     setOpen(false);
   };
 
-  const changeTimeClicked = (event) => {
-    setState((state) => ({
-      ...state,
-      welcomeUser: true,
-      changeTimeClicked: true,
-    }));
+  const saveClicked = (event) => {
+    setSaving(true);
+
+    BookService.updateBookingTime({
+      bookingId: state.userBooking._id,
+      bookingTime: state.bookingTime,
+      bookingDate: dateformat(
+        new Date(new Date(state.bookingDate).toUTCString().slice(0, -4)),
+        "yyyy-mm-dd"
+      ),
+    })
+      .then((res) => {
+        setSaving(false);
+        setState((state) => ({
+          ...state,
+          changeTimeClicked: false,
+          timeChangedResult: true,
+        }));
+      })
+      .catch((err) => {
+        console.log(err);
+        setSaving(false);
+      });
   };
 
-  const editInfoClicked = (event) => {
+  const backButtonClicked = (event) => {
     setState((state) => ({
       ...state,
-      welcomeUser: true,
-      editInfoClicked: true,
-    }));
-  };
-
-  const cancelTimeClicked = (event) => {
-    setState((state) => ({
-      ...state,
-      welcomeUser: true,
-      cancelTimeClicked: true,
+      welcomeUser: false,
+      changeTimeClicked: false,
     }));
   };
 
@@ -297,106 +307,16 @@ export default function WelcomeUser() {
             variant="h6"
             align="center"
           >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <img
-                className={classes.doctorImage}
-                src={doctorImage}
-                alt="doctor image"
-              />
 
-              <span className={classes.pageTitle}>
-                Private STD Check in London
-              </span>
-            </div>
           </Typography>
 
-          <p
-            className={
-              isMobile ? classes.textContentMobile : classes.textContent
-            }
-          >
-            Welcome Back {state.userBooking.fullname},
-          </p>
+          <div style={{ paddingBottom: "20px" }}>
+            <DateForm />
+          </div>
 
-          <p
-            className={
-              isMobile ? classes.textContentMobile : classes.textContent
-            }
-          >
-            Do you want to change or cancel your appointment?
-          </p>
-
-          <Divider />
-
-          {!state.userBooking.tr && (
-            <div
-              style={{
-                textAlign: "left",
-                paddingLeft: "20px",
-                paddingTop: "10px",
-              }}
-            >
-              <ul className={classes.ul}>
-                <li className={classes.li}>
-                  <span className={classes.infoTitle}>Booked Date</span>{" "}
-                  <span className={classes.infoData}>
-                    {FormatDateFromStringWithSlash(
-                      state.userBooking.bookingDate
-                    )}
-                  </span>
-                </li>
-                <li className={classes.li}>
-                  <span className={classes.infoTitle}>Booked Time</span>{" "}
-                  <span className={classes.infoData}>
-                    {state.userBooking.bookingTime}
-                  </span>
-                </li>
-                <li className={classes.li}>
-                  <span className={classes.infoTitle}>Fullname</span>{" "}
-                  <span className={classes.infoData}>
-                    {state.userBooking.fullname}
-                  </span>
-                </li>
-                <li className={classes.li}>
-                  <span className={classes.infoTitle}>Email</span>{" "}
-                  <span className={classes.infoData}>
-                    {state.userBooking.email || "-"}
-                  </span>
-                </li>
-                <li className={classes.li}>
-                  <span className={classes.infoTitle}>Telephone</span>{" "}
-                  <span className={classes.infoData}>
-                    {state.userBooking.phone || "-"}
-                  </span>
-                </li>
-
-                <li className={classes.li}>
-                  <span className={classes.infoTitle}>Package</span>{" "}
-                  <span className={classes.infoData}>
-                    {state.userBooking.packageName}
-                  </span>
-                </li>
-                <li className={classes.li}>
-                  <span className={classes.infoTitle}>Estimated Price</span>{" "}
-                  <span className={classes.infoData}>
-                    {`${state.userBooking.estimatedPrice}`}
-                  </span>
-                </li>
-                <li className={classes.li}>
-                  <span className={classes.infoTitle}>Notes</span>{" "}
-                  <span className={classes.infoData}>
-                    {state.userBooking.notes || "-"}
-                  </span>
-                </li>
-              </ul>
-            </div>
-          )}
+          <div style={{ paddingBottom: "20px" }}>
+            <TimeForm />
+          </div>
 
           <Divider />
 
@@ -416,40 +336,31 @@ export default function WelcomeUser() {
             >
               <Grid item xs>
                 <Button
-                  fullWidth
-                  variant="contained"
-                  className={classes.changeTimeButton}
-                  color="primary"
-                  onClick={changeTimeClicked}
-                  onTouchTap={changeTimeClicked}
-                >
-                  Change My appointment Time
-                </Button>
-              </Grid>
-
-              <Grid item xs>
-                <Button
+                  disabled={
+                    saving || !state.bookingTime || state.bookingTime.length < 1
+                  }
                   fullWidth
                   variant="contained"
                   className={classes.editInfoButton}
                   color="primary"
-                  onClick={editInfoClicked}
-                  onTouchTap={editInfoClicked}
+                  onClick={saveClicked}
+                  onTouchTap={saveClicked}
                 >
-                  Edit My Info
+                  Save Changes
                 </Button>
               </Grid>
 
               <Grid item xs>
                 <Button
+                  disabled={saving}
                   fullWidth
                   variant="contained"
-                  className={classes.cancelTimeButton}
-                  color="primary"
-                  onClick={cancelTimeClicked}
-                  onTouchTap={cancelTimeClicked}
+                  className={classes.backButton}
+                  color="default"
+                  onClick={backButtonClicked}
+                  onTouchTap={backButtonClicked}
                 >
-                  Cancel my appointment
+                  Back
                 </Button>
               </Grid>
             </Grid>
@@ -483,7 +394,7 @@ export default function WelcomeUser() {
               tabIndex={-1}
             >
               <div style={{ textAlign: "justify", padding: "10px" }}>
-                Medical Express Clinic will not contact you for any other reason
+              Medical Express Clinic will not contact you for any other reason
                 than to share your test results, and certificate if selected,
                 via the email address provided. The information provided to us
                 via this registration form is never shared with any other
@@ -493,7 +404,7 @@ export default function WelcomeUser() {
                 call on the telephone number provided to inform you of your
                 result and provide additional advice or guidance. If we cannot
                 get hold of you, we will email you asking you to contact the
-                clinic.{" "}
+                clinic.
               </div>
             </DialogContentText>
           </DialogContent>
@@ -503,6 +414,10 @@ export default function WelcomeUser() {
             </Button>
           </DialogActions>
         </Dialog>
+
+        <Backdrop className={classes.backdrop} open={saving}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
 
         <Copyright />
       </main>

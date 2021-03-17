@@ -10,7 +10,7 @@ import GlobalState from './../../GlobalState';
 
 import WelcomeUser from './welcome-user';
 
-import STDBookService from './../../services/STDBookService';
+import BloodBookService from './../../services/BloodBookService';
 import ErrorUser from './error-user';
 import dateformat from 'dateformat'
 import SubmitFormDataResult from './edit-info-result-user';
@@ -53,14 +53,14 @@ export default function NavigatorUser(props) {
     const [loaded, setLoaded] = React.useState(false);
 
     useEffect(() => {
-        document.title = "Private STD Registration Form"
+        document.title = "Blood Registration Form"
      }, []);
 
     useEffect( () => {
 
 if (props.pathId && props.pathId.length === 24)
         {
-            STDBookService.getBookingById(props.pathId).then( res => {
+            BloodBookService.getBookingById(props.pathId).then( res => {
                 const result = res.data
                 if (result)
                 {

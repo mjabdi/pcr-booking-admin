@@ -12,6 +12,8 @@ import GPFormNavigatorUser from "./users/gpform/navigator-user";
 import STDNavigatorUser from "./users/std/navigator-user";
 import STDFormNavigatorUser from "./users/stdform/navigator-user";
 
+import BloodNavigatorUser from "./users/blood/navigator-user";
+import BloodFormNavigatorUser from "./users/bloodform/navigator-user";
 
 function App() {
   const [state, setState] = React.useState({
@@ -22,39 +24,68 @@ function App() {
   const getPathId = () => {
     let urlElements = window.location.pathname.split("/");
     if (urlElements.length === 4) {
-      return {id: urlElements[urlElements.length - 1] , type: 'pcr'};
+      return { id: urlElements[urlElements.length - 1], type: "pcr" };
     }
 
     if (urlElements.length === 6) {
       if (urlElements[urlElements.length - 2] === "pcr") {
-        return  {id: urlElements[urlElements.length - 1] , type: 'pcr'};
+        return { id: urlElements[urlElements.length - 1], type: "pcr" };
       } else if (urlElements[urlElements.length - 2] === "gynae") {
-        if (urlElements[urlElements.length - 3] === "edit")
-        {
-          return  {id: urlElements[urlElements.length - 1] , type: 'gynae', page: "edit"};
-        }else if  (urlElements[urlElements.length - 3] === "form")
-        {
-          return  {id: urlElements[urlElements.length - 1] , type: 'gynae', page: "form"};
+        if (urlElements[urlElements.length - 3] === "edit") {
+          return {
+            id: urlElements[urlElements.length - 1],
+            type: "gynae",
+            page: "edit",
+          };
+        } else if (urlElements[urlElements.length - 3] === "form") {
+          return {
+            id: urlElements[urlElements.length - 1],
+            type: "gynae",
+            page: "form",
+          };
         }
-        
-      }else if (urlElements[urlElements.length - 2] === "gp") {
-        if (urlElements[urlElements.length - 3] === "edit")
-        {
-          return  {id: urlElements[urlElements.length - 1] , type: 'gp', page: "edit"};
-        }else if  (urlElements[urlElements.length - 3] === "form")
-        {
-          return  {id: urlElements[urlElements.length - 1] , type: 'gp', page: "form"};
-        }        
-      }
-      else if (urlElements[urlElements.length - 2] === "std") {
-        if (urlElements[urlElements.length - 3] === "edit")
-        {
-          return  {id: urlElements[urlElements.length - 1] , type: 'std', page: "edit"};
-        }else if  (urlElements[urlElements.length - 3] === "form")
-        {
-          return  {id: urlElements[urlElements.length - 1] , type: 'std', page: "form"};
-        }      
-
+      } else if (urlElements[urlElements.length - 2] === "gp") {
+        if (urlElements[urlElements.length - 3] === "edit") {
+          return {
+            id: urlElements[urlElements.length - 1],
+            type: "gp",
+            page: "edit",
+          };
+        } else if (urlElements[urlElements.length - 3] === "form") {
+          return {
+            id: urlElements[urlElements.length - 1],
+            type: "gp",
+            page: "form",
+          };
+        }
+      } else if (urlElements[urlElements.length - 2] === "std") {
+        if (urlElements[urlElements.length - 3] === "edit") {
+          return {
+            id: urlElements[urlElements.length - 1],
+            type: "std",
+            page: "edit",
+          };
+        } else if (urlElements[urlElements.length - 3] === "form") {
+          return {
+            id: urlElements[urlElements.length - 1],
+            type: "std",
+            page: "form",
+          };
+        }
+      } else if (urlElements[urlElements.length - 2] === "blood") {
+        if (urlElements[urlElements.length - 3] === "edit") {
+          return {
+            id: urlElements[urlElements.length - 1],
+            type: "blood",
+            page: "edit",
+          };
+        } else if (urlElements[urlElements.length - 3] === "form") {
+          return {
+            id: urlElements[urlElements.length - 1],
+            type: "blood",
+            page: "form",
+          };
+        }
       }
     }
 
@@ -64,14 +95,49 @@ function App() {
   return (
     <GlobalState.Provider value={[state, setState]}>
       <div className="App">
-        {getPathId() && getPathId().type === 'pcr' && <NavigatorUser pathId={`${getPathId().id}`} />}
-        {getPathId() && getPathId().type === 'gynae' && getPathId().page === 'edit' && <GyaneNavigatorUser pathId={`${getPathId().id}`} />}
-        {getPathId() && getPathId().type === 'gynae' && getPathId().page === 'form' && <GyaneFormNavigatorUser pathId={`${getPathId().id}`} />}
-        {getPathId() && getPathId().type === 'gp' && getPathId().page === 'edit' && <GPNavigatorUser pathId={`${getPathId().id}`} />}
-        {getPathId() && getPathId().type === 'gp' && getPathId().page === 'form' && <GPFormNavigatorUser pathId={`${getPathId().id}`} />}
-        {getPathId() && getPathId().type === 'std' && getPathId().page === 'edit' && <STDNavigatorUser pathId={`${getPathId().id}`} />}
-        {getPathId() && getPathId().type === 'std' && getPathId().page === 'form' && <STDFormNavigatorUser pathId={`${getPathId().id}`} />}
-
+        {getPathId() && getPathId().type === "pcr" && (
+          <NavigatorUser pathId={`${getPathId().id}`} />
+        )}
+        {getPathId() &&
+          getPathId().type === "gynae" &&
+          getPathId().page === "edit" && (
+            <GyaneNavigatorUser pathId={`${getPathId().id}`} />
+          )}
+        {getPathId() &&
+          getPathId().type === "gynae" &&
+          getPathId().page === "form" && (
+            <GyaneFormNavigatorUser pathId={`${getPathId().id}`} />
+          )}
+        {getPathId() &&
+          getPathId().type === "gp" &&
+          getPathId().page === "edit" && (
+            <GPNavigatorUser pathId={`${getPathId().id}`} />
+          )}
+        {getPathId() &&
+          getPathId().type === "gp" &&
+          getPathId().page === "form" && (
+            <GPFormNavigatorUser pathId={`${getPathId().id}`} />
+          )}
+        {getPathId() &&
+          getPathId().type === "std" &&
+          getPathId().page === "edit" && (
+            <STDNavigatorUser pathId={`${getPathId().id}`} />
+          )}
+        {getPathId() &&
+          getPathId().type === "std" &&
+          getPathId().page === "form" && (
+            <STDFormNavigatorUser pathId={`${getPathId().id}`} />
+          )}
+        {getPathId() &&
+          getPathId().type === "blood" &&
+          getPathId().page === "edit" && (
+            <BloodNavigatorUser pathId={`${getPathId().id}`} />
+          )}
+        {getPathId() &&
+          getPathId().type === "blood" &&
+          getPathId().page === "form" && (
+            <BloodFormNavigatorUser pathId={`${getPathId().id}`} />
+          )}
 
         {!getPathId() && <Navigator />}
       </div>

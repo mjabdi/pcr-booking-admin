@@ -1,6 +1,6 @@
 import API from './api';
 
-export default class gpBookService {
+export default class stdBookService {
 
 
    static submitFormData = (bookingId, formData) =>

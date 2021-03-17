@@ -8,7 +8,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import GlobalState from '../../GlobalState';
 import {BrowserView, MobileView} from 'react-device-detect';
 
-import TimeService from '../../services/GPTimeService';
+import TimeService from '../../services/BloodTimeService';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
