@@ -15,6 +15,10 @@ import STDFormNavigatorUser from "./users/stdform/navigator-user";
 import BloodNavigatorUser from "./users/blood/navigator-user";
 import BloodFormNavigatorUser from "./users/bloodform/navigator-user";
 
+import DermaNavigatorUser from "./users/derma/navigator-user";
+import DermaFormNavigatorUser from "./users/dermaform/navigator-user";
+
+
 function App() {
   const [state, setState] = React.useState({
     foundRecords: [],
@@ -87,6 +91,21 @@ function App() {
           };
         }
       }
+      else if (urlElements[urlElements.length - 2] === "derma") {
+        if (urlElements[urlElements.length - 3] === "edit") {
+          return {
+            id: urlElements[urlElements.length - 1],
+            type: "derma",
+            page: "edit",
+          };
+        } else if (urlElements[urlElements.length - 3] === "form") {
+          return {
+            id: urlElements[urlElements.length - 1],
+            type: "derma",
+            page: "form",
+          };
+        }
+      }
     }
 
     return null;
@@ -138,6 +157,17 @@ function App() {
           getPathId().page === "form" && (
             <BloodFormNavigatorUser pathId={`${getPathId().id}`} />
           )}
+          {getPathId() &&
+          getPathId().type === "derma" &&
+          getPathId().page === "edit" && (
+            <DermaNavigatorUser pathId={`${getPathId().id}`} />
+          )}
+        {getPathId() &&
+          getPathId().type === "derma" &&
+          getPathId().page === "form" && (
+            <DermaFormNavigatorUser pathId={`${getPathId().id}`} />
+          )}
+
 
         {!getPathId() && <Navigator />}
       </div>
