@@ -157,6 +157,7 @@ function App() {
           getPathId().page === "form" && (
             <BloodFormNavigatorUser pathId={`${getPathId().id}`} />
           )}
+          
           {getPathId() &&
           getPathId().type === "derma" &&
           getPathId().page === "edit" && (

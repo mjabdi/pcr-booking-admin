@@ -228,8 +228,7 @@ const useStyles = makeStyles((theme) => ({
 
 const Packages = [
   {packageName: 'PRIVATE CONSULTATION WITH CONSULTANT DERMATOLOGIST'},
-  {packageName: `FREE CONSULTATION FOR AESTHETIC TREATMENTS
-  BOTOX`},
+  {packageName: `FREE CONSULTATION FOR AESTHETIC TREATMENTS AND BOTOX`},
   {packageName: `RADIOFREQUNCY`},
   {packageName: `LASER HAIR`},
   {packageName: `FILLERS`},
