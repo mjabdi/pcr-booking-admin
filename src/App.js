@@ -18,6 +18,9 @@ import BloodFormNavigatorUser from "./users/bloodform/navigator-user";
 import DermaNavigatorUser from "./users/derma/navigator-user";
 import DermaFormNavigatorUser from "./users/dermaform/navigator-user";
 
+import DentistNavigatorUser from "./users/dentist/navigator-user";
+
+
 
 function App() {
   const [state, setState] = React.useState({
@@ -106,6 +109,21 @@ function App() {
           };
         }
       }
+      else if (urlElements[urlElements.length - 2] === "dentist") {
+        if (urlElements[urlElements.length - 3] === "edit") {
+          return {
+            id: urlElements[urlElements.length - 1],
+            type: "dentist",
+            page: "edit",
+          };
+        } else if (urlElements[urlElements.length - 3] === "form") {
+          return {
+            id: urlElements[urlElements.length - 1],
+            type: "dentist",
+            page: "form",
+          };
+        }
+      } 
     }
 
     return null;
@@ -168,6 +186,14 @@ function App() {
           getPathId().page === "form" && (
             <DermaFormNavigatorUser pathId={`${getPathId().id}`} />
           )}
+
+
+            {getPathId() &&
+          getPathId().type === "dentist" &&
+          getPathId().page === "edit" && (
+            <DentistNavigatorUser pathId={`${getPathId().id}`} />
+          )}
+
 
 
         {!getPathId() && <Navigator />}
