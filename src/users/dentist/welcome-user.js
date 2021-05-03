@@ -15,7 +15,12 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
+import Alert from '@material-ui/lab/Alert';
+
 import HttpsIcon from "@material-ui/icons/Https";
+
+import PhoneIcon from '@material-ui/icons/Phone';
+
 
 import {
   BrowserView,
@@ -201,6 +206,8 @@ export default function WelcomeUser() {
   const [open, setOpen] = React.useState(false);
   const [scroll, setScroll] = React.useState("paper");
 
+  const [disableChange, setDisableChange] = React.useState(false)
+
   const descriptionElementRef = React.useRef(null);
   React.useEffect(() => {
     if (open) {
@@ -210,6 +217,34 @@ export default function WelcomeUser() {
       }
     }
   }, [open]);
+
+  React.useEffect(() => {
+
+    if (shouldDisableChange()){
+      setDisableChange(true)
+    }
+  }, [])
+
+  const shouldDisableChange = () =>
+  {
+    const today = new Date()
+    const bookdate = new Date(state.userBooking.bookingDate)
+
+    let diff = (bookdate.getTime() - today.getTime()) / (1000 * 60 * 60)
+
+    let deduction = 0
+    if (today.getDay() === 5)
+    {
+      deduction = 48
+    }else if (today.getDay() === 6)
+    {
+      deduction = 24
+    }
+
+    diff = diff - deduction
+
+    return diff < 48
+  }
 
   const handleClickOpen = (scrollType) => () => {
     setOpen(true);
@@ -299,6 +334,24 @@ export default function WelcomeUser() {
               /> */}
             </div>
           </Typography>
+
+          {disableChange && (
+              <div style={{border:"1px solid #00909d", marginBottom:"10px"  , borderRadius:"8px",  fontSize: "1.1rem", padding:"10px 5px", color: "#0c4e59", fontWeight: "500", background: "#d9fffd" }}>
+              In order to cancel or change the schedule of your appointment, <br/> please call "020 71830357"
+                    <div style={{ marginTop: "10px", fontSize: "1.4rem", fontWeight: "500" }}>
+                  <Grid container spacing={1} direction="row" justify="center" alignItems="center">
+                    <Grid item>
+                      <div>  <a href="tel:02071831049"><PhoneIcon style={{ color: "#00909d", fontSize: "1.8rem" }} /> </a></div>
+                    </Grid>
+                    <Grid item>
+                      <div style={{ marginTop: "-10px" }}>
+                        <a href="tel:02071830357" style={{ color: "#00909d" }}> Call:  020 71830357 </a>
+                      </div>
+                    </Grid>
+                  </Grid>
+                </div>
+                </div>
+          )}
 
           <p
             className={
@@ -399,6 +452,7 @@ export default function WelcomeUser() {
                   color="primary"
                   onClick={changeTimeClicked}
                   onTouchTap={changeTimeClicked}
+                  disabled = {disableChange}
                 >
                   Change My appointment Time
                 </Button>
@@ -425,6 +479,8 @@ export default function WelcomeUser() {
                   color="primary"
                   onClick={cancelTimeClicked}
                   onTouchTap={cancelTimeClicked}
+                  disabled = {disableChange}
+
                 >
                   Cancel my appointment
                 </Button>
