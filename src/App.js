@@ -20,6 +20,9 @@ import DermaFormNavigatorUser from "./users/dermaform/navigator-user";
 
 import DentistNavigatorUser from "./users/dentist/navigator-user";
 
+import ScreeningFormNavigatorUser from "./users/screeningform/navigator-user";
+
+
 
 
 function App() {
@@ -123,6 +126,14 @@ function App() {
             page: "form",
           };
         }
+      }else if (urlElements[urlElements.length - 2] === "screening") {
+          if (urlElements[urlElements.length - 3] === "form") {
+          return {
+            id: urlElements[urlElements.length - 1],
+            type: "screening",
+            page: "form",
+          };
+        }
       } 
     }
 
@@ -193,6 +204,13 @@ function App() {
           getPathId().page === "edit" && (
             <DentistNavigatorUser pathId={`${getPathId().id}`} />
           )}
+
+          {getPathId() &&
+          getPathId().type === "screening" &&
+          getPathId().page === "form" && (
+            <ScreeningFormNavigatorUser pathId={`${getPathId().id}`} />
+          )}
+
 
 
 
