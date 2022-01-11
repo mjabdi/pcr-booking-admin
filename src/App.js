@@ -23,6 +23,11 @@ import DentistNavigatorUser from "./users/dentist/navigator-user";
 import ScreeningFormNavigatorUser from "./users/screeningform/navigator-user";
 
 
+import CorporateNavigatorUser from "./users/corporate/navigator-user";
+import CorporateFormNavigatorUser from "./users/corporateform/navigator-user";
+
+
+
 
 
 function App() {
@@ -68,7 +73,22 @@ function App() {
             page: "form",
           };
         }
-      } else if (urlElements[urlElements.length - 2] === "std") {
+      }else if (urlElements[urlElements.length - 2] === "corporate") {
+        if (urlElements[urlElements.length - 3] === "edit") {
+          return {
+            id: urlElements[urlElements.length - 1],
+            type: "corporate",
+            page: "edit",
+          };
+        } else if (urlElements[urlElements.length - 3] === "form") {
+          return {
+            id: urlElements[urlElements.length - 1],
+            type: "corporate",
+            page: "form",
+          };
+        }
+      } 
+      else if (urlElements[urlElements.length - 2] === "std") {
         if (urlElements[urlElements.length - 3] === "edit") {
           return {
             id: urlElements[urlElements.length - 1],
@@ -210,6 +230,18 @@ function App() {
           getPathId().page === "form" && (
             <ScreeningFormNavigatorUser pathId={`${getPathId().id}`} />
           )}
+
+        {getPathId() &&
+          getPathId().type === "corporate" &&
+          getPathId().page === "edit" && (
+            <CorporateNavigatorUser pathId={`${getPathId().id}`} />
+          )}
+        {getPathId() &&
+          getPathId().type === "corporate" &&
+          getPathId().page === "form" && (
+            <CorporateFormNavigatorUser pathId={`${getPathId().id}`} />
+          )}
+
 
 
 
