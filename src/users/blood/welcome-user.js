@@ -213,6 +213,10 @@ export default function WelcomeUser() {
   const [open, setOpen] = React.useState(false);
   const [scroll, setScroll] = React.useState("paper");
 
+
+  const [disableChange, setDisableChange] = React.useState(false)
+
+
   const descriptionElementRef = React.useRef(null);
   React.useEffect(() => {
     if (open) {
@@ -222,6 +226,33 @@ export default function WelcomeUser() {
       }
     }
   }, [open]);
+
+  React.useEffect(() => {
+
+    if (shouldDisableChange()){
+      setDisableChange(true)
+    }
+  }, [])
+
+  const shouldDisableChange = () =>
+  {
+    const today = new Date()
+    const bookdate = new Date(state.userBooking.bookingDate)
+
+    let hour = parseInt(state.userBooking.bookingTime.substr(0,2))
+    if (state.userBooking.bookingTime.indexOf("PM") > 0 && hour < 12)
+    {
+      hour += 12
+    }
+
+    bookdate.setHours(hour)
+
+    let diff = (bookdate.getTime() - today.getTime()) / (1000 * 60 * 60)
+
+    return diff < 24
+  }
+
+
 
   const handleClickOpen = (scrollType) => () => {
     setOpen(true);
@@ -325,6 +356,25 @@ export default function WelcomeUser() {
               </span>
             </div>
           </Typography>
+
+          {disableChange && (
+              <div style={{border:"1px solid #c90072", marginBottom:"10px"  , borderRadius:"8px",  fontSize: "1.1rem", padding:"10px 5px", color: "#c90072", fontWeight: "500", background: "#fff5fc" }}>
+              In order to cancel or change the schedule of your appointment, <br/> please call "020 7499 1991"
+                    <div style={{ marginTop: "10px", fontSize: "1.4rem", fontWeight: "500" }}>
+                  <Grid container spacing={1} direction="row" justify="center" alignItems="center">
+                    <Grid item>
+                      <div>  <a href="tel:02074991991"><PhoneIcon style={{ color: "#c90072", fontSize: "1.8rem" }} /> </a></div>
+                    </Grid>
+                    <Grid item>
+                      <div style={{ marginTop: "-10px" }}>
+                        <a href="tel:02074991991" style={{ color: "#c90072" }}> Call:  020  7499 1991 </a>
+                      </div>
+                    </Grid>
+                  </Grid>
+                </div>
+                </div>
+          )}
+
 
           <p
             className={
@@ -452,6 +502,8 @@ export default function WelcomeUser() {
                   color="primary"
                   onClick={changeTimeClicked}
                   onTouchTap={changeTimeClicked}
+                  disabled={disableChange}
+
                 >
                   Change My appointment Time
                 </Button>
@@ -478,6 +530,8 @@ export default function WelcomeUser() {
                   color="primary"
                   onClick={cancelTimeClicked}
                   onTouchTap={cancelTimeClicked}
+                  disabled={disableChange}
+
                 >
                   Cancel my appointment
                 </Button>
