@@ -216,6 +216,9 @@ export default function WelcomeUser() {
   const [open, setOpen] = React.useState(false);
   const [scroll, setScroll] = React.useState("paper");
 
+  const [disableChange, setDisableChange] = React.useState(false)
+
+
   const descriptionElementRef = React.useRef(null);
   React.useEffect(() => {
     if (open) {
@@ -223,8 +226,31 @@ export default function WelcomeUser() {
       if (descriptionElement !== null) {
         descriptionElement.focus();
       }
+
+      if (shouldDisableChange()){
+        setDisableChange(true)
+      }
     }
   }, [open]);
+
+  const shouldDisableChange = () =>
+  {
+    const today = new Date()
+    const bookdate = new Date(state.userBooking.bookingDate)
+
+    let hour = parseInt(state.userBooking.bookingTime.substr(0,2))
+    if (state.userBooking.bookingTime.indexOf("PM") > 0 && hour < 12)
+    {
+      hour += 12
+    }
+
+    bookdate.setHours(hour)
+
+    let diff = (bookdate.getTime() - today.getTime()) / (1000 * 60 * 60)
+
+    return diff < 24
+  }
+
 
   const handleClickOpen = (scrollType) => () => {
     setOpen(true);
@@ -413,6 +439,8 @@ export default function WelcomeUser() {
                   color="primary"
                   onClick={changeTimeClicked}
                   onTouchTap={changeTimeClicked}
+                  disabled={disableChange}
+
                 >
                   Change My appointment Time
                 </Button>
@@ -439,6 +467,8 @@ export default function WelcomeUser() {
                   color="primary"
                   onClick={cancelTimeClicked}
                   onTouchTap={cancelTimeClicked}
+                  disabled={disableChange}
+
                 >
                   Cancel my appointment
                 </Button>
