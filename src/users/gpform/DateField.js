@@ -115,90 +115,96 @@ const DateField = ({title, value, dateChanged, error}) => {
         setYearArray(years);
 
       } , [])
+      const handleYearClicked = (event) => {
+        if (!year) {
+          setYear("2000");
+        }
+      };
     
   return (
-
     <React.Fragment>
-
-        
-    <div style={{position:"relative", border:`1px solid ${error ? 'red' : '#ddd'}` , borderRadius:"10px", padding:"20px", paddingBottom: "50px", marginTop: "20px"}}>
-
-        <div style={{position:"absolute", top: "-15px", left : "15px", backgroundColor:"#fff", color : `${error ? 'red' : '#555'}`, padding:"5px" , paddingLeft:"10px", paddingRight:"10px" }}>
-               {title} * 
-       </div>
-
-    
+      <div
+        style={{
+          position: "relative",
+          border: `1px solid ${error ? "red" : "#ddd"}`,
+          borderRadius: "10px",
+          padding: "20px",
+          paddingBottom: "50px",
+          marginTop: "20px",
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            top: "-15px",
+            left: "15px",
+            backgroundColor: "#fff",
+            color: `${error ? "red" : "#555"}`,
+            padding: "5px",
+            paddingLeft: "10px",
+            paddingRight: "10px",
+          }}
+        >
+          {title} *
+        </div>
 
         <Grid
-            container
-            direction="row"
-            justify="flex-start"
-            alignItems="flex-start"
-            spacing={2}
+          container
+          direction="row"
+          justify="flex-start"
+          alignItems="flex-start"
+          spacing={2}
         >
+          <Grid item xs={12} md={4}>
+            <FormControl fullWidth>
+              <InputLabel id="day-label">Day</InputLabel>
+              <Select
+                labelId="day-label"
+                id="day-select"
+                value={day}
+                onChange={handleDayChanged}
+              >
+                {dayArray.map((item) => (
+                  <MenuItem value={item}>{item}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
 
+          <Grid item xs={12} md={4}>
+            <FormControl fullWidth>
+              <InputLabel id="month-label">Month</InputLabel>
+              <Select
+                labelId="month-label"
+                id="month-select"
+                value={month}
+                onChange={handleMonthChanged}
+              >
+                {monthArray.map((item, index) => (
+                  <MenuItem value={index}>{item}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
 
-            <Grid item xs={12} md={4}>
-                <FormControl fullWidth>
-                    <InputLabel  id="day-label">Day</InputLabel>
-                    <Select
-                        
-                        labelId="day-label"
-                        id="day-select"
-                        value={day}
-                        onChange={handleDayChanged}
-                        >
-                        {
-                            dayArray.map( item => (
-                                <MenuItem value={item}>{item}</MenuItem>
-                            )
-                        )} 
-                    </Select>
-                </FormControl>
-
-
-            </Grid>
-
-            <Grid item xs={12} md={4}>
-                <FormControl fullWidth>
-                    <InputLabel  id="month-label">Month</InputLabel>
-                    <Select
-                        labelId="month-label"
-                        id="month-select"
-                        value={month}
-                        onChange={handleMonthChanged}
-                        >
-                        {
-                            monthArray.map( (item , index) => (
-                                <MenuItem value={index}>{item}</MenuItem>
-                            )
-                        )} 
-                    </Select>
-                </FormControl>
-
-                
-            </Grid>
-
-            <Grid item xs={12} md={4}>
-                <FormControl fullWidth>
-                    <InputLabel  id="day-label">Year</InputLabel>
-                    <Select
-                    labelId="year-label"
-                    id="year-select"
-                    value={year}
-                    onChange={handleYearChanged}
-                    >
-                    {
-                        yearArray.map( item => (
-                            <MenuItem value={item}>{item}</MenuItem>
-                        )
-                    )} 
-                    </Select>
-                </FormControl>
-            </Grid>
+          <Grid item xs={12} md={4}>
+            <FormControl fullWidth>
+              <InputLabel id="day-label">Year</InputLabel>
+              <Select
+                labelId="year-label"
+                id="year-select"
+                value={year}
+                onChange={handleYearChanged}
+                onFocus={handleYearClicked}
+              >
+                {yearArray.map((item) => (
+                  <MenuItem value={item}>{item}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
         </Grid>
-
-        </div>
+      </div>
     </React.Fragment>
   );
 }

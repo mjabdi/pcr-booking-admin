@@ -9,6 +9,9 @@ import GyaneFormNavigatorUser from "./users/gynaeform/navigator-user";
 import GPNavigatorUser from "./users/gp/navigator-user";
 import GPFormNavigatorUser from "./users/gpform/navigator-user";
 
+import PaediatricianNavigatorUser from "./users/paediatrician/navigator-user";
+import PaediatricianFormNavigatorUser from "./users/paediatricianform/navigator-user";
+
 import STDNavigatorUser from "./users/std/navigator-user";
 import STDFormNavigatorUser from "./users/stdform/navigator-user";
 
@@ -73,7 +76,21 @@ function App() {
             page: "form",
           };
         }
-      }else if (urlElements[urlElements.length - 2] === "corporate") {
+      } else if (urlElements[urlElements.length - 2] === "paediatrician") {
+        if (urlElements[urlElements.length - 3] === "edit") {
+          return {
+            id: urlElements[urlElements.length - 1],
+            type: "paediatrician",
+            page: "edit",
+          };
+        } else if (urlElements[urlElements.length - 3] === "form") {
+          return {
+            id: urlElements[urlElements.length - 1],
+            type: "paediatrician",
+            page: "form",
+          };
+        }
+      } else if (urlElements[urlElements.length - 2] === "corporate") {
         if (urlElements[urlElements.length - 3] === "edit") {
           return {
             id: urlElements[urlElements.length - 1],
@@ -87,8 +104,7 @@ function App() {
             page: "form",
           };
         }
-      } 
-      else if (urlElements[urlElements.length - 2] === "std") {
+      } else if (urlElements[urlElements.length - 2] === "std") {
         if (urlElements[urlElements.length - 3] === "edit") {
           return {
             id: urlElements[urlElements.length - 1],
@@ -116,8 +132,7 @@ function App() {
             page: "form",
           };
         }
-      }
-      else if (urlElements[urlElements.length - 2] === "derma") {
+      } else if (urlElements[urlElements.length - 2] === "derma") {
         if (urlElements[urlElements.length - 3] === "edit") {
           return {
             id: urlElements[urlElements.length - 1],
@@ -131,8 +146,7 @@ function App() {
             page: "form",
           };
         }
-      }
-      else if (urlElements[urlElements.length - 2] === "dentist") {
+      } else if (urlElements[urlElements.length - 2] === "dentist") {
         if (urlElements[urlElements.length - 3] === "edit") {
           return {
             id: urlElements[urlElements.length - 1],
@@ -146,8 +160,8 @@ function App() {
             page: "form",
           };
         }
-      }else if (urlElements[urlElements.length - 2] === "screening") {
-          if (urlElements[urlElements.length - 3] === "form") {
+      } else if (urlElements[urlElements.length - 2] === "screening") {
+        if (urlElements[urlElements.length - 3] === "form") {
           return {
             id: urlElements[urlElements.length - 1],
             type: "screening",
@@ -187,6 +201,16 @@ function App() {
             <GPFormNavigatorUser pathId={`${getPathId().id}`} />
           )}
         {getPathId() &&
+          getPathId().type === "paediatrician" &&
+          getPathId().page === "edit" && (
+            <PaediatricianNavigatorUser pathId={`${getPathId().id}`} />
+          )}
+        {getPathId() &&
+          getPathId().type === "paediatrician" &&
+          getPathId().page === "form" && (
+            <PaediatricianFormNavigatorUser pathId={`${getPathId().id}`} />
+          )}
+        {getPathId() &&
           getPathId().type === "std" &&
           getPathId().page === "edit" && (
             <STDNavigatorUser pathId={`${getPathId().id}`} />
@@ -206,8 +230,8 @@ function App() {
           getPathId().page === "form" && (
             <BloodFormNavigatorUser pathId={`${getPathId().id}`} />
           )}
-          
-          {getPathId() &&
+
+        {getPathId() &&
           getPathId().type === "derma" &&
           getPathId().page === "edit" && (
             <DermaNavigatorUser pathId={`${getPathId().id}`} />
@@ -218,14 +242,13 @@ function App() {
             <DermaFormNavigatorUser pathId={`${getPathId().id}`} />
           )}
 
-
-            {getPathId() &&
+        {getPathId() &&
           getPathId().type === "dentist" &&
           getPathId().page === "edit" && (
             <DentistNavigatorUser pathId={`${getPathId().id}`} />
           )}
 
-          {getPathId() &&
+        {getPathId() &&
           getPathId().type === "screening" &&
           getPathId().page === "form" && (
             <ScreeningFormNavigatorUser pathId={`${getPathId().id}`} />
@@ -241,10 +264,6 @@ function App() {
           getPathId().page === "form" && (
             <CorporateFormNavigatorUser pathId={`${getPathId().id}`} />
           )}
-
-
-
-
 
         {!getPathId() && <Navigator />}
       </div>
