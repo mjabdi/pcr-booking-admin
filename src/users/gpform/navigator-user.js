@@ -43,6 +43,7 @@ function timePassed (bookingDate)
 {
     const today= new Date();
     const todayStr = dateformat(today , 'yyyy-mm-dd');
+    bookingDate = new Date((new Date(bookingDate)).getTime() + 60*60*24*1000)
     return (bookingDate < todayStr); 
 }
 
